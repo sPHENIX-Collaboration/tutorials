@@ -80,7 +80,7 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
 PHG4ParticleGun *get_gun(const char *name="PGUN")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
-  PHG4ParticleGun *pgun = se->getSubsysReco(name);
+  PHG4ParticleGun *pgun = (PHG4ParticleGun  *) se->getSubsysReco(name);
   return pgun;
 }
 

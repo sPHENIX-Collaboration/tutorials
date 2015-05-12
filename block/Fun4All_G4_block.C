@@ -4,6 +4,7 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors");
   gSystem->Load("libg4testbench");
+  gSystem->Load("libg4eval");
   gSystem->Load("libg4histos");
 
   ///////////////////////////////////////////
@@ -46,6 +47,10 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   box->SetMaterial("G4_W");
   box->SetActive(); // it is an active volume - save G4Hits
   g4Reco->registerSubsystem(box);
+
+  PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
+  g4Reco->registerSubsystem(truth);
+
   se->registerSubsystem( g4Reco );
 
   ///////////////////////////////////////////
@@ -56,11 +61,31 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
     {
       Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT",outfile);
       se->registerOutputManager(out);
+
+    }
+  if (outfile)
+    {
+      // save a comprehensive  evaluation file
+      PHG4DSTReader* ana = new PHG4DSTReader(
+          string(outfile) + string("_DSTReader.root"));
+      ana->set_save_particle(true);
+      ana->set_load_all_particle(false);
+      ana->set_load_active_particle(true);
+      ana->set_save_vertex(true);
+      if (nEvents > 0 && nEvents < 2)
+        {
+          ana->Verbosity(2);
+        }
+      ana->AddNode("box_0");
+      se->registerSubsystem(ana);
     }
 
    // input - we need a dummy to drive the event loop
   Fun4AllInputManager *in = new Fun4AllDummyInputManager( "JADE");
   se->registerInputManager( in );
+
+  // a quick evaluator to inspect on hit/particle/tower level
+
 
   if (nEvents > 0)
     {

@@ -4,7 +4,8 @@
 // May 5 2015
 //----------------------------------------------------------
 
-#include<PHFlowJetMaker.h>
+#include"PHFlowJetMaker.h"
+
 #include<g4cemc/RawCluster.h>
 #include<g4cemc/RawClusterContainer.h>
 
@@ -21,14 +22,14 @@
 #include <fastjet/ClusterSequence.hh>
 #include <fastjet/SISConePlugin.hh>
 
-//#include <PHPyJetContainerV2.h>
-
+#include <TF1.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
-#include <TF1.h>
+#include <TLorentzVector.h>
 #include <TNtuple.h>
-#include <TFile.h>
-#include <TMath.h>
+
+#include <cmath>
 
 using namespace std;
 
@@ -37,10 +38,9 @@ typedef std::map<int,TLorentzVector*> tlvmap;
 /*
  * Constructor
  */
-PHFlowJetMaker::PHFlowJetMaker(char *outputfile, const std::string &name):SubsysReco(name)
+PHFlowJetMaker::PHFlowJetMaker(const std::string &name):
+  SubsysReco(name)
 {
-  outfile = outputfile;
-
   //Define parameters for jet reconstruction
    min_jet_pT = 1.0;
    double r_param = 0.3;
@@ -175,7 +175,7 @@ void PHFlowJetMaker::run_particle_flow(std::vector<fastjet::PseudoJet>& flow_par
       pz = trk->get3Momentum(2);
       pt = sqrt(px*px + py*py);
       p = sqrt(px*px + py*py + pz*pz);
-      track_energy = TMath::Sqrt(p*p + 0.139*0.139); //Assume pion mass
+      track_energy = sqrt(p*p + 0.139*0.139); //Assume pion mass
       phi = atan2(py,px);
       eta = -log(tan(acos(pz/p)/2.0));
       et = track_energy/cosh(eta);
@@ -183,11 +183,11 @@ void PHFlowJetMaker::run_particle_flow(std::vector<fastjet::PseudoJet>& flow_par
       //Account for angle wrap-around
       if(phi < 0)
 	{
-	  phi = phi + 2*TMath::Pi();
+	  phi = phi + 2*M_PI;
 	}
-      else if(phi > 2*TMath::Pi())
+      else if(phi > 2*M_PI)
 	{
-	  phi = phi + 2*TMath::Pi();
+	  phi = phi + 2*M_PI;
 	}
 
       //Quality cut on tracks
@@ -451,16 +451,9 @@ int PHFlowJetMaker::get_matched(double clus_energy, double track_energy)
  * Write jets to node tree
  */
 /*
+todo - we are working on a jet object
 void PHFlowJetMaker::save_jets_to_nodetree()
 {
   flow_jet_container = new PHPyJetContainerV2();
 }
 */
-/*
- * End
- */
-int PHFlowJetMaker::End(PHCompositeNode* topNode)
-{
-  return 0;
-}
-

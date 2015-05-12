@@ -6,28 +6,11 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <TLorentzVector.h>
 
-class Fun4AllHistoManager;
 class PHCompositeNode;
-class PHG4HitContainer;
-class RawTowerContainer;
-class RawTowerGeom;
 class RawClusterContainer;
-class RawCluster;
-class PHMCTowerContainerV1;
-class RawClusterContainer;
-class PHFastjetContainer;
-class PHPyJetContainerV2;
-class PHG4TruthInfoContainer;
-class SvtxTrack;
 class SvtxTrackMap;
-class TVector3;
-class TLorentzVector;
-class TH1F;
 class TF1;
-class TH2F;
-class TNtuple;
 
 namespace fastjet {
   class PseudoJet;
@@ -41,15 +24,13 @@ class PHFlowJetMaker: public SubsysReco
 {
  public:
 
-  PHFlowJetMaker(char *outputfile, const std::string &name = "PHFlowJetMaker");
+  PHFlowJetMaker(const std::string &name = "PHFlowJetMaker");
 
   virtual ~PHFlowJetMaker();
 
   int Init(PHCompositeNode *);
 
   int process_event(PHCompositeNode *);
-
-  int End(PHCompositeNode *);
 
   void create_calo_pseudojets(std::vector<fastjet::PseudoJet>& particles, RawClusterContainer* emc_clusters, RawClusterContainer* hci_clusters, RawClusterContainer* hco_clusters);
 
@@ -66,8 +47,6 @@ class PHFlowJetMaker: public SubsysReco
   static const float sfHCALIN = 0.071;
   static const float sfHCALOUT = 0.04;
 			 
-  char *outfile;
-
   //Tolerance for cluster-track matching
   TF1 *match_tolerance_low;
   TF1 *match_tolerance_high;

@@ -60,6 +60,8 @@ MakeSimpleTree::process_event(PHCompositeNode *topNode)
        item->MyFloat(f);
        item->MyInt(i);
      }
+   mycontainer->MyEventInt(i);
+   mycontainer->MyEventFloat(f);
    i++;
    // Fun4All looks at the return codes from each module
    // DISCARDEVENT tells an output manager which has this module

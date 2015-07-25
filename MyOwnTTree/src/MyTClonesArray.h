@@ -2,7 +2,7 @@
 #define MYTCLONESARRAY_H__
 // This is how to store a class inside a TClonesArray, useful for
 // e.g. tracks or in general anything where you have many objects per event.
-// This class doesn't make play the virtual base class inheritance game we do
+// This class doesn't play the virtual base class inheritance game we do
 // for our dst's, so old files won't be readable if you change this class
 // root might still be able to read parts of old files but I really 
 // wouldn't rely on this
@@ -22,9 +22,14 @@ class MyTClonesArray : public PHObject
   MySimpleTree *GetNewItem();
   MySimpleTree *GetItem(const unsigned int i) const;
   int Entries();
+  void MyEventInt(const int i) {myeventint = i;}
+  int MyEventInt() const {return myeventint;}
+  void MyEventFloat(const float f) {myeventfloat = f;}
+  float MyEventFloat() const {return myeventfloat;}
 
  protected:
-
+  int myeventint;
+  float myeventfloat;
   TClonesArray *MyTCArray;
 
   ClassDef(MyTClonesArray,1)

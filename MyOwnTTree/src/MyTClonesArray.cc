@@ -22,7 +22,9 @@ using namespace std;
 
 static int DEFAULTSIZE = 10;
 
-MyTClonesArray::MyTClonesArray()
+MyTClonesArray::MyTClonesArray():
+  myeventint(0),
+  myeventfloat(NAN)
 {
   MyTCArray = new TClonesArray("MySimpleTree",DEFAULTSIZE );
 }
@@ -42,6 +44,8 @@ MyTClonesArray::~MyTClonesArray()
 void 
 MyTClonesArray::Reset()
 {
+  myeventint = 0;
+  myeventfloat = NAN;
   MyTCArray->Clear();
   if (MyTCArray->GetSize() > DEFAULTSIZE)
     {

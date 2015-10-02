@@ -83,7 +83,7 @@ CaloAna::process_event( PHCompositeNode* topNode )
   //  TOWER_CALIB_<detector>: Calibrated towers
   //  CLUSTER_<detector>: clusters
   process_g4hits(topNode);
-  //  process_g4cells(topNode);
+  process_g4cells(topNode);
   process_towers(topNode);
   process_clusters(topNode);
   return Fun4AllReturnCodes::EVENT_OK;
@@ -177,7 +177,7 @@ CaloAna::process_towers( PHCompositeNode* topNode )
 
   // loop over the G4Hits
   nodename.str("");
-  nodename << "TOWER_CALIB" << detector;
+  nodename << "TOWER_CALIB_" << detector;
   geonodename.str("");
   geonodename << "TOWERGEOM_" << detector;
   RawTowerGeom* towergeom = findNode::getClass<RawTowerGeom>(topNode, geonodename.str().c_str());

@@ -14,19 +14,20 @@ int thetabins = 10;
 
 void matscan()
 {
-Fun4AllServer *se = Fun4AllServer::instance();
-PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco("PHG4RECO");
- char cmd[200];
-// set the desired phi range and binning (10 bins from 0-90 deg)
- sprintf(cmd,"/control/matScan/phi %d %f %f deg",phibins,phimin,phispan);
- cout << "executing " << cmd << endl;
- g4->ApplyCommand(cmd);
-// set theta range - one at theta=0 which is vertically w.r.t. the beam axis
- sprintf(cmd,"/control/matScan/theta  %d %f %f deg",thetabins,thetamin,thetaspan);
- cout << "executing " << cmd << endl;
- g4->ApplyCommand(cmd);
-// do the scan
- cout << "starting scan - patience" << endl;
+  Fun4AllServer *se = Fun4AllServer::instance();
+  PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco("PHG4RECO");
+  g4->InitRun(se->topNode());
+  char cmd[200];
+  // set the desired phi range and binning (10 bins from 0-90 deg)
+  sprintf(cmd,"/control/matScan/phi %d %f %f deg",phibins,phimin,phispan);
+  cout << "executing " << cmd << endl;
+  g4->ApplyCommand(cmd);
+  // set theta range - one at theta=0 which is vertically w.r.t. the beam axis
+  sprintf(cmd,"/control/matScan/theta  %d %f %f deg",thetabins,thetamin,thetaspan);
+  cout << "executing " << cmd << endl;
+  g4->ApplyCommand(cmd);
+  // do the scan
+  cout << "starting scan - patience" << endl;
   g4->ApplyCommand("/control/matScan/scan");
 }
 

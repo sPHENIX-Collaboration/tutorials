@@ -37,6 +37,7 @@ using namespace std;
 
 CaloAna::CaloAna(const std::string &name, const std::string &filename):
   SubsysReco( name ),
+  detector("HCALIN"),
   outfilename(filename),
   hm(NULL),
   outfile(NULL),
@@ -95,7 +96,6 @@ CaloAna::process_g4hits( PHCompositeNode* topNode )
 {
 
   ostringstream nodename;
-  string detector = "HCALIN";
 
   // loop over the G4Hits
   nodename.str("");
@@ -126,7 +126,6 @@ CaloAna::process_g4cells( PHCompositeNode* topNode )
 {
   ostringstream nodename;
   ostringstream geonodename;
-  string detector = "HCALIN";
 
   // loop over the G4Hits
   nodename.str("");
@@ -174,7 +173,6 @@ CaloAna::process_towers( PHCompositeNode* topNode )
 {
   ostringstream nodename;
   ostringstream geonodename;
-  string detector = "HCALIN";
 
   // loop over the G4Hits
   nodename.str("");
@@ -210,7 +208,6 @@ int
 CaloAna::process_clusters( PHCompositeNode* topNode )
 {
   ostringstream nodename;
-  string detector = "HCALIN";
 
   // loop over the G4Hits
   nodename.str("");

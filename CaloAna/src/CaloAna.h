@@ -33,7 +33,10 @@ class CaloAna: public SubsysReco
   int process_towers(PHCompositeNode *);
   int process_clusters(PHCompositeNode *);
 
+  void Detector(const std::string &name) {detector = name;}
+
 protected:
+  std::string detector;
   std::string outfilename;
   Fun4AllHistoManager *hm;
   TFile *outfile; 

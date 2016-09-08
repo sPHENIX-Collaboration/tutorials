@@ -12,6 +12,7 @@
 
 // Tower includes
 #include <g4cemc/RawTowerGeom.h>
+#include <g4cemc/RawTowerGeomContainer.h>
 #include <g4cemc/RawTowerContainer.h>
 #include <g4cemc/RawTower.h>
 
@@ -23,7 +24,7 @@
 #include <fun4all/Fun4AllHistoManager.h>
 #include <fun4all/Fun4AllReturnCodes.h>
 
-#include <fun4all/getClass.h>
+#include <phool/getClass.h>
 
 #include <TFile.h>
 #include <TNtuple.h>
@@ -180,7 +181,7 @@ CaloAna::process_towers( PHCompositeNode* topNode )
   nodename << "TOWER_CALIB_" << detector;
   geonodename.str("");
   geonodename << "TOWERGEOM_" << detector;
-  RawTowerGeom* towergeom = findNode::getClass<RawTowerGeom>(topNode, geonodename.str().c_str());
+  RawTowerGeomContainer* towergeom = findNode::getClass<RawTowerGeomContainer>(topNode, geonodename.str().c_str());
   if (!towergeom)
     {
       return Fun4AllReturnCodes::EVENT_OK;

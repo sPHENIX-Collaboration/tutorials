@@ -35,18 +35,17 @@ int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
   double length[6] = {20., 20., 36., -1., - 1., - 1.}; // -1 use eta coverage to determine length
   PHG4CylinderSubsystem *cyl;
   // here is our silicon:
-  for (int ilayer = 0; ilayer < 6; ilayer++)
+   for (int ilayer = 0; ilayer < 6; ilayer++)
     {
       cyl = new PHG4CylinderSubsystem("SVTX", ilayer);
-      cyl->SetRadius(svxrad[ilayer]);
-      cyl->SetMaterial("G4_Si");
-      cyl->SetThickness(si_thickness[ilayer]);
+      cyl->set_double_param("radius",svxrad[ilayer]);
+      cyl->set_string_param("material","G4_Si");
+      cyl->set_double_param("thickness",si_thickness[ilayer]);
       cyl->SetActive();
       cyl->SuperDetector("SVTX");
       if (length[ilayer] > 0)
         {
-          cyl->SetLengthViaRapidityCoverage(false);
-          cyl->SetLength(length[ilayer]);
+          cyl->set_double_param("length",length[ilayer]);
         }
       g4Reco->registerSubsystem( cyl );
     }

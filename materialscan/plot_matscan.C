@@ -68,7 +68,7 @@ void plot_matscan(const char *datfile)
   TCanvas *c = new TCanvas("c1","material scan");
   c->Divide(1,2);
   c->cd(1);
-  TH2 *h2 = new TH2F("hx2","x0 vs phi",2,phimin-1,phimax+1,2,0,x0max+1);
+  TH2 *h2 = new TH2F("hx2","x0 vs phi",2,phimin-1,phimax+1,2,0,x0max+0.1*x0max);
   h2->SetStats(kFALSE);
   h2->Draw();
   TGraph *gr = new TGraph(phivec.size(),phiarr,x0arr);
@@ -76,7 +76,7 @@ void plot_matscan(const char *datfile)
   gr->SetMarkerSize(0.1);
   gr->Draw("LP");
   c->cd(2);  
-  TH2 *hl2 = new TH2F("hlamda2","lamda0 vs phi",2,phimin-1,phimax+1,2,0,lamda0max+1);
+  TH2 *hl2 = new TH2F("hlamda2","lamda0 vs phi",2,phimin-1,phimax+1,2,0,lamda0max+lamda0max/10.);
   hl2->SetStats(kFALSE);
   hl2->Draw();
   TGraph *grl = new TGraph(phivec.size(),phiarr,lamda0arr);

@@ -42,9 +42,11 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   double ysize = 200.;  
   double zsize = 400.;  
   PHG4BlockSubsystem *box = new PHG4BlockSubsystem("box");
-  box->SetSize(xsize,ysize,zsize);
-  box->SetCenterZ(zsize/2.); // shift box so we do not create particles in its center
-  box->SetMaterial("G4_W");
+  box->set_double_param("xsize",xsize);
+  box->set_double_param("ysize",ysize);
+  box->set_double_param("zsize",zsize);
+  box->set_double_param("place_z",zsize/2.);// shift box so we do not create particles in its center
+  box->set_string_param("material","G4_W");
   box->SetActive(); // it is an active volume - save G4Hits
   g4Reco->registerSubsystem(box);
 

@@ -29,7 +29,7 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   // size of the world - every detector has to fit in here
   g4Reco->SetWorldSizeX(500);
   g4Reco->SetWorldSizeY(500);
-  g4Reco->SetWorldSizeZ(500);
+  g4Reco->SetWorldSizeZ(2000);
   // shape of our world - it is a box
   g4Reco->SetWorldShape("G4BOX");
   // this is what our world is filled with
@@ -45,8 +45,8 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   box->set_double_param("size_x",xsize);
   box->set_double_param("size_y",ysize);
   box->set_double_param("size_z",zsize);
-  box->set_double_param("place_z",zsize/2.);// shift box so we do not create particles in its center
-  box->set_string_param("material","G4_W");
+  box->set_double_param("place_z",zsize/2.+100);// shift box so we do not create particles in its center and shift by 10 so we can see the track of the incoming particle
+  box->set_string_param("material","G4_POLYSTYRENE"); // material of box
   box->SetActive(); // it is an active volume - save G4Hits
   g4Reco->registerSubsystem(box);
 

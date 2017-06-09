@@ -14,7 +14,7 @@
 #
 /vis/open OGLIX
 #/vis/open OGLSX
-#/vis/viewer/set/viewpointThetaPhi 0 0
+/vis/viewer/set/viewpointThetaPhi 270 0
 #/vis/viewer/zoom 16.
 #/vis/viewer/zoom 4.
 #

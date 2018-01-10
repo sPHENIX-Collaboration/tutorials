@@ -11,14 +11,14 @@
 #include <g4detectors/PHG4CylinderCell.h>
 
 // Tower includes
-#include <g4cemc/RawTowerGeom.h>
-#include <g4cemc/RawTowerGeomContainer.h>
-#include <g4cemc/RawTowerContainer.h>
-#include <g4cemc/RawTower.h>
+#include <calobase/RawTowerGeom.h>
+#include <calobase/RawTowerGeomContainer.h>
+#include <calobase/RawTowerContainer.h>
+#include <calobase/RawTower.h>
 
 // Cluster includes
-#include <g4cemc/RawClusterContainer.h>
-#include <g4cemc/RawCluster.h>
+#include <calobase/RawClusterContainer.h>
+#include <calobase/RawCluster.h>
 
 
 #include <fun4all/Fun4AllHistoManager.h>
@@ -68,7 +68,7 @@ CaloAna::Init( PHCompositeNode* )
   g4hitntuple = new TNtuple("hitntup", "G4Hits", "x0:y0:z0:x1:y1:z1:edep");
   g4cellntuple = new TNtuple("cellntup", "G4Cells", "phi:eta:edep");
   towerntuple = new TNtuple("towerntup", "Towers", "phi:eta:energy");
-  clusterntuple  = new TNtuple("clusterntup", "Clusters", "phi:eta:energy:towers");
+  clusterntuple  = new TNtuple("clusterntup", "Clusters", "phi:z:energy:towers");
   return 0;
 }
 
@@ -219,7 +219,7 @@ CaloAna::process_clusters( PHCompositeNode* topNode )
       for ( RawClusterContainer::ConstIterator cluster_iter = cluster_range.first ; cluster_iter !=  cluster_range.second; cluster_iter++ )
 	{
 	  clusterntuple->Fill(cluster_iter->second->get_phi(),
-			      cluster_iter->second->get_eta(),
+			      cluster_iter->second->get_z(),
 			      cluster_iter->second->get_energy(),
 			      cluster_iter->second->getNTowers());
 	}

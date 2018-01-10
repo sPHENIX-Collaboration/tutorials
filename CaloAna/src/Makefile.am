@@ -22,7 +22,7 @@ nodist_libcaloana_la_SOURCES = \
 libcaloana_la_LDFLAGS = \
    -L$(libdir) \
    -L$(OFFLINE_MAIN)/lib \
-   -lcemc \
+   -lg4dst \
    -lfun4all \
    -lphg4hit \
    -lg4detectors

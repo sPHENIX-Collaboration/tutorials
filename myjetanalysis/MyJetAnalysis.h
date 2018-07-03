@@ -3,11 +3,13 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <stdint.h>
-#include <array>
 #include <memory>
 #include <string>
 #include <utility>  // std::pair, std::make_pair
+
+#ifndef __CINT__
+#include <array>
+#endif  // #ifndef __CINT__
 
 class PHCompositeNode;
 class JetEvalStack;
@@ -22,6 +24,7 @@ class MyJetAnalysis : public SubsysReco
       const std::string &recojetname = "AntiKt_Tower_r04",
       const std::string &truthjetname = "AntiKt_Truth_r04",
       const std::string &outputfilename = "myjetanalysis.root");
+
   virtual ~MyJetAnalysis();
 
   //! set eta range
@@ -45,12 +48,12 @@ class MyJetAnalysis : public SubsysReco
   int End(PHCompositeNode *topNode);
 
  private:
+
 #ifndef __CINT__
 
   //! cache the jet evaluation modules
-  std::unique_ptr<JetEvalStack> m_jetEvalStack;
+  std::shared_ptr<JetEvalStack> m_jetEvalStack;
 
-#endif
 
   std::string m_recoJetName;
   std::string m_truthJetName;
@@ -61,6 +64,9 @@ class MyJetAnalysis : public SubsysReco
 
   //! pT range
   std::pair<double, double> m_ptRange;
+
+  //! max track-jet matching radius
+  double m_trackJetMatchingRadius;
 
   //! Output histograms
   TH1 *m_hInclusiveE;
@@ -95,6 +101,8 @@ class MyJetAnalysis : public SubsysReco
   };
   std::array<float, kMaxMatchedTrack> m_trackdR;
   std::array<float, kMaxMatchedTrack> m_trackpT;
+
+#endif  // #ifndef __CINT__
 };
 
 #endif  // __CALOEVALUATOR_H__

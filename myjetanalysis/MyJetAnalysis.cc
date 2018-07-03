@@ -3,27 +3,18 @@
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
-#include <fun4all/SubsysReco.h>
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
 
-#include <phool/PHCompositeNode.h>
-
-#include <g4main/PHG4Particle.h>
-#include <g4main/PHG4Shower.h>
-#include <g4main/PHG4TruthInfoContainer.h>
-#include <g4main/PHG4VtxPoint.h>
-
 #include <g4eval/JetEvalStack.h>
-#include <g4eval/JetTruthEval.h>
-
+#include <g4hough/SvtxTrackMap.h>
 #include <g4jets/JetMap.h>
 
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>
-#include <TLorentzVector.h>
 #include <TString.h>
+#include <TTree.h>
 #include <TVector3.h>
 
 #include <algorithm>
@@ -32,7 +23,6 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
-#include <vector>
 
 using namespace std;
 
@@ -44,23 +34,27 @@ MyJetAnalysis::MyJetAnalysis(const std::string& recojetname, const std::string& 
   , m_etaRange(-.7, .7)
   , m_ptRange(15, 100)
   , m_trackJetMatchingRadius(.7)
+  , m_hInclusiveE(nullptr)
+  , m_hInclusiveEta(nullptr)
+  , m_hInclusivePhi(nullptr)
+  , m_T(nullptr)
   , m_event(-1)
   , m_id(-1)
   , m_nComponent(-1)
-  , m_eta(numeric_limits<float>::signaling_Nan())
-  , m_phi(numeric_limits<float>::signaling_Nan())
-  , m_e(numeric_limits<float>::signaling_Nan())
-  , m_pt(numeric_limits<float>::signaling_Nan())
+  , m_eta(numeric_limits<float>::signaling_NaN())
+  , m_phi(numeric_limits<float>::signaling_NaN())
+  , m_e(numeric_limits<float>::signaling_NaN())
+  , m_pt(numeric_limits<float>::signaling_NaN())
   , m_truthID(-1)
   , m_truthNComponent(-1)
-  , m_truthEta(numeric_limits<float>::signaling_Nan())
-  , m_truthPhi(numeric_limits<float>::signaling_Nan())
-  , m_truthE(numeric_limits<float>::signaling_Nan())
-  , m_truthPt(numeric_limits<float>::signaling_Nan())
+  , m_truthEta(numeric_limits<float>::signaling_NaN())
+  , m_truthPhi(numeric_limits<float>::signaling_NaN())
+  , m_truthE(numeric_limits<float>::signaling_NaN())
+  , m_truthPt(numeric_limits<float>::signaling_NaN())
   , m_nMatchedTrack(-1)
 {
-  m_trackdR.fill(numeric_limits<float>::signaling_Nan());
-  m_trackpT.fill(numeric_limits<float>::signaling_Nan());
+  m_trackdR.fill(numeric_limits<float>::signaling_NaN());
+  m_trackpT.fill(numeric_limits<float>::signaling_NaN());
 }
 
 MyJetAnalysis::~MyJetAnalysis()
@@ -82,11 +76,11 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
   m_hInclusiveEta =
       new TH1F(
           "Inclusive_eta",  //
-          TString(jet_name) + " inclusive jet #eta, " + get_eta_range_str() + ";#eta;Jet energy density", 50, -1, 1);
+          TString(m_recoJetName) + " inclusive jet #eta;#eta;Jet energy density", 50, -1, 1);
   m_hInclusivePhi =
       new TH1F(
           "Inclusive_phi",  //
-          TString(jet_name) + " inclusive jet #phi, " + get_eta_range_str() + ";#phi;Jet energy density", 50, -M_PI, M_PI);
+          TString(m_recoJetName) + " inclusive jet #phi;#phi;Jet energy density", 50, -M_PI, M_PI);
 
   //Trees
   m_T = new TTree("T", "MyJetAnalysis Tree");
@@ -133,7 +127,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
 int MyJetAnalysis::End(PHCompositeNode* topNode)
 {
   cout << "MyJetAnalysis::End - Outoput to " << m_outputFileName << endl;
-  PHTFileServer::get().cd(_out_file_name);
+  PHTFileServer::get().cd(m_outputFileName);
 
   m_hInclusiveE->Write();
   m_hInclusiveEta->Write();
@@ -145,7 +139,7 @@ int MyJetAnalysis::End(PHCompositeNode* topNode)
 
 int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
 {
-  m_jetEvalStack = unique_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
+  m_jetEvalStack = shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
 
   return Fun4AllReturnCodes::EVENT_OK;
 }
@@ -156,7 +150,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     cout << "MyJetAnalysis::process_event() entered" << endl;
 
   m_jetEvalStack->next_event(topNode);
-  JetRecoEval* recoeval = _jetevalstack->get_reco_eval();
+  JetRecoEval* recoeval = m_jetEvalStack->get_reco_eval();
   ++m_event;
 
   // interface to jets
@@ -204,7 +198,6 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     m_hInclusivePhi->Fill(jet->get_phi());
 
     // fill trees - jet spectrum
-    Jet* recojet = iter->second;
     Jet* truthjet = recoeval->max_truth_jet_by_energy(jet);
 
     m_id = jet->get_id();
@@ -249,7 +242,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
       {
         //matched track to jet
 
-        assert(m_nMatchedTrack<kMaxMatchedTrack);
+        assert(m_nMatchedTrack < kMaxMatchedTrack);
 
         m_trackdR[m_nMatchedTrack] = dR;
         m_trackpT[m_nMatchedTrack] = v.Perp();
@@ -257,12 +250,11 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
         ++m_nMatchedTrack;
       }
 
-      if (m_nMatchedTrack>=kMaxMatchedTrack)
+      if (m_nMatchedTrack >= kMaxMatchedTrack)
       {
-        cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks"<<endl;
+        cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks" << endl;
         break;
       }
-
     }
   }
 

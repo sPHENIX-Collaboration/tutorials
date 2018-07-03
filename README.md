@@ -1,19 +1,23 @@
 
 # Welcome
 
-This is the core software respository for [sPHENIX collaboration](https://www.sphenix.bnl.gov/). 
+This tutorial respository carry a few example cases of analysis for [sPHENIX collaboration](https://www.sphenix.bnl.gov/):
 
-
-Code from the mastrer branch is pulled and build each night (nightly-build) 
-and it becomes [part of the default software environment on RCF](https://wiki.bnl.gov/sPHENIX/index.php/Setup#.28At_each_login.29_Run_sPHENIX_login_shell). 
-Weekly snapshot of the build is also available as ANA-builds. 
-Due to its importance, update of this repository require going through a review via [the "Pull Request" process](https://wiki.bnl.gov/sPHENIX/index.php/GitHub_Coresoftware_Update_Procedures). 
+* Simulation setups
+  * __block__: build a simple block-shaped detector in Geant4
+  * __cylinder__: build a simple cylinder-shaped detector in Geant4
+* Simulation checks
+  * __materialscan__: scan radiation and hadronic interaction length in ROOT command prompt
+  * __PHG4DSTReader__: poke at simulation results with ROOT command lines. For official analysis please use analysis module such as the next a few items below
+* Example analysis modules
+  * __MyOwnTTree__: two examples to create your own TTree using analysis module in the Fun4All framework
+  * __myjetanalysis__: example to analysis jet and to perform jet fragmentation and jet shape analysis
+  * __CaloAna__: example to fetch caloirmeter hit, tower and clusters and save to a NTuple
 
 # Useful links 
 
 * Tutorials
   * [Get started on day-1](https://wiki.bnl.gov/sPHENIX/index.php/SPHENIX_software_day-1_checklist)
-  * ["Pull Request" tutorial](https://wiki.bnl.gov/sPHENIX/index.php/GitHub_Coresoftware_Update_Procedures)
 * Documentation
   * [Software wiki](https://wiki.bnl.gov/sPHENIX/index.php/Software)
   * [Doxygen: easier way to browse code](https://www.phenix.bnl.gov/WWW/sPHENIX/doxygen/html/)

@@ -61,24 +61,27 @@ root [2] T->Show(0)
  event           = 0          <- event number
  id              = 49         <- jet ID in this event
  nComponent      = 51         <- number of component in reco jet, i.e. # of towers in jet
- event           = 0
- phi             = -1.43342
- e               = 19.4207
- pt              = 18.2251
- truthID         = 0
- truthNComponent = 1
- truthEta        = 0.348408
- truthPhi        = -1.42448
- truthE          = 32.0003
- truthPt         = 30.1514
- nMatchedTrack   = 1
- trackdR         = 0.00869318
- trackpT         = 30.4937
+ eta             = 0.3255     <- jet psuedorapidity
+ phi             = -1.43342   <- jet phi
+ e               = 19.4207    <- jet energy
+ pt              = 18.2251    <- jet pT
+ truthID         = 0          <- If matched with a truth jet, the truth jet's ID
+ truthNComponent = 1          <- If matched with a truth jet, the truth jet's number of component
+ truthEta        = 0.348408   <- If matched with a truth jet, the truth jet's eta
+ truthPhi        = -1.42448   <- If matched with a truth jet, the truth jet's phi
+ truthE          = 32.0003    <- If matched with a truth jet, the truth jet's energy
+ truthPt         = 30.1514    <- If matched with a truth jet, the truth jet's pT
+ nMatchedTrack   = 1          <- Number of track that matched with the jet
+ trackdR         = 0.00869318 <- Distance of track and jet in eta-phi space, an array with size of [nMatchedTrack]
+ trackpT         = 30.4937    <- Track's pT, an array with size of [nMatchedTrack]
 ```
 
 ## Make this your module
 
-Please copy this folder to a new folder under your local [analysis repository](https://github.com/sPHENIX-Collaboration/analysis) and change package and class name. 
+Please copy this folder to a new folder under your local [analysis repository](https://github.com/sPHENIX-Collaboration/analysis) 
+and change package and class names. Welcome to edit it for your analysis cases. 
+
+Please upload your analysis module back to the [analysis repository](https://github.com/sPHENIX-Collaboration/analysis) at the end too so it could be shared with others. 
 
 # Read more
 

@@ -75,11 +75,11 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
 
   m_hInclusiveEta =
       new TH1F(
-          "Inclusive_eta",  //
+          "hInclusive_eta",  //
           TString(m_recoJetName) + " inclusive jet #eta;#eta;Jet energy density", 50, -1, 1);
   m_hInclusivePhi =
       new TH1F(
-          "Inclusive_phi",  //
+          "hInclusive_phi",  //
           TString(m_recoJetName) + " inclusive jet #phi;#phi;Jet energy density", 50, -M_PI, M_PI);
 
   //Trees
@@ -255,8 +255,11 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
         cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks" << endl;
         break;
       }
-    }
-  }
+
+    }  //    for (SvtxTrackMap::Iter iter = trackmap->begin();
+
+    m_T->Fill();
+  }  //   for (JetMap::Iter iter = jets->begin(); iter != jets->end(); ++iter)
 
   return Fun4AllReturnCodes::EVENT_OK;
 }

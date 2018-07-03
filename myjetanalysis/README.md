@@ -1,6 +1,6 @@
 # Welcome
 
-This is an example analys module which iterate through reconstructed jet, match it with cloest truth jet and tracks within a dR cone.
+This is an example analys module which iterates through reconstructed jet, matches it with truth jet, and matches with reconstructed tracks within a dR cone.
 The output is a ROOT file with histograms of reconstructed jet sepectrum and a TTree with per-jet kinematics and matched truth jet kinematics. 
 The matched track pT and Delta-R is also saved in an array in the TTree. 
 

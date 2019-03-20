@@ -1,3 +1,22 @@
+#pragma once
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#include <fun4all/SubsysReco.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllDstOutputManager.h>
+#include <fun4all/Fun4AllOutputManager.h>
+#include <fun4all/Fun4AllDummyInputManager.h>
+#include <g4detectors/PHG4CylinderSubsystem.h>
+#include <g4eval/PHG4DSTReader.h>
+#include <g4main/PHG4ParticleGenerator.h>
+#include <g4main/PHG4Reco.h>
+#include <g4main/PHG4TruthSubsystem.h>
+#include <phool/recoConsts.h>
+R__LOAD_LIBRARY(libg4eval.so)
+R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libg4testbench.so)
+R__LOAD_LIBRARY(libg4detectors.so)
+#endif
 int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
 {
 
@@ -53,7 +72,7 @@ int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
 
   if (outfile)
     {
-      Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT",outfile);
+      Fun4AllOutputManager *out = new Fun4AllDstOutputManager("DSTOUT",outfile);
       se->registerOutputManager(out);
     }
   Fun4AllInputManager *in = new Fun4AllDummyInputManager( "JADE");
@@ -71,7 +90,7 @@ int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
       delete se;
       gSystem->Exit(0);
     }
-
+  return 0;
 }
 
 PHG4ParticleGenerator *get_gen(const char *name="PGENERATOR")

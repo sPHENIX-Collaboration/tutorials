@@ -1,7 +1,8 @@
 How to use:
 start root and
 Run the Fun4All_G4_sPHENIX.C (or fsPHENIX or ePHENIX) macro with -1 events 
-(which just loads the G4 configuration)
+(which just loads the G4 configuration). You'll need a lot of sub-macros, you 
+definitely want to run this in another directory.
 
 .x Fun4All_G4_sPHENIX.C(-1)
 
@@ -19,9 +20,17 @@ same for theta. For scans in phi use theta_span = theta_min and theta_bins = 1
 
 if you are running the same ranges all the time, just adjust those values in 
 the macro.
-Execute matscan() and store output in some file (here T.T)
+Execute matscan() and store output in some file (here T.T), for Root5 use:
 
 matscan(); > T.T
+
+Root6:
+uses a slightly different scheme, you need to redirect all output (at which time
+you will not see any prompt anymore - genius)
+.> T.T
+matscan()
+.q
+
 
 Sadly this dumps more than just the x0/lamda values for each phi/theta bin.
 In order to extract those, quit root and run matscan_digest.pl to extract 

@@ -43,3 +43,7 @@ plot_matscan.C is a simple plotting macro which plots x0/lamda vs phi (leave
 theta constant by theta_span = theta_min and theta_bins = 1:
 
 .x plot_matscan.C("matscan.dat")
+
+If you want to plot theta (keeping phi constant when running matscan.C), use
+
+.x plot_matscan.C("matscan.dat",1)

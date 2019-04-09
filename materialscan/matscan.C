@@ -1,16 +1,22 @@
 // just a dumb macro to run this before I forget how this is done
 // to pipe the output into a file (T.T here) execute
 // .L matscan.C
+// ROOT5:
 // matscan(); > T.T
+// ROOT6:
+// .> T.T
+// matscan()
+// .q
 
 // the span is the delta phi/theta you want to cover, not the maximum
-// angle 
+// angle. The default is 10 bins in azimuth at theta=0.1 (almost 
+// midrapidity, exact midrapidity we have gaps in the calorimeters and inner tracking
 float phimin = 0.;
 float phispan = 360.;
 int phibins = 10;
-float thetamin = 0.; // theta = 0 is perpendicular to beam axis
+float thetamin = 0.1; // theta = 0 is perpendicular to beam axis
 float thetaspan = 360.;
-int thetabins = 10;
+int thetabins = 1;
 
 void matscan()
 {
@@ -29,7 +35,9 @@ void matscan()
   // do the scan
   cout << "starting scan - patience" << endl;
   g4->ApplyCommand("/control/matScan/scan");
+  cout << "All done" << endl;
 }
+
 
 void set_phimin(const float f)
 {

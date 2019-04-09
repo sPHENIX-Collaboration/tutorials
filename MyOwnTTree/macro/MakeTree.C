@@ -1,3 +1,18 @@
+#pragma once
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#include <fun4all/SubsysReco.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllDstOutputManager.h>
+#include <fun4all/Fun4AllOutputManager.h>
+#include <fun4all/Fun4AllDummyInputManager.h>
+#include <phool/recoConsts.h>
+// here you need your package name (set in configure.ac)
+#include <mytree/MakeSimpleTree.h>
+R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libmytree.so)
+#endif
+
 void  MakeTree()
 {
   gSystem->Load("libmytree.so");
@@ -5,7 +20,7 @@ void  MakeTree()
 
   // since it doesn't matter we use a dummy input manager which just
   // drives the event loop with a runnumber of 310000
-  recoConsts *rc = recoConsts::instance()
+  recoConsts *rc = recoConsts::instance();
     rc->set_IntFlag( "RUNNUMBER", 310000);
   Fun4AllInputManager *in = new Fun4AllDummyInputManager( "DSTin");
   se->registerInputManager( in );

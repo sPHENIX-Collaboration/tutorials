@@ -1,5 +1,5 @@
-#ifndef __MyJetAnalysis_H__
-#define __MyJetAnalysis_H__
+#ifndef MYJETANALYSIS_H
+#define MYJETANALYSIS_H
 
 #include <fun4all/SubsysReco.h>
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>  // std::pair, std::make_pair
 
-#ifndef __CINT__
+#if ! defined(__CINT__) || defined(__CLING__)
 #include <array>
 #endif  // #ifndef __CINT__
 
@@ -49,7 +49,7 @@ class MyJetAnalysis : public SubsysReco
 
  private:
 
-#ifndef __CINT__
+#if ! defined(__CINT__) || defined(__CLING__)
 
   //! cache the jet evaluation modules
   std::shared_ptr<JetEvalStack> m_jetEvalStack;
@@ -105,4 +105,4 @@ class MyJetAnalysis : public SubsysReco
 #endif  // #ifndef __CINT__
 };
 
-#endif  // __CALOEVALUATOR_H__
+#endif  // MYJETANALYSIS_H

@@ -3,11 +3,14 @@
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
+
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
 
 #include <g4eval/JetEvalStack.h>
-#include <g4hough/SvtxTrackMap.h>
+
+#include <trackbase_historic/SvtxTrackMap.h>
+
 #include <g4jets/JetMap.h>
 
 #include <TFile.h>
@@ -63,7 +66,7 @@ MyJetAnalysis::~MyJetAnalysis()
 
 int MyJetAnalysis::Init(PHCompositeNode* topNode)
 {
-  if (verbosity >= MyJetAnalysis::VERBOSITY_SOME)
+  if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
     cout << "MyJetAnalysis::Init - Outoput to " << m_outputFileName << endl;
 
   PHTFileServer::get().open(m_outputFileName, "RECREATE");
@@ -146,7 +149,7 @@ int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
 
 int MyJetAnalysis::process_event(PHCompositeNode* topNode)
 {
-  if (verbosity >= MyJetAnalysis::VERBOSITY_SOME)
+  if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
     cout << "MyJetAnalysis::process_event() entered" << endl;
 
   m_jetEvalStack->next_event(topNode);
@@ -181,7 +184,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     bool pt_cut = (jet->get_pt() >= m_ptRange.first) and (jet->get_pt() <= m_ptRange.second);
     if ((not eta_cut) or (not pt_cut))
     {
-      if (verbosity >= MyJetAnalysis::VERBOSITY_MORE)
+      if (Verbosity() >= MyJetAnalysis::VERBOSITY_MORE)
       {
         cout << "MyJetAnalysis::process_event() - jet failed acceptance cut: ";
         jet->identify();

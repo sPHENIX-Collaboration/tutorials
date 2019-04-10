@@ -59,6 +59,7 @@ void Fun4All_G4_IonGun(
   box->set_double_param("size_z",zsize);
   box->set_double_param("place_z",zsize/2.+10);// shift box by 10 cm so we do not create particles in its center
   box->set_string_param("material","G4_WATER"); // material of box
+  box->set_int_param("use_g4steps",1);
   box->SetActive();
   // this will check for overlaps during construction, if you have multiple volumes in very close 
   // proximity you might want to run this once with this flag enabled

@@ -33,6 +33,10 @@ while(my $line = <F>)
 	$foundthetaphi = 0;
 	next;
     }
+    if ($line =~ /All done/)
+    {
+      last;
+    }
     if ($foundthetaphi == 1)
     {
 	if ($skip == 0)

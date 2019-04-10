@@ -187,6 +187,8 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
       if (Verbosity() >= MyJetAnalysis::VERBOSITY_MORE)
       {
         cout << "MyJetAnalysis::process_event() - jet failed acceptance cut: ";
+        cout << "eta cut: " << eta_cut << ", ptcut: " << pt_cut << endl;
+        cout << "jet eta: " << jet->get_eta() << ", jet pt: " << jet->get_pt() << endl;
         jet->identify();
       }
       continue;

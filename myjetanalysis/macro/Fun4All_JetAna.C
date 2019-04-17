@@ -4,7 +4,6 @@
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllDstInputManager.h>
-#include <phool/recoConsts.h>
 
 // here you need your package name (set in configure.ac)
 #include <myjetanalysis/MyJetAnalysis.h>

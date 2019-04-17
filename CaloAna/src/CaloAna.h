@@ -9,12 +9,11 @@ class PHCompositeNode;
 class TFile;
 class TNtuple;
 
-class CaloAna: public SubsysReco
+class CaloAna : public SubsysReco
 {
  public:
-
   //! constructor
-  CaloAna( const std::string &name = "CaloAna", const std::string &fname = "MyNtuple.root");
+  CaloAna(const std::string &name = "CaloAna", const std::string &fname = "MyNtuple.root");
 
   //! destructor
   virtual ~CaloAna();
@@ -33,17 +32,17 @@ class CaloAna: public SubsysReco
   int process_towers(PHCompositeNode *);
   int process_clusters(PHCompositeNode *);
 
-  void Detector(const std::string &name) {detector = name;}
+  void Detector(const std::string &name) { detector = name; }
 
-protected:
+ protected:
   std::string detector;
   std::string outfilename;
   Fun4AllHistoManager *hm;
-  TFile *outfile; 
+  TFile *outfile;
   TNtuple *g4hitntuple;
   TNtuple *g4cellntuple;
   TNtuple *towerntuple;
   TNtuple *clusterntuple;
 };
 
-#endif 
+#endif

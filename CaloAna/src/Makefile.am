@@ -7,25 +7,30 @@ AM_LDFLAGS = \
   -L$(libdir) \
   -L$(OFFLINE_MAIN)/lib
 
-INCLUDES = \
+AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
   -I$(ROOTSYS)/include
 
+pkginclude_HEADERS = \
+  CaloAna.h
+
+if ! MAKEROOT6
+  ROOT5_DICTS = \
+    CaloAna_Dict.cc
+endif
 
 libcaloana_la_SOURCES = \
+  $(ROOT5_DICTS) \
   CaloAna.cc 
 
-nodist_libcaloana_la_SOURCES = \
-  CaloAna_Dict.C
-
 libcaloana_la_LDFLAGS = \
-   -L$(libdir) \
-   -L$(OFFLINE_MAIN)/lib \
-   -lg4dst \
-   -lfun4all \
-   -lphg4hit \
-   -lg4detectors
+  -L$(libdir) \
+  -L$(OFFLINE_MAIN)/lib \
+  -lcalo_io \
+  -lfun4all \
+  -lg4detectors_io \
+  -lphg4hit
 
 
 ################################################
@@ -44,11 +49,9 @@ testexternals.C:
 	echo "  return 0;" >> $@
 	echo "}" >> $@
 
-CLEANFILES = CaloAna_Dict.C CaloAna_Dict.h
+# Rule for generating table CINT dictionaries.
+%_Dict.cc: %.h %LinkDef.h
+	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
 
-# rules to make root dictionaries
-CaloAna_Dict.C: \
-  CaloAna.h \
-  CaloAnaLinkDef.h
-	rootcint -f $@ -c $(DEFAULT_INCLUDES) $(INCLUDES) $^
-
+clean-local:
+	rm -f *Dict* $(BUILT_SOURCES) *.pcm

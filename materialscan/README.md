@@ -16,7 +16,12 @@ set_phimin() // in degrees
 set_phispan() // in degrees, phi range is phimin - phimin+phispan
 set_phibins() // number of bins in this phi range
 
-same for theta. For scans in phi use theta_span = theta_min and theta_bins = 1
+same for theta.
+For scans in phi use theta_span = theta_min and theta_bins = 1, for midrapidity
+scans you can use the setmidrap(); to set this up
+
+For scans in theta use phi_span = phi_min and phi_bins = 1, use set_thetascan()
+to do a scan in theta.
 
 if you are running the same ranges all the time, just adjust those values in 
 the macro.

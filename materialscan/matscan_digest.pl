@@ -2,20 +2,24 @@
 
 use strict;
 use warnings;
+use Getopt::Long;
 
 if ($#ARGV < 0)
 {
     print "extracts theta/phi/x0/lambda0 output from G4 matscan cmd from logfile\n";
     print "usage matscan_digest.pl <logfile>\n";
+    print "--outputfile data file name ";
     exit(-1);
 }
 if (! -f $ARGV[0])
 {
     die "could not locate $ARGV[0]\n";
 }
+my $outputfile='matscan.dat';
+GetOptions('outputfile=s' => \$outputfile);
 
 open(F,"$ARGV[0]");
-open(F1,">matscan.dat");
+open(F1,">$outputfile");
 my $foundthetaphi = 0;
 my $skip =0;
 while(my $line = <F>)

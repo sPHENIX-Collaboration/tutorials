@@ -1,3 +1,4 @@
+#pragma once
 // just a dumb macro to run this before I forget how this is done
 // to pipe the output into a file (T.T here) execute
 // .L matscan.C
@@ -17,6 +18,14 @@ int phibins = 10;
 float thetamin = 0.1; // theta = 0 is perpendicular to beam axis
 float thetaspan = 360.;
 int thetabins = 1;
+
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#include <fun4all/Fun4AllServer.h>
+#include <g4main/PHG4Reco.h>
+
+R__LOAD_LIBRARY(libg4testbench.so)
+#endif
+
 
 void matscan()
 {
@@ -87,4 +96,14 @@ void setmidrap()
   set_phibins(100);
   set_phispan(5);
   set_thetaspan(0);
+}
+
+void set_thetascan()
+{
+  set_phibins(1);
+  set_phimin(1.); // do phi=1deg to avoid phi=0 in case there are discontinuities
+  set_phispan(1);
+  set_thetamin(-60);
+  set_thetaspan(120);
+  set_thetabins(60);
 }

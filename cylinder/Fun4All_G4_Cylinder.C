@@ -30,13 +30,11 @@ int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
   Fun4AllServer *se = Fun4AllServer::instance();
   se->Verbosity(0);
 
+  recoConsts *rc = recoConsts::instance();
+//  rc->set_IntFlag("RANDOMSEED", 12345); // if you want to use a fixed seed
   // PHG4ParticleGenerator generates particle
   // distributions in eta/phi/mom range
   PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
-  int uniqueseed = TRandom3(0).GetSeed();
-  recoConsts *rc = recoConsts::instance();
-  rc->set_IntFlag("RANDOMSEED", uniqueseed);
-  gen->set_seed(uniqueseed);
   //gen->set_name("gamma");
   gen->set_name("e+");
   gen->set_vtx(0, 0, 0);

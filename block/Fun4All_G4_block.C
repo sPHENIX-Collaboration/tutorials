@@ -11,7 +11,7 @@
 #include <g4main/PHG4ParticleGun.h>
 #include <g4main/PHG4Reco.h>
 #include <g4main/PHG4TruthSubsystem.h>
-
+#include <phool/recoConsts.h>
 R__LOAD_LIBRARY(libg4eval.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
@@ -31,7 +31,11 @@ int Fun4All_G4_block(const int nEvents = 10, const char *outfile=NULL)
   // Make the Server
   //////////////////////////////////////////
   Fun4AllServer *se = Fun4AllServer::instance();
-  //  se->Verbosity(1);
+  //  se->Verbosity(1); // enable some blabbering
+
+  recoConsts *rc = recoConsts::instance();
+// uncomment and change number (or not)if you want to use a fixed seed
+//  rc->set_IntFlag("RANDOMSEED", 12345); 
 
   // particle gun
   PHG4ParticleGun *gun = new PHG4ParticleGun("PGUN");

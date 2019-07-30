@@ -1,8 +1,9 @@
 
 # Welcome
 
-This tutorial respository carry a few example cases of analysis for [sPHENIX collaboration](https://www.sphenix.bnl.gov/):
-
+This tutorial respository carries a few example cases of analysis for [sPHENIX collaboration](https://www.sphenix.bnl.gov/):
+* Generators
+  * __eventgenerator_display__: Display the output of our event generators in an empty world
 * Simulation setups
   * __block__: build a simple block-shaped detector in Geant4
   * __cylinder__: build a simple cylinder-shaped detector in Geant4
@@ -12,7 +13,7 @@ This tutorial respository carry a few example cases of analysis for [sPHENIX col
 * Example analysis modules
   * __MyOwnTTree__: two examples to create your own TTree using analysis module in the Fun4All framework
   * __myjetanalysis__: example to analysis jet and to perform jet fragmentation and jet shape analysis
-  * __CaloAna__: example to fetch caloirmeter hit, tower and clusters and save to a NTuple
+  * __CaloAna__: example to fetch calorimeter hit, tower and clusters and save to a NTuple
 
 # Useful links 
 

@@ -26,9 +26,11 @@
 # machines. You might have to play with it. GEANT prints out a
 # list of available graphics systems at some point.
 #/vis/open OGLIX
-/vis/open OGLSX 1200x900-0+0
+/vis/open OGLIX 1200x900-0+0
+# stop redrawing for every command
+/vis/viewer/set/autoRefresh false
 # increase display limit for more complex detectors
-/vis/ogl/set/displayListLimit 500000
+#/vis/ogl/set/displayListLimit 500000
 /vis/viewer/set/viewpointThetaPhi 240 -10
 #/vis/viewer/set/background white
 # our world is 4x4 meters, the detector is about 1m across
@@ -66,11 +68,11 @@
 #/vis/modeling/trajectories/create/drawByParticleID
 #/vis/modeling/trajectories/drawByParticleID-0/set e- red
 # remove low energy stuff
-/vis/filtering/trajectories/create/attributeFilter
-/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
-/vis/filtering/trajectories/attributeFilter-0/addInterval 2 MeV 1000 GeV
-#
-/vis/scene/endOfEventAction accumulate
+#/vis/filtering/trajectories/create/attributeFilter
+#/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
+#/vis/filtering/trajectories/attributeFilter-0/addInterval 2 MeV 1000 GeV
+# reenable auto refresh
+/vis/viewer/set/autoRefresh true
 #
 # At end of each run, an automatic flush causes graphical output.
 #/run/beamOn 1

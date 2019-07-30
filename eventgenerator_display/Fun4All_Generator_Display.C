@@ -113,7 +113,7 @@ int Fun4All_Generator_Display(
 
     PHPythia6 *pythia6 = new PHPythia6();
     // see coresoftware/generators/PHPythia6 for example config
-    pythia6->set_config_file("phpythia6_ep.cfg");
+    pythia6->set_config_file("phpythia6.cfg");
     se->registerSubsystem(pythia6);
   }
   else if (runsartre)

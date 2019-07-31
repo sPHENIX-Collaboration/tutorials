@@ -19,12 +19,14 @@ R__LOAD_LIBRARY(libg4detectors.so)
 R__LOAD_LIBRARY(libg4trackfastsim.so)
 #endif
 
-int Fun4All_G4_Momentum(const int nEvents = 10, const char *outfile = NULL)
+int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
 {
   gSystem->Load("libfun4all");
   gSystem->Load("libg4detectors.so");
   gSystem->Load("libg4testbench.so");
   gSystem->Load("libg4trackfastsim.so");
+
+  const bool whether_to_sim_calorimeter = false;
 
   ///////////////////////////////////////////
   // Make the Server
@@ -73,6 +75,8 @@ int Fun4All_G4_Momentum(const int nEvents = 10, const char *outfile = NULL)
   cyl->set_string_param("material", "G4_W");  // tungsten
   cyl->set_double_param("thickness", 12);     // 12 cm
   cyl->SetActive();
+  if (whether_to_sim_calorimeter == false)
+    cyl->BlackHole(); // eats everything touching EMCal and disable calorimeter simulation.
   cyl->SuperDetector("EMC");
   g4Reco->registerSubsystem(cyl);
   // HCal

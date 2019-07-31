@@ -21,7 +21,7 @@ R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 R__LOAD_LIBRARY(libPHPythia6.so)
 R__LOAD_LIBRARY(libPHPythia8.so)
-//R__LOAD_LIBRARY(libPHSartre.so) //disable Sartre for now
+//R__LOAD_LIBRARY(libPHSartre.so)
 #endif
 
 using namespace std;
@@ -57,7 +57,7 @@ int Fun4All_Generator_Display(
   // Use Pythia 6
   const bool runpythia6 = true;
   // Or:
-  // Use Sartre - disabled for now
+  // Use Sartre - DO NOT USE RIGHT NOW
   const bool runsartre = false;
 
 

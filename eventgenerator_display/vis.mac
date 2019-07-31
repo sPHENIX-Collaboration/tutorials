@@ -65,8 +65,17 @@
 #
 # Many other options available with /vis/modeling and /vis/filtering.
 # For example, select colour by particle ID
-#/vis/modeling/trajectories/create/drawByParticleID
-#/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- yellow
+/vis/modeling/trajectories/drawByParticleID-0/set pi- blue
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ blue
+/vis/modeling/trajectories/drawByParticleID-0/set kaon- red
+/vis/modeling/trajectories/drawByParticleID-0/set kaon+ red
+/vis/modeling/trajectories/drawByParticleID-0/set proton cyan
+/vis/modeling/trajectories/drawByParticleID-0/set anti_proton cyan
+/vis/modeling/trajectories/drawByParticleID-0/set neutron white
+/vis/modeling/trajectories/drawByParticleID-0/set anti_neutron white
+/vis/modeling/trajectories/drawByParticleID-0/set gamma green
 # remove low energy stuff
 #/vis/filtering/trajectories/create/attributeFilter
 #/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag

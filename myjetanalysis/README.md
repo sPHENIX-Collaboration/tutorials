@@ -13,34 +13,42 @@ After compiling, it should produce this file: `$MYINSTALL/lib/libmyjetanalysis.s
 ## Run this module
 
 To run this module, please insert this block of code in the Fun4All macro for your jet analysis:
-```c++
-
-Fun4All_Macro(...)
-{
-  //.... ( Run this after jet and tracking recontstruction  )
-  
-  // this loads the library for my jet analysis you have just compiled. 
-  gSystem->Load("libmyjetanalysis");
-
-  // this loads the library for my jet analysis you have just compiled. 
-  MyJetAnalysis *myJetAnalysis = new MyJetAnalysis("AntiKt_Tower_r04","AntiKt_Truth_r04","myjetanalysis.root");
-  se->registerSubsystem(myJetAnalysis);
-  
-  //.... (other IO operations)
-  
-  // this run number of events
-  se->run(nEvents);
+```diff
+@@ -20,6 +20,9 @@
+ #include <phpythia8/PHPythia8.h>
+ #include <phhepmc/Fun4AllHepMCPileupInputManager.h>
+ #include <phhepmc/Fun4AllHepMCInputManager.h>
++
++#include <myjetanalysis/MyJetAnalysis.h>
++
+ #include "G4Setup_sPHENIX.C"
+ #include "G4_Bbc.C"
+ #include "G4_Global.C"
+@@ -33,6 +36,8 @@ R__LOAD_LIBRARY(libg4testbench.so)
+ R__LOAD_LIBRARY(libphhepmc.so)
+ R__LOAD_LIBRARY(libPHPythia6.so)
+ R__LOAD_LIBRARY(libPHPythia8.so)
++
++R__LOAD_LIBRARY(libmyjetanalysis.so)
+ #endif
  
-  // histogram and TTree are saved at this step
-  se->End();
-}
+ using namespace std;
+@@ -587,6 +592,11 @@ int Fun4All_G4_sPHENIX(
+     if (do_dst_compress) DstCompress(out);
+     se->registerOutputManager(out);
+   }
++
++  gSystem->Load("libmyjetanalysis");
++  MyJetAnalysis *myJetAnalysis = new MyJetAnalysis("AntiKt_Tower_r04","AntiKt_Truth_r04","myjetanalysis.root");
++  se->registerSubsystem(myJetAnalysis);
++
+   //-----------------
+   // Event processing
+   //-----------------
+
 ```
-Furthermore, here is a full set of example macro to run this analysis module 
-by analyzing existing single particle (32 GeV pi-) simulation production 
-(therefore always makes single particle jet with 1 matched track).
-* Repository: `blackcathj/macros.git`, branch: `CD-1-reference-production-readback-my-jet-analysis`
-* i.e. https://github.com/blackcathj/macros/tree/CD-1-reference-production-readback-my-jet-analysis/macros/g4simulations
-* Main macro: [Fun4All_G4_sPHENIX.C](https://github.com/blackcathj/macros/blob/CD-1-reference-production-readback-my-jet-analysis/macros/g4simulations/Fun4All_G4_sPHENIX.C)
+Furthermore, here is a full set of example macro to run this analysis module by analyzing PYTHIA8 jet event simulated in the same process: 
+https://github.com/blackcathj/macros/blob/my-jet-analysis/macros/g4simulations/Fun4All_G4_sPHENIX.C
 
 ## Check the output
 

@@ -593,6 +593,12 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
   }
 }
 
+/**
+ * This method gets clusters from the EMCal and stores them in a tree. It
+ * also demonstrates how to get trigger emulator information. Clusters from
+ * other containers can be obtained in a similar way (e.g. clusters from
+ * the IHCal, etc.)
+ */
 void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
 {
   /// Get the raw cluster container

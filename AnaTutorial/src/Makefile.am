@@ -30,7 +30,9 @@ libanatutorial_la_LDFLAGS = \
   -lcalo_io \
   -lfun4all \
   -lg4detectors_io \
-  -lphg4hit
+  -lphg4hit \
+  -lg4dst \
+  -lg4eval
 
 
 ################################################

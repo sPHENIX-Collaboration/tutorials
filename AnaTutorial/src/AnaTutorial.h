@@ -12,7 +12,6 @@ class TH1;
 class TH2;
 class PHCompositeNode;
 class RawClusterContainer;
-class RawTowerContainer;
 class RawCluster;
 class SvtxTrackMap;
 class JetMap;
@@ -47,15 +46,43 @@ class AnaTutorial : public SubsysReco
   /// SubsysReco end processing method
   int End(PHCompositeNode *);
 
-  int minjetpt;
-  void setMinJetPt(float minJetPt){minjetpt = minJetPt;}
+  /// Set the minimum jet pT to cut on
+  void setMinJetPt(float minjetpt){_minjetpt = minjetpt;}
+  
+  /// Set the minimum cluster pT to cut on
+  void setMinClusPt(float mincluspt){_mincluspt = mincluspt;}
+  
+  /// Set things to analyze
+  void analyzeTracks(bool analyzeTracks){_analyzeTracks = analyzeTracks;}
+  void analyzeClusters(bool analyzeClusters){_analyzeClusters = analyzeClusters;}
+  void analyzeJets(bool analyzeJets){_analyzeJets = analyzeJets;}
+  void analyzeTruth(bool analyzeTruth){_analyzeTruth = analyzeTruth;}
   
  protected:
+
   /// String to contain the outfile name containing the trees
   std::string outfilename;
 
   /// Fun4All Histogram Manager tool
   Fun4AllHistoManager *hm;
+
+  /// A float for cutting on jet pt
+  float _minjetpt;
+
+  /// A float for cutting on cluster pt
+  float _mincluspt;
+
+  /// A boolean for running over tracks
+  bool _analyzeTracks;
+
+  /// A boolean for running over clusters
+  bool _analyzeClusters;
+
+  /// A boolean for running over jets
+  bool _analyzeJets;
+
+  /// A boolean for collecting hepmc information
+  bool _analyzeTruth;
 
   /// TFile to hold the following TTrees and histograms
   TFile *outfile;
@@ -99,6 +126,7 @@ class AnaTutorial : public SubsysReco
   double truthpy;
   double truthpz;
   double truthpt;
+  double truthp;
   int numparticlesinevent;
   int truthpid;
 
@@ -150,6 +178,16 @@ class AnaTutorial : public SubsysReco
   double truthjetpz;
   double dR;
 
+  /// Cluster variables
+  double clusenergy;
+  double cluseta;
+  double clustheta;
+  double cluspt;
+  double clusphi;
+  double cluspx;
+  double cluspy;
+  double cluspz;
+  
 
 };
 

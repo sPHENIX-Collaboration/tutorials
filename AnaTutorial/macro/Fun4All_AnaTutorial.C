@@ -1,33 +1,35 @@
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-#include <fun4all/SubsysReco.h>
-#include <fun4all/Fun4AllServer.h>
-#include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllDummyInputManager.h>
-#include <fun4all/Fun4AllOutputManager.h>
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 00, 0)
+#include <anatutorial/AnaTutorial.h>
 #include <fun4all/Fun4AllDstInputManager.h>
-#include <fun4all/Fun4AllNoSyncDstInputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
-#include <g4main/PHG4ParticleGeneratorBase.h>
+#include <fun4all/Fun4AllDummyInputManager.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllNoSyncDstInputManager.h>
+#include <fun4all/Fun4AllOutputManager.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/SubsysReco.h>
+#include <g4detectors/PHG4DetectorSubsystem.h>
+#include <g4main/HepMCNodeReader.h>
 #include <g4main/PHG4ParticleGenerator.h>
-#include <g4main/PHG4SimpleEventGenerator.h>
+#include <g4main/PHG4ParticleGeneratorBase.h>
 #include <g4main/PHG4ParticleGeneratorVectorMeson.h>
 #include <g4main/PHG4ParticleGun.h>
-#include <g4main/HepMCNodeReader.h>
-#include <g4detectors/PHG4DetectorSubsystem.h>
+#include <g4main/PHG4SimpleEventGenerator.h>
+#include <phhepmc/Fun4AllHepMCInputManager.h>
+#include <phhepmc/Fun4AllHepMCPileupInputManager.h>
+#include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
 #include <phpythia6/PHPythia6.h>
 #include <phpythia8/PHPythia8.h>
-#include <phhepmc/Fun4AllHepMCPileupInputManager.h>
-#include <phhepmc/Fun4AllHepMCInputManager.h>
+#include "DisplayOn.C"
 #include "G4Setup_sPHENIX.C"
 #include "G4_Bbc.C"
-#include "G4_Global.C"
 #include "G4_CaloTrigger.C"
-#include "G4_Jets.C"
-#include "G4_HIJetReco.C"
 #include "G4_DSTReader.C"
-#include "DisplayOn.C"
-#include <anatutorial/AnaTutorial.h>
+#include "G4_Global.C"
+#include "G4_HIJetReco.C"
+#include "G4_Jets.C"
+#include "G4_TopoClusterReco.C"
 R__LOAD_LIBRARY(libanatutorial.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
@@ -38,14 +40,12 @@ R__LOAD_LIBRARY(libPHPythia8.so)
 
 using namespace std;
 
-
 int Fun4All_AnaTutorial(
     const int nEvents = 1,
     const char *inputFile = "/sphenix/data/data02/review_2017-08-02/single_particle/spacal2d/fieldmap/G4Hits_sPHENIX_e-_eta0_8GeV-0002.root",
     const char *outputFile = "G4sPHENIX.root",
     const char *embed_input_file = "/sphenix/data/data02/review_2017-08-02/sHijing/fm_0-4.list")
 {
-
   //===============
   // Input options
   //===============
@@ -63,7 +63,7 @@ int Fun4All_AnaTutorial(
   const bool readhepmc = false;  // read HepMC files
   // Or:
   // Use pythia
-  const bool runpythia8 = true;
+  const bool runpythia8 = false;
   const bool runpythia6 = false;
   //
   // **** And ****
@@ -74,7 +74,7 @@ int Fun4All_AnaTutorial(
 
   // Besides the above flags. One can further choose to further put in following particles in Geant4 simulation
   // Use multi-particle generator (PHG4SimpleEventGenerator), see the code block below to choose particle species and kinematics
-  const bool particles = false && !readhits;
+  const bool particles = true && !readhits;
   // or gun/ very simple single particle gun generator
   const bool usegun = false && !readhits;
   // Throw single Upsilons, may be embedded in Hijing by setting readhepmc flag also  (note, careful to set Z vertex equal to Hijing events)
@@ -83,6 +83,10 @@ int Fun4All_AnaTutorial(
   // Event pile up simulation with collision rate in Hz MB collisions.
   // Note please follow up the macro to verify the settings for beam parameters
   const double pileup_collision_rate = 0;  // 100e3 for 100kHz nominal AuAu collision rate.
+  const bool do_write_output = false;
+  // To write cluster files set do_write_output = true and set
+  // do_tracking = true, do_tracking_cell = true, do_tracking_cluster = true and
+  // leave the tracking for later do_tracking_track =  false,  do_tracking_eval = false
 
   //======================
   // What to run
@@ -94,7 +98,8 @@ int Fun4All_AnaTutorial(
 
   bool do_tracking = true;
   bool do_tracking_cell = do_tracking && true;
-  bool do_tracking_track = do_tracking_cell && true;
+  bool do_tracking_cluster = do_tracking_cell && true;
+  bool do_tracking_track = do_tracking_cluster && true;
   bool do_tracking_eval = do_tracking_track && false;
 
   bool do_pstof = false;
@@ -120,7 +125,7 @@ int Fun4All_AnaTutorial(
   bool do_hcalout_eval = do_hcalout_cluster && false;
 
   // forward EMC
-  bool do_femc = true;
+  bool do_femc = false;
   bool do_femc_cell = do_femc && true;
   bool do_femc_twr = do_femc_cell && true;
   bool do_femc_cluster = do_femc_twr && true;
@@ -135,12 +140,15 @@ int Fun4All_AnaTutorial(
   bool do_calotrigger = true && do_cemc_twr && do_hcalin_twr && do_hcalout_twr;
 
   bool do_jet_reco = true;
-  bool do_jet_eval = do_jet_reco && false;
+  bool do_jet_eval = do_jet_reco && true;
 
   // HI Jet Reco for p+Au / Au+Au collisions (default is false for
   // single particle / p+p-only simulations, or for p+Au / Au+Au
   // simulations which don't particularly care about jets)
   bool do_HIjetreco = false && do_cemc_twr && do_hcalin_twr && do_hcalout_twr;
+
+  // 3-D topoCluster reconstruction in both HCal layers -- requires towers from both
+  bool do_topoCluster = false && do_hcalin_twr && do_hcalout_twr;
 
   bool do_dst_compress = false;
 
@@ -162,21 +170,25 @@ int Fun4All_AnaTutorial(
 
   int absorberactive = 1;  // set to 1 to make all absorbers active volumes
   //  const string magfield = "1.5"; // alternatively to specify a constant magnetic field, give a float number, which will be translated to solenoidal field in T, if string use as fieldmap name (including path)
-  const string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root"); // default map from the calibration database
-  const float magfield_rescale = -1.4 / 1.5;                                     // scale the map to a 1.4 T field
+  const string magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root");  // default map from the calibration database
+  const float magfield_rescale = -1.4 / 1.5;                                                         // scale the map to a 1.4 T field
 
   //---------------
   // Fun4All server
   //---------------
 
   bool display_on = false;
-  if(display_on)
-    {
-      gROOT->LoadMacro("DisplayOn.C");
-    }
+  if (display_on)
+  {
+    gROOT->LoadMacro("DisplayOn.C");
+  }
 
   Fun4AllServer *se = Fun4AllServer::instance();
   se->Verbosity(0);
+
+  //Opt to print all random seed used for debugging reproducibility. Comment out to reduce stdout prints.
+  PHRandomSeed::Verbosity(1);
+
   // just if we set some flags somewhere in this macro
   recoConsts *rc = recoConsts::instance();
   // By default every random number generator uses
@@ -219,7 +231,7 @@ int Fun4All_AnaTutorial(
 
       PHPythia8 *pythia8 = new PHPythia8();
       // see coresoftware/generators/PHPythia8 for example config
-      pythia8->set_config_file("phpythia8.cfg"); // example configure files : https://github.com/sPHENIX-Collaboration/coresoftware/tree/master/generators/PHPythia8
+      pythia8->set_config_file("phpythia8.cfg");  // example configure files : https://github.com/sPHENIX-Collaboration/coresoftware/tree/master/generators/PHPythia8
       if (readhepmc)
         pythia8->set_reuse_vertex(0);  // reuse vertex of subevent with embedding ID of 0
       // pythia8->set_vertex_distribution_width(0,0,10,0); // additional vertex smearing if needed, more vertex options available
@@ -231,7 +243,7 @@ int Fun4All_AnaTutorial(
       gSystem->Load("libPHPythia6.so");
 
       PHPythia6 *pythia6 = new PHPythia6();
-      pythia6->set_config_file("phpythia6.cfg"); // example configure files : https://github.com/sPHENIX-Collaboration/coresoftware/tree/master/generators/PHPythia6
+      pythia6->set_config_file("phpythia6.cfg");  // example configure files : https://github.com/sPHENIX-Collaboration/coresoftware/tree/master/generators/PHPythia6
       if (readhepmc)
         pythia6->set_reuse_vertex(0);  // reuse vertex of subevent with embedding ID of 0
       // pythia6->set_vertex_distribution_width(0,0,10,0); // additional vertex smearing if needed, more vertex options available
@@ -295,46 +307,46 @@ int Fun4All_AnaTutorial(
     {
       // run upsilons for momentum, dca performance, alone or embedded in Hijing
 
-      for(int iups = 0; iups < num_upsilons_per_event;iups++)
+      for (int iups = 0; iups < num_upsilons_per_event; iups++)
       {
-	PHG4ParticleGeneratorVectorMeson *vgen = new PHG4ParticleGeneratorVectorMeson();
-	vgen->add_decay_particles("e+", "e-", 0);  // i = decay id
-	// event vertex
-	if (readhepmc || do_embedding || particles || runpythia8 || runpythia6)
-	{
-	  vgen->set_reuse_existing_vertex(true);
-	}
+        PHG4ParticleGeneratorVectorMeson *vgen = new PHG4ParticleGeneratorVectorMeson();
+        vgen->add_decay_particles("e+", "e-", 0);  // i = decay id
+        // event vertex
+        if (readhepmc || do_embedding || particles || runpythia8 || runpythia6)
+        {
+          vgen->set_reuse_existing_vertex(true);
+        }
 
-	// Note: this rapidity range completely fills the acceptance of eta = +/- 1 unit
-	vgen->set_rapidity_range(-1.0, +1.0);
-	vgen->set_pt_range(0.0, 10.0);
+        // Note: this rapidity range completely fills the acceptance of eta = +/- 1 unit
+        vgen->set_rapidity_range(-1.0, +1.0);
+        vgen->set_pt_range(0.0, 10.0);
 
-	int istate = 1;
+        int istate = 1;
 
-	if (istate == 1)
-	{
-	  // Upsilon(1S)
-	  vgen->set_mass(9.46);
-	  vgen->set_width(54.02e-6);
-	}
-	else if (istate == 2)
-	{
-	  // Upsilon(2S)
-	  vgen->set_mass(10.0233);
-	  vgen->set_width(31.98e-6);
-	}
-	else
-	{
-	  // Upsilon(3S)
-	  vgen->set_mass(10.3552);
-	  vgen->set_width(20.32e-6);
-	}
+        if (istate == 1)
+        {
+          // Upsilon(1S)
+          vgen->set_mass(9.46);
+          vgen->set_width(54.02e-6);
+        }
+        else if (istate == 2)
+        {
+          // Upsilon(2S)
+          vgen->set_mass(10.0233);
+          vgen->set_width(31.98e-6);
+        }
+        else
+        {
+          // Upsilon(3S)
+          vgen->set_mass(10.3552);
+          vgen->set_width(20.32e-6);
+        }
 
-	vgen->Verbosity(0);
-	vgen->Embed(3);
-	se->registerSubsystem(vgen);
+        vgen->Verbosity(0);
+        vgen->Embed(3);
+        se->registerSubsystem(vgen);
 
-	cout << "Upsilon generator for istate = " << istate << " created and registered " << endl;
+        cout << "Upsilon generator for istate = " << istate << " created and registered " << endl;
       }
     }
   }
@@ -345,12 +357,12 @@ int Fun4All_AnaTutorial(
     // Detector description
     //---------------------
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 00, 0)
     G4Setup(absorberactive, magfield, EDecayType::kAll,
-            do_tracking, do_pstof, do_cemc, do_hcalin, do_magnet, do_hcalout, do_pipe,do_plugdoor, do_femc, magfield_rescale);
+            do_tracking, do_pstof, do_cemc, do_hcalin, do_magnet, do_hcalout, do_pipe, do_plugdoor, do_femc, magfield_rescale);
 #else
     G4Setup(absorberactive, magfield, TPythia6Decayer::kAll,
-            do_tracking, do_pstof, do_cemc, do_hcalin, do_magnet, do_hcalout, do_pipe,do_plugdoor, do_femc, magfield_rescale);
+            do_tracking, do_pstof, do_cemc, do_hcalin, do_magnet, do_hcalout, do_pipe, do_plugdoor, do_femc, magfield_rescale);
 #endif
   }
 
@@ -404,6 +416,8 @@ int Fun4All_AnaTutorial(
   // SVTX tracking
   //--------------
 
+  if (do_tracking_cluster) Tracking_Clus();
+
   if (do_tracking_track) Tracking_Reco();
 
   //-----------------
@@ -448,6 +462,12 @@ int Fun4All_AnaTutorial(
     HIJetReco();
   }
 
+  if (do_topoCluster)
+  {
+    gROOT->LoadMacro("G4_TopoClusterReco.C");
+    TopoClusterReco();
+  }
+
   //----------------------
   // Simulation evaluation
   //----------------------
@@ -463,8 +483,6 @@ int Fun4All_AnaTutorial(
   if (do_femc_eval) FEMC_Eval(string(outputFile) + "_g4femc_eval.root");
 
   if (do_jet_eval) Jet_Eval(string(outputFile) + "_g4jet_eval.root");
-  
-  gSystem->Load("libanatutorial.so");
 
   AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", string(outputFile) + "_anaTutorial.root");
   anaTutorial->setMinJetPt(10.);
@@ -472,7 +490,7 @@ int Fun4All_AnaTutorial(
   anaTutorial->analyzeTracks(true);
   anaTutorial->analyzeClusters(false);
   anaTutorial->analyzeJets(false);
-  anaTutorial->AnalyzeTruth(false);
+  anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
 
   //--------------
@@ -553,8 +571,8 @@ int Fun4All_AnaTutorial(
 
     if (do_tracking)
     {
-      // This gets the default drift velocity only! 
-      PHG4TpcElectronDrift *dr = (PHG4TpcElectronDrift *)se->getSubsysReco("PHG4TpcElectronDrift");
+      // This gets the default drift velocity only!
+      PHG4TpcElectronDrift *dr = (PHG4TpcElectronDrift *) se->getSubsysReco("PHG4TpcElectronDrift");
       assert(dr);
       double TpcDriftVelocity = dr->get_double_param("drift_velocity");
       time_window_minus = -105.5 / TpcDriftVelocity;  // ns
@@ -583,10 +601,12 @@ int Fun4All_AnaTutorial(
                 /*bool*/ do_hcalout_twr);
   }
 
-  //  Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outputFile);
-  // if (do_dst_compress) DstCompress(out);
-  //  se->registerOutputManager(out);
-
+  if (do_write_output)
+  {
+    Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outputFile);
+    if (do_dst_compress) DstCompress(out);
+    se->registerOutputManager(out);
+  }
   //-----------------
   // Event processing
   //-----------------
@@ -602,14 +622,14 @@ int Fun4All_AnaTutorial(
     return 0;
   }
 
-  if(display_on)
-    {
-      DisplayOn();
-      // prevent macro from finishing so can see display
-      int i;
-      cout << "***** Enter any integer to proceed" << endl;
-      cin >> i;
-    }
+  if (display_on)
+  {
+    DisplayOn();
+    // prevent macro from finishing so can see display
+    int i;
+    cout << "***** Enter any integer to proceed" << endl;
+    cin >> i;
+  }
 
   se->run(nEvents);
 
@@ -617,14 +637,12 @@ int Fun4All_AnaTutorial(
   // Exit
   //-----
 
-
   se->End();
   std::cout << "All done" << std::endl;
   delete se;
   gSystem->Exit(0);
   return 0;
 }
-
 
 // This function is only used to test if we can load this as root6 macro
 // without running into unresolved libraries and include files

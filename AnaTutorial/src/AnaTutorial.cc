@@ -3,12 +3,12 @@
 /// Cluster/Calorimeter includes
 #include <calobase/RawCluster.h>
 #include <calobase/RawClusterContainer.h>
-#include <calotrigger/CaloTriggerInfo.h>
 #include <calobase/RawClusterUtility.h>
 #include <calobase/RawTower.h>
 #include <calobase/RawTowerContainer.h>
 #include <calobase/RawTowerGeom.h>
 #include <calobase/RawTowerGeomContainer.h>
+#include <calotrigger/CaloTriggerInfo.h>
 
 /// Jet includes
 #include <g4jets/Jet.h>
@@ -35,19 +35,19 @@
 /// Fun4All includes
 #include <fun4all/Fun4AllHistoManager.h>
 #include <fun4all/Fun4AllReturnCodes.h>
-#include <phool/getClass.h>
 #include <g4main/PHG4Hit.h>
 #include <g4main/PHG4Particle.h>
 #include <g4main/PHG4TruthInfoContainer.h>
 #include <phool/PHCompositeNode.h>
+#include <phool/getClass.h>
 
 /// ROOT includes
 #include <TFile.h>
-#include <TNtuple.h>
-#include <TTree.h>
-#include <TMath.h>
 #include <TH1.h>
 #include <TH2.h>
+#include <TMath.h>
+#include <TNtuple.h>
+#include <TTree.h>
 
 /// C++ includes
 #include <cassert>
@@ -66,7 +66,7 @@ using namespace std;
 /**
  * Constructor of module
  */
-AnaTutorial::AnaTutorial(const std::string& name, const std::string& filename)
+AnaTutorial::AnaTutorial(const std::string &name, const std::string &filename)
   : SubsysReco(name)
   , outfilename(filename)
   , hm(nullptr)
@@ -96,6 +96,10 @@ AnaTutorial::~AnaTutorial()
  */
 int AnaTutorial::Init(PHCompositeNode *topNode)
 {
+  if (Verbosity() > 5)
+  {
+    cout << "Beginning Init in AnaTutorial" << endl;
+  }
   initializeVariables();
   initializeTrees();
 
@@ -104,10 +108,10 @@ int AnaTutorial::Init(PHCompositeNode *topNode)
   // TH1 *h1 = new TH1F("h1",....)
   // hm->registerHisto(h1);
   outfile = new TFile(outfilename.c_str(), "RECREATE");
-  
-  phi_h = new TH1D("phi_h",";Counts;#phi [rad]",50,-6,6);
+
+  phi_h = new TH1D("phi_h", ";Counts;#phi [rad]", 50, -6, 6);
   hm->registerHisto(phi_h);
-  eta_phi_h = new TH2F("phi_eta_h",";#eta;#phi [rad]",10,-1,1,50,-6,6);
+  eta_phi_h = new TH2F("phi_eta_h", ";#eta;#phi [rad]", 10, -1, 1, 50, -6, 6);
   hm->registerHisto(eta_phi_h);
 
   return 0;
@@ -117,70 +121,77 @@ int AnaTutorial::Init(PHCompositeNode *topNode)
  * Main workhorse function where each event is looped over and 
  * data from each event is collected from the node tree for analysis
  */
-int AnaTutorial::process_event(PHCompositeNode* topNode)
+int AnaTutorial::process_event(PHCompositeNode *topNode)
 {
-  /// Get the truth information 
-  if( _analyzeTruth ) {
+  if (Verbosity() > 5)
+  {
+    cout << "Beginning process_event in AnaTutorial" << endl;
+  }
+  /// Get the truth information
+  if (_analyzeTruth)
+  {
     getHEPMCTruth(topNode);
     getPHG4Truth(topNode);
   }
-  
+
   /// Get the tracks
   if (_analyzeTracks)
+  {
     getTracks(topNode);
-  
+  }
   /// Get the truth and reconstructed jets
-  if (_analyzeJets) {
+  if (_analyzeJets)
+  {
     getTruthJets(topNode);
     getReconstructedJets(topNode);
   }
-  
+
   /// Get calorimeter information
-  if(_analyzeClusters){
+  if (_analyzeClusters)
+  {
     getEMCalClusters(topNode);
-    getIHCalClusters(topNode);
-    getTriggerInfo(topNode);
   }
 
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-
 /**
  * End the module and finish any data collection. Clean up any remaining
  * loose ends
  */
-int AnaTutorial::End(PHCompositeNode* topNode)
+int AnaTutorial::End(PHCompositeNode *topNode)
 {
-
-  if(Verbosity() > 1){
-    cout<< "Ending AnaTutorial analysis package"<<endl;
+  if (Verbosity() > 1)
+  {
+    cout << "Ending AnaTutorial analysis package" << endl;
   }
   /// Change to the outfile
   outfile->cd();
-  
+
   /// If we analyzed the tracks, write the tree out
-  if(_analyzeTracks)
+  if (_analyzeTracks)
     tracktree->Write();
-  
+
   /// If we analyzed the jets, write them out
-  if(_analyzeJets){
+  if (_analyzeJets)
+  {
     truthjettree->Write();
     recojettree->Write();
   }
-  
+
   /// If we analyzed the truth particles, write them out
-  if(_analyzeTruth){
+  if (_analyzeTruth)
+  {
     hepmctree->Write();
     truthtree->Write();
   }
 
   /// If we analyzed the clusters, write them out
-  if(_analyzeClusters)
-    {
-      clustertree->Write();
-    }
-  
+  if (_analyzeClusters)
+  {
+    clustertree->Write();
+  }
+
   /// Write out any other histograms
   phi_h->Write();
   eta_phi_h->Write();
@@ -188,18 +199,18 @@ int AnaTutorial::End(PHCompositeNode* topNode)
   /// Write and close the outfile
   outfile->Write();
   outfile->Close();
-  
+
   delete outfile;
   /// Let the histogram manager deal with dumping the histogram memory
   hm->dumpHistos(outfilename, "UPDATE");
 
-    if(Verbosity() > 1){
-    cout<< "Finished AnaTutorial analysis package"<<endl;
+  if (Verbosity() > 1)
+  {
+    cout << "Finished AnaTutorial analysis package" << endl;
   }
- 
+
   return 0;
 }
-
 
 /**
  * This method gets all of the HEPMC truth particles from the node tree
@@ -209,88 +220,86 @@ int AnaTutorial::End(PHCompositeNode* topNode)
  */
 void AnaTutorial::getHEPMCTruth(PHCompositeNode *topNode)
 {
-  
   /// Get the node from the node tree
   PHHepMCGenEventMap *hepmceventmap = findNode::getClass<PHHepMCGenEventMap>(topNode, "PHHepMCGenEventMap");
-  
+
   /// If the node was not properly put on the tree, return
   if (!hepmceventmap)
-    {
-      cout << PHWHERE 
-	   << "HEPMC event map node is missing, can't collected HEPMC truth particles"
-	   << endl;
-      return;
-    }
-  
+  {
+    cout << PHWHERE
+         << "HEPMC event map node is missing, can't collected HEPMC truth particles"
+         << endl;
+    return;
+  }
+
   /// Could have some print statements for debugging with verbosity
   if (Verbosity() > 1)
-    {
-      cout << "Getting HEPMC truth particles " << endl;
-    }
-  
+  {
+    cout << "Getting HEPMC truth particles " << endl;
+  }
+
   /// You can iterate over the number of events in a hepmc event
   /// for pile up events where you have multiple hard scatterings per bunch crossing
   for (PHHepMCGenEventMap::ConstIter eventIter = hepmceventmap->begin();
        eventIter != hepmceventmap->end();
        ++eventIter)
+  {
+    /// Get the event
+    PHHepMCGenEvent *hepmcevent = eventIter->second;
+
+    if (hepmcevent)
     {
-      /// Get the event
-      PHHepMCGenEvent *hepmcevent = eventIter->second;
-      
-      if (hepmcevent)
-	{
-	  /// Get the event characteristics, inherited from HepMC classes
-	  HepMC::GenEvent *truthevent = hepmcevent->getEvent();
-	  if (!truthevent)
-	    {
-	      cout << PHWHERE 
-		   << "no evt pointer under phhepmvgeneventmap found " 
-		   << endl;
-	      return;
-	    }
-	  
-	  /// Get the parton info
-	  HepMC::PdfInfo *pdfinfo = truthevent->pdf_info();
-	  
-	  /// Get the parton info as determined from HEPMC
-	  partid1 = pdfinfo->id1();
-	  partid2 = pdfinfo->id2();
-	  x1 = pdfinfo->x1();
-	  x2 = pdfinfo->x2();
-	  
-	  /// Are there multiple partonic intercations in a p+p event
-	  mpi = truthevent->mpi();
-	  
-	  /// Get the PYTHIA signal process id identifying the 2-to-2 hard process
-	  process_id = truthevent->signal_process_id();
-	  
-	  if(Verbosity() > 2)
-	    {
-	      cout<<" Iterating over an event"<<endl;
-	    }
-	  /// Loop over all the truth particles and get their information
-	  for (HepMC::GenEvent::particle_const_iterator iter = truthevent->particles_begin();
-	       iter != truthevent->particles_end();
-	       ++iter)
-	    {
-	      /// Get each pythia particle characteristics
-	      truthenergy = (*iter)->momentum().e();
-	      truthpid = (*iter)->pdg_id();
-	      
-	      trutheta = (*iter)->momentum().pseudoRapidity();
-	      truthphi = (*iter)->momentum().phi();
-	      truthpx = (*iter)->momentum().px();
-	      truthpy = (*iter)->momentum().py();
-	      truthpz = (*iter)->momentum().pz();
-	      truthpt = sqrt(truthpx * truthpx + truthpy * truthpy);
-	      
-	      //fill the truth tree
-	      hepmctree->Fill();
-	      numparticlesinevent++;
-	    }
-	}
-    } 
-  
+      /// Get the event characteristics, inherited from HepMC classes
+      HepMC::GenEvent *truthevent = hepmcevent->getEvent();
+      if (!truthevent)
+      {
+        cout << PHWHERE
+             << "no evt pointer under phhepmvgeneventmap found "
+             << endl;
+        return;
+      }
+
+      /// Get the parton info
+      HepMC::PdfInfo *pdfinfo = truthevent->pdf_info();
+
+      /// Get the parton info as determined from HEPMC
+      partid1 = pdfinfo->id1();
+      partid2 = pdfinfo->id2();
+      x1 = pdfinfo->x1();
+      x2 = pdfinfo->x2();
+
+      /// Are there multiple partonic intercations in a p+p event
+      mpi = truthevent->mpi();
+
+      /// Get the PYTHIA signal process id identifying the 2-to-2 hard process
+      process_id = truthevent->signal_process_id();
+
+      if (Verbosity() > 2)
+      {
+        cout << " Iterating over an event" << endl;
+      }
+      /// Loop over all the truth particles and get their information
+      for (HepMC::GenEvent::particle_const_iterator iter = truthevent->particles_begin();
+           iter != truthevent->particles_end();
+           ++iter)
+      {
+        /// Get each pythia particle characteristics
+        truthenergy = (*iter)->momentum().e();
+        truthpid = (*iter)->pdg_id();
+
+        trutheta = (*iter)->momentum().pseudoRapidity();
+        truthphi = (*iter)->momentum().phi();
+        truthpx = (*iter)->momentum().px();
+        truthpy = (*iter)->momentum().py();
+        truthpz = (*iter)->momentum().pz();
+        truthpt = sqrt(truthpx * truthpx + truthpy * truthpy);
+
+        //fill the truth tree
+        hepmctree->Fill();
+        numparticlesinevent++;
+      }
+    }
+  }
 }
 
 /**
@@ -301,15 +310,15 @@ void AnaTutorial::getHEPMCTruth(PHCompositeNode *topNode)
  */
 void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
 {
-
   /// G4 truth particle node
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
-     
-  if( !truthinfo ){
-      cout << PHWHERE 
-	   << "PHG4TruthInfoContainer node is missing, can't collect G4 truth particles"
-	   << endl;
-      return;
+
+  if (!truthinfo)
+  {
+    cout << PHWHERE
+         << "PHG4TruthInfoContainer node is missing, can't collect G4 truth particles"
+         << endl;
+    return;
   }
 
   /// Get the primary particle range
@@ -319,34 +328,31 @@ void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
   for (PHG4TruthInfoContainer::ConstIterator iter = range.first;
        iter != range.second;
        ++iter)
-    {
-      /// Get this truth particle
-      PHG4Particle *truth = iter->second;
-      
-      /// Get this particles momentum, etc.
-      truthpx = truth->get_px();
-      truthpy = truth->get_py();
-      truthpz = truth->get_pz();
-      truthp = sqrt(truthpx * truthpx + truthpy * truthpy + truthpz * truthpz);
-      truthenergy = truth->get_e();
-      
-      truthpt = sqrt(truthpx * truthpx + truthpy * truthpy);
-      
-      truthphi = atan(truthpy / truthpx);
-      
-      trutheta = atanh(truthpz / truthenergy);
-      /// Check for nans
-      if (trutheta != trutheta)
-	trutheta = -9999;
-      truthpid = truth->get_pid();
-      
-      /// Fill the g4 truth tree
-      truthtree->Fill();
-    }
-  
+  {
+    /// Get this truth particle
+    PHG4Particle *truth = iter->second;
+
+    /// Get this particles momentum, etc.
+    truthpx = truth->get_px();
+    truthpy = truth->get_py();
+    truthpz = truth->get_pz();
+    truthp = sqrt(truthpx * truthpx + truthpy * truthpy + truthpz * truthpz);
+    truthenergy = truth->get_e();
+
+    truthpt = sqrt(truthpx * truthpx + truthpy * truthpy);
+
+    truthphi = atan(truthpy / truthpx);
+
+    trutheta = atanh(truthpz / truthenergy);
+    /// Check for nans
+    if (trutheta != trutheta)
+      trutheta = -9999;
+    truthpid = truth->get_pid();
+
+    /// Fill the g4 truth tree
+    truthtree->Fill();
+  }
 }
-
-
 
 /**
  * This method gets the tracks as reconstructed from the tracker. It also
@@ -355,79 +361,78 @@ void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
  */
 void AnaTutorial::getTracks(PHCompositeNode *topNode)
 {
-  
   /// SVTX tracks node
   SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "SvtxTrackMap");
 
-  if( !trackmap ){
-      cout << PHWHERE 
-	   << "SvtxTrackMap node is missing, can't collect tracks"
-	   << endl;
-      return;
+  if (!trackmap)
+  {
+    cout << PHWHERE
+         << "SvtxTrackMap node is missing, can't collect tracks"
+         << endl;
+    return;
   }
-  
+
   /// EvalStack for truth track matching
   SvtxEvalStack *svtxevalstack = new SvtxEvalStack(topNode);
   svtxevalstack->next_event(topNode);
 
   /// Get the track evaluator
   SvtxTrackEval *trackeval = svtxevalstack->get_track_eval();
-  
+
   /// Get the range for primary tracks
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
-  
+
   if (Verbosity() > 1)
-    {
-      cout << "Get the SVTX tracks" << endl;
-    }
+  {
+    cout << "Get the SVTX tracks" << endl;
+  }
   for (SvtxTrackMap::Iter iter = trackmap->begin();
        iter != trackmap->end();
        ++iter)
-    {
-      SvtxTrack *track = iter->second;
-      
-      /// Get the reconstructed track info
-      tr_px = track->get_px();
-      tr_py = track->get_py();
-      tr_pz = track->get_pz();
-      tr_p = sqrt(tr_px * tr_px + tr_py * tr_py + tr_pz * tr_pz);
-      
-      tr_pt = sqrt(tr_px * tr_px + tr_py * tr_py);
-      
-      // Make some cuts on the track to clean up sample
-      if (tr_pt < 0.5)
-	continue;
-      
-      tr_phi = track->get_phi();
-      tr_eta = track->get_eta();
-   
-      charge = track->get_charge();
-      chisq = track->get_chisq();
-      ndf = track->get_ndf();
-      dca = track->get_dca();
-      tr_x = track->get_x();
-      tr_y = track->get_y();
-      tr_z = track->get_z();
-      
-      /// Get truth track info that matches this reconstructed track
-      PHG4Particle *truthtrack = trackeval->max_truth_particle_by_nclusters(track);
-      truth_is_primary = truthinfo->is_primary(truthtrack);
-      
-      truthtrackpx = truthtrack->get_px();
-      truthtrackpy = truthtrack->get_py();
-      truthtrackpz = truthtrack->get_pz();
-      truthtrackp = sqrt(truthtrackpx * truthtrackpx + truthtrackpy * truthtrackpy + truthtrackpz * truthtrackpz);
-      
-      truthtracke = truthtrack->get_e();
-      
-      truthtrackpt = sqrt(truthtrackpx * truthtrackpx + truthtrackpy * truthtrackpy);
-      truthtrackphi = atan(truthtrackpy / truthtrackpx);
-      truthtracketa = atanh(truthtrackpz / truthtrackp);
-      truthtrackpid = truthtrack->get_pid();
-      
-      tracktree->Fill();
-    }
-  
+  {
+    SvtxTrack *track = iter->second;
+
+    /// Get the reconstructed track info
+    tr_px = track->get_px();
+    tr_py = track->get_py();
+    tr_pz = track->get_pz();
+    tr_p = sqrt(tr_px * tr_px + tr_py * tr_py + tr_pz * tr_pz);
+
+    tr_pt = sqrt(tr_px * tr_px + tr_py * tr_py);
+
+    // Make some cuts on the track to clean up sample
+    if (tr_pt < 0.5)
+      continue;
+
+    tr_phi = track->get_phi();
+    tr_eta = track->get_eta();
+
+    charge = track->get_charge();
+    chisq = track->get_chisq();
+    ndf = track->get_ndf();
+    dca = track->get_dca();
+    tr_x = track->get_x();
+    tr_y = track->get_y();
+    tr_z = track->get_z();
+
+    /// Get truth track info that matches this reconstructed track
+    PHG4Particle *truthtrack = trackeval->max_truth_particle_by_nclusters(track);
+    truth_is_primary = truthinfo->is_primary(truthtrack);
+
+    truthtrackpx = truthtrack->get_px();
+    truthtrackpy = truthtrack->get_py();
+    truthtrackpz = truthtrack->get_pz();
+    truthtrackp = sqrt(truthtrackpx * truthtrackpx + truthtrackpy * truthtrackpy + truthtrackpz * truthtrackpz);
+
+    truthtracke = truthtrack->get_e();
+
+    truthtrackpt = sqrt(truthtrackpx * truthtrackpx + truthtrackpy * truthtrackpy);
+    truthtrackphi = atan(truthtrackpy / truthtrackpx);
+    truthtracketa = atanh(truthtrackpz / truthtrackp);
+    truthtrackpid = truthtrack->get_pid();
+
+    tracktree->Fill();
+  }
 }
 
 /**
@@ -436,46 +441,45 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
 void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
 {
   if (Verbosity() > 1)
-     {
-       cout << "get the truth jets" << endl;
-     }
-   
-  /// Get the truth jet node
-  JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
-  
-  if (!truth_jets){
-      cout << PHWHERE 
-	   << "Truth jet node is missing, can't collect truth jets"
-	   << endl;
-      return;
+  {
+    cout << "get the truth jets" << endl;
   }
 
+  /// Get the truth jet node
+  JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
+
+  if (!truth_jets)
+  {
+    cout << PHWHERE
+         << "Truth jet node is missing, can't collect truth jets"
+         << endl;
+    return;
+  }
 
   /// Iterate over the truth jets
   for (JetMap::Iter iter = truth_jets->begin();
        iter != truth_jets->end();
        ++iter)
-    {
-      Jet *jet = iter->second;
-      
-      truthjetpt = jet->get_pt();
-      
-      /// Only collect truthjets above the _minjetpt cut
-      if (truthjetpt < _minjetpt)
-	continue;
-      
-      truthjeteta = jet->get_eta();   
-      truthjetpx = jet->get_px();
-      truthjetpy = jet->get_py();
-      truthjetpz = jet->get_pz();
-      truthjetphi = jet->get_phi();
-      truthjetp = jet->get_p();
-      truthjetenergy = jet->get_e();
-      
-      /// Fill the truthjet tree
-      truthjettree->Fill();
-    }
-  
+  {
+    Jet *jet = iter->second;
+
+    truthjetpt = jet->get_pt();
+
+    /// Only collect truthjets above the _minjetpt cut
+    if (truthjetpt < _minjetpt)
+      continue;
+
+    truthjeteta = jet->get_eta();
+    truthjetpx = jet->get_px();
+    truthjetpy = jet->get_py();
+    truthjetpz = jet->get_pz();
+    truthjetphi = jet->get_phi();
+    truthjetp = jet->get_p();
+    truthjetenergy = jet->get_e();
+
+    /// Fill the truthjet tree
+    truthjettree->Fill();
+  }
 }
 
 /**
@@ -487,107 +491,107 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
   JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
   /// Get the truth jets
   JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
-  
-  if(!reco_jets){
-    cout << PHWHERE 
-	 << "Reconstructed jet node is missing, can't collect reconstructed jets"
-	 << endl;
+
+  if (!reco_jets)
+  {
+    cout << PHWHERE
+         << "Reconstructed jet node is missing, can't collect reconstructed jets"
+         << endl;
     return;
   }
 
   if (Verbosity() > 1)
-    {
-       cout << "Get all Reco Jets" << endl;
-    }
-  
+  {
+    cout << "Get all Reco Jets" << endl;
+  }
+
   /// Iterate over the reconstructed jets
   for (JetMap::Iter recoIter = reco_jets->begin();
        recoIter != reco_jets->end();
        ++recoIter)
-    {
-      Jet *jet = recoIter->second;
-      recojetpt = jet->get_pt();
-      if (recojetpt < _minjetpt)
-	continue;
-      
-      recojeteta = jet->get_eta();
-      
-      // Get reco jet characteristics
-      recojetid = jet->get_id();
-      recojetpx = jet->get_px();
-      recojetpy = jet->get_py();
-      recojetpz = jet->get_pz();
-      recojetphi = jet->get_phi();
-      recojetp = jet->get_p();
-      recojetenergy = jet->get_e();
-      
-      if (Verbosity() > 1)
-	{
-	  cout << "matching by distance jet" << endl;
-	}
-      
-      /// Set the matched truth jet characteristics to 0
-      truthjetid = 0;
-      truthjetp = 0;
-      truthjetphi = 0;
-      truthjeteta = 0;
-      truthjetpt = 0;
-      truthjetenergy = 0;
-      truthjetpx = 0;
-      truthjetpy = 0;
-      truthjetpz = 0;
-      
-      /// Check to make sure the truth jet node is available
-      if(truth_jets) {
-	/// Match the reconstructed jet to the closest truth jet in delta R space
-	/// Iterate over the truth jets
-	float closestjet = 9999;
-	for (JetMap::Iter truthIter = truth_jets->begin();
-	     truthIter != truth_jets->end();
-	     ++truthIter)
-	  {
-	    Jet *jet = truthIter->second;
-	    
-	    float thisjetpt = jet->get_pt();
-	    if (thisjetpt < _minjetpt)
-	      continue;
-	    
-	    float thisjeteta = jet->get_eta();
-	    float thisjetphi = jet->get_phi();
-	    
-	    float dphi = recojetphi - thisjetphi;
-	    if (dphi > 3. * TMath::Pi() / 2.)
-	      dphi -= TMath::Pi() * 2.;
-	    if (dphi < -1. * TMath::Pi() / 2.)
-	      dphi += TMath::Pi() * 2.;
-	    
-	    float deta = recojeteta - thisjeteta;
-	    /// Determine the distance in eta phi space between the reconstructed
-	    /// and truth jets
-	    dR = sqrt(pow(dphi, 2.) + pow(deta, 2.));
-	    
-	    /// If this truth jet is closer than the previous truth jet, it is 
-	    /// closer and thus should be considered the truth jet
-	    if (dR < reco_jets->get_par() && dR < closestjet)
-	      {
-		truthjetid = -9999;  
-		truthjetp = jet->get_p();
-		truthjetphi = jet->get_phi();
-		truthjeteta = jet->get_eta();
-		truthjetpt = jet->get_pt();
-		truthjetenergy = jet->get_e();
-		truthjetpx = jet->get_px();
-		truthjetpy = jet->get_py();
-		truthjetpz = jet->get_pz();
-		closestjet = dR;
-	      }
-	  }
-      }
-      recojettree->Fill();
-      
-    }
-}
+  {
+    Jet *jet = recoIter->second;
+    recojetpt = jet->get_pt();
+    if (recojetpt < _minjetpt)
+      continue;
 
+    recojeteta = jet->get_eta();
+
+    // Get reco jet characteristics
+    recojetid = jet->get_id();
+    recojetpx = jet->get_px();
+    recojetpy = jet->get_py();
+    recojetpz = jet->get_pz();
+    recojetphi = jet->get_phi();
+    recojetp = jet->get_p();
+    recojetenergy = jet->get_e();
+
+    if (Verbosity() > 1)
+    {
+      cout << "matching by distance jet" << endl;
+    }
+
+    /// Set the matched truth jet characteristics to 0
+    truthjetid = 0;
+    truthjetp = 0;
+    truthjetphi = 0;
+    truthjeteta = 0;
+    truthjetpt = 0;
+    truthjetenergy = 0;
+    truthjetpx = 0;
+    truthjetpy = 0;
+    truthjetpz = 0;
+
+    /// Check to make sure the truth jet node is available
+    if (truth_jets)
+    {
+      /// Match the reconstructed jet to the closest truth jet in delta R space
+      /// Iterate over the truth jets
+      float closestjet = 9999;
+      for (JetMap::Iter truthIter = truth_jets->begin();
+           truthIter != truth_jets->end();
+           ++truthIter)
+      {
+        Jet *jet = truthIter->second;
+
+        float thisjetpt = jet->get_pt();
+        if (thisjetpt < _minjetpt)
+          continue;
+
+        float thisjeteta = jet->get_eta();
+        float thisjetphi = jet->get_phi();
+
+        float dphi = recojetphi - thisjetphi;
+        if (dphi > 3. * TMath::Pi() / 2.)
+          dphi -= TMath::Pi() * 2.;
+        if (dphi < -1. * TMath::Pi() / 2.)
+          dphi += TMath::Pi() * 2.;
+
+        float deta = recojeteta - thisjeteta;
+        /// Determine the distance in eta phi space between the reconstructed
+        /// and truth jets
+        dR = sqrt(pow(dphi, 2.) + pow(deta, 2.));
+
+        /// If this truth jet is closer than the previous truth jet, it is
+        /// closer and thus should be considered the truth jet
+        if (dR < reco_jets->get_par() && dR < closestjet)
+        {
+          truthjetid = -9999;
+          truthjetp = jet->get_p();
+          truthjetphi = jet->get_phi();
+          truthjeteta = jet->get_eta();
+          truthjetpt = jet->get_pt();
+          truthjetenergy = jet->get_e();
+          truthjetpx = jet->get_px();
+          truthjetpy = jet->get_py();
+          truthjetpz = jet->get_pz();
+          closestjet = dR;
+        }
+      }
+    }
+    recojettree->Fill();
+  }
+}
 
 void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
 {
@@ -595,82 +599,73 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
   /// Note: other cluster containers exist as well. Check out the node tree when
   /// you run a simulation
   RawClusterContainer *clusters = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_CEMC");
-  
-  if(!clusters){
-    cout << PHWHERE 
-	 << "EMCal cluster node is missing, can't collect EMCal clusters"
-	 << endl;
+
+  if (!clusters)
+  {
+    cout << PHWHERE
+         << "EMCal cluster node is missing, can't collect EMCal clusters"
+         << endl;
     return;
   }
-  
+
   /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
   GlobalVertexMap *vertexmap = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
-    {
-      cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
-      assert(vertexmap);  // force quit
-      
-      return;
-    }
-  
-  if (vertexmap->empty())
-    {
-      cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
-      return;
-    }
-  
-  GlobalVertex *vtx = vertexmap->begin()->second;
-  if (vtx == nullptr) 
+  {
+    cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    assert(vertexmap);  // force quit
+
     return;
-  
+  }
+
+  if (vertexmap->empty())
+  {
+    cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    return;
+  }
+
+  GlobalVertex *vtx = vertexmap->begin()->second;
+  if (vtx == nullptr)
+    return;
+
+  /// Trigger emulator
+  CaloTriggerInfo *trigger = findNode::getClass<CaloTriggerInfo>(topNode, "CaloTriggerInfo");
+  /// Can obtain some trigger information if desired
+  E_4x4 = trigger->get_best_EMCal_4x4_E();
+
   RawClusterContainer::ConstRange begin_end = clusters->getClusters();
   RawClusterContainer::ConstIterator clusiter;
-  
+
   /// Loop over the EMCal clusters
   for (clusiter = begin_end.first;
        clusiter != begin_end.second;
        ++clusiter)
-    {
-      /// Get this cluster
-      RawCluster *cluster = clusiter->second;
-      
-      /// Get cluster characteristics
-      /// This helper class determines the photon characteristics
-      /// depending on the vertex position
-      /// This is important for e.g. eta determination and E_T determination
-      CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
-      CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
-      clusenergy = E_vec_cluster.mag();
-      cluseta = E_vec_cluster.pseudoRapidity();
-      clustheta = E_vec_cluster.getTheta();
-      cluspt = E_vec_cluster.perp();
-      clusphi = E_vec_cluster.getPhi();
-      
-      if (cluspt < _mincluspt)
-	continue;
-   
-      cluspx = cluspt * cos(clusphi);
-      cluspy = cluspt * sin(clusphi);
-      cluspz = sqrt(clusenergy * clusenergy - cluspx * cluspx - cluspy * cluspy);
-      
-      //fill the cluster tree with all emcal clusters
-      clustertree->Fill();
-      
-      
-    }
-}
+  {
+    /// Get this cluster
+    RawCluster *cluster = clusiter->second;
 
-void AnaTutorial::getIHCalClusters(PHCompositeNode *topNode)
-{
+    /// Get cluster characteristics
+    /// This helper class determines the photon characteristics
+    /// depending on the vertex position
+    /// This is important for e.g. eta determination and E_T determination
+    CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
+    CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
+    clusenergy = E_vec_cluster.mag();
+    cluseta = E_vec_cluster.pseudoRapidity();
+    clustheta = E_vec_cluster.getTheta();
+    cluspt = E_vec_cluster.perp();
+    clusphi = E_vec_cluster.getPhi();
 
-}
+    if (cluspt < _mincluspt)
+      continue;
 
-void AnaTutorial::getTriggerInfo(PHCompositeNode *topNode)
-{
+    cluspx = cluspt * cos(clusphi);
+    cluspy = cluspt * sin(clusphi);
+    cluspz = sqrt(clusenergy * clusenergy - cluspx * cluspx - cluspy * cluspy);
 
-  /// Trigger emulator
-  ///CaloTriggerInfo *trigger = findNode::getClass<CaloTriggerInfo>(topNode, "CaloTriggerInfo");
-
+    //fill the cluster tree with all emcal clusters
+    clustertree->Fill();
+  }
 }
 
 /**
@@ -679,83 +674,81 @@ void AnaTutorial::getTriggerInfo(PHCompositeNode *topNode)
  */
 void AnaTutorial::initializeTrees()
 {
-  recojettree = new TTree("jettree","A tree with reconstructed jets");
-  recojettree->Branch("recojetpt",&recojetpt,"recojetpt/D");
-  recojettree->Branch("recojetid",&recojetid,"recojetid/I");
-  recojettree->Branch("recojetpx",&recojetpx,"recojetpx/D");
-  recojettree->Branch("recojetpy",&recojetpy,"recojetpy/D");
-  recojettree->Branch("recojetpz",&recojetpz,"recojetpz/D");
-  recojettree->Branch("recojetphi",&recojetphi,"recojetphi/D");
-  recojettree->Branch("recojeteta",&recojeteta,"recojeteta/D");
-  recojettree->Branch("recojetenergy",&recojetenergy,"recojetenergy/D");
-  recojettree->Branch("truthjetid",&truthjetid,"truthjetid/I");
-  recojettree->Branch("truthjetp",&truthjetp,"truthjetp/D");
-  recojettree->Branch("truthjetphi",&truthjetphi,"truthjetphi/D");
-  recojettree->Branch("truthjeteta",&truthjeteta,"truthjeteta/D");
-  recojettree->Branch("truthjetpt",&truthjetpt,"truthjetpt/D");
-  recojettree->Branch("truthjetenergy",&truthjetenergy,"truthjetenergy/D");
-  recojettree->Branch("truthjetpx",&truthjetpx,"truthjetpx/D");
-  recojettree->Branch("truthjetpy",&truthjetpy,"truthjyetpy/D");
-  recojettree->Branch("truthjetpz",&truthjetpz,"truthjetpz/D");
-  recojettree->Branch("dR",&dR,"dR/D");
+  recojettree = new TTree("jettree", "A tree with reconstructed jets");
+  recojettree->Branch("recojetpt", &recojetpt, "recojetpt/D");
+  recojettree->Branch("recojetid", &recojetid, "recojetid/I");
+  recojettree->Branch("recojetpx", &recojetpx, "recojetpx/D");
+  recojettree->Branch("recojetpy", &recojetpy, "recojetpy/D");
+  recojettree->Branch("recojetpz", &recojetpz, "recojetpz/D");
+  recojettree->Branch("recojetphi", &recojetphi, "recojetphi/D");
+  recojettree->Branch("recojeteta", &recojeteta, "recojeteta/D");
+  recojettree->Branch("recojetenergy", &recojetenergy, "recojetenergy/D");
+  recojettree->Branch("truthjetid", &truthjetid, "truthjetid/I");
+  recojettree->Branch("truthjetp", &truthjetp, "truthjetp/D");
+  recojettree->Branch("truthjetphi", &truthjetphi, "truthjetphi/D");
+  recojettree->Branch("truthjeteta", &truthjeteta, "truthjeteta/D");
+  recojettree->Branch("truthjetpt", &truthjetpt, "truthjetpt/D");
+  recojettree->Branch("truthjetenergy", &truthjetenergy, "truthjetenergy/D");
+  recojettree->Branch("truthjetpx", &truthjetpx, "truthjetpx/D");
+  recojettree->Branch("truthjetpy", &truthjetpy, "truthjyetpy/D");
+  recojettree->Branch("truthjetpz", &truthjetpz, "truthjetpz/D");
+  recojettree->Branch("dR", &dR, "dR/D");
 
-
-  truthjettree = new TTree ("truthjettree","A tree with truth jets");
-  truthjettree->Branch("truthjetid",&truthjetid,"truthjetid/I");
-  truthjettree->Branch("truthjetp",&truthjetp,"truthjetp/D");
-  truthjettree->Branch("truthjetphi",&truthjetphi,"truthjetphi/D");
-  truthjettree->Branch("truthjeteta",&truthjeteta,"truthjeteta/D");
-  truthjettree->Branch("truthjetpt",&truthjetpt,"truthjetpt/D");
-  truthjettree->Branch("truthjetenergy",&truthjetenergy,"truthjetenergy/D");
-  truthjettree->Branch("truthjetpx",&truthjetpx,"truthjetpx/D");
-  truthjettree->Branch("truthjetpy",&truthjetpy,"truthjetpy/D");
-  truthjettree->Branch("truthjetpz",&truthjetpz,"truthjetpz/D");
+  truthjettree = new TTree("truthjettree", "A tree with truth jets");
+  truthjettree->Branch("truthjetid", &truthjetid, "truthjetid/I");
+  truthjettree->Branch("truthjetp", &truthjetp, "truthjetp/D");
+  truthjettree->Branch("truthjetphi", &truthjetphi, "truthjetphi/D");
+  truthjettree->Branch("truthjeteta", &truthjeteta, "truthjeteta/D");
+  truthjettree->Branch("truthjetpt", &truthjetpt, "truthjetpt/D");
+  truthjettree->Branch("truthjetenergy", &truthjetenergy, "truthjetenergy/D");
+  truthjettree->Branch("truthjetpx", &truthjetpx, "truthjetpx/D");
+  truthjettree->Branch("truthjetpy", &truthjetpy, "truthjetpy/D");
+  truthjettree->Branch("truthjetpz", &truthjetpz, "truthjetpz/D");
 
   tracktree = new TTree("tracktree", "A tree with svtx tracks");
-  tracktree->Branch("tr_px",&tr_px,"tr_px/D");
-  tracktree->Branch("tr_py",&tr_py,"tr_py/D");
-  tracktree->Branch("tr_pz",&tr_pz,"tr_pz/D");
-  tracktree->Branch("tr_p",&tr_p,"tr_p/D");
-  tracktree->Branch("tr_pt",&tr_pt,"tr_pt/D");
-  tracktree->Branch("tr_phi",&tr_phi,"tr_phi/D");
-  tracktree->Branch("tr_eta",&tr_eta,"tr_eta/D");
-  tracktree->Branch("charge",&charge,"charge/I");
-  tracktree->Branch("chisq",&chisq,"chisq/D");
-  tracktree->Branch("ndf",&ndf,"ndf/I");
-  tracktree->Branch("dca",&dca,"dca/D");
-  tracktree->Branch("tr_x",&tr_x,"tr_x/D");
-  tracktree->Branch("tr_y",&tr_y,"tr_y/D");
-  tracktree->Branch("tr_z",&tr_z,"tr_z/D");
-  tracktree->Branch("truth_is_primary",&truth_is_primary,"truth_is_primary/I");
-  tracktree->Branch("truthtrackpx",&truthtrackpx,"truthtrackpx/D");
-  tracktree->Branch("truthtrackpy",&truthtrackpy,"truthtrackpy/D");
-  tracktree->Branch("truthtrackpz",&truthtrackpz,"truthtrackpz/D");
-  tracktree->Branch("truthtrackp",&truthtrackp,"truthtrackp/D");
-  tracktree->Branch("truthtracke",&truthtracke,"truthtracke/D");
-  tracktree->Branch("truthtrackpt",&truthtrackpt,"truthtrackpt/D");
-  tracktree->Branch("truthtrackphi",&truthtrackphi,"truthtrackphi/D");
-  tracktree->Branch("truthtracketa",&truthtracketa,"truthtracketa/D");
-  tracktree->Branch("truthtrackpid",&truthtrackpid,"truthtrackpid/I");
+  tracktree->Branch("tr_px", &tr_px, "tr_px/D");
+  tracktree->Branch("tr_py", &tr_py, "tr_py/D");
+  tracktree->Branch("tr_pz", &tr_pz, "tr_pz/D");
+  tracktree->Branch("tr_p", &tr_p, "tr_p/D");
+  tracktree->Branch("tr_pt", &tr_pt, "tr_pt/D");
+  tracktree->Branch("tr_phi", &tr_phi, "tr_phi/D");
+  tracktree->Branch("tr_eta", &tr_eta, "tr_eta/D");
+  tracktree->Branch("charge", &charge, "charge/I");
+  tracktree->Branch("chisq", &chisq, "chisq/D");
+  tracktree->Branch("ndf", &ndf, "ndf/I");
+  tracktree->Branch("dca", &dca, "dca/D");
+  tracktree->Branch("tr_x", &tr_x, "tr_x/D");
+  tracktree->Branch("tr_y", &tr_y, "tr_y/D");
+  tracktree->Branch("tr_z", &tr_z, "tr_z/D");
+  tracktree->Branch("truth_is_primary", &truth_is_primary, "truth_is_primary/I");
+  tracktree->Branch("truthtrackpx", &truthtrackpx, "truthtrackpx/D");
+  tracktree->Branch("truthtrackpy", &truthtrackpy, "truthtrackpy/D");
+  tracktree->Branch("truthtrackpz", &truthtrackpz, "truthtrackpz/D");
+  tracktree->Branch("truthtrackp", &truthtrackp, "truthtrackp/D");
+  tracktree->Branch("truthtracke", &truthtracke, "truthtracke/D");
+  tracktree->Branch("truthtrackpt", &truthtrackpt, "truthtrackpt/D");
+  tracktree->Branch("truthtrackphi", &truthtrackphi, "truthtrackphi/D");
+  tracktree->Branch("truthtracketa", &truthtracketa, "truthtracketa/D");
+  tracktree->Branch("truthtrackpid", &truthtrackpid, "truthtrackpid/I");
 
-  hepmctree = new TTree("hepmctree","A tree with hepmc truth particles");
-  hepmctree->Branch("partid1",&partid1,"partid1/I");
-  hepmctree->Branch("partid2",&partid2,"partid2/I");
-  hepmctree->Branch("x1",&x1,"x1/D");
-  hepmctree->Branch("x2",&x2,"x2/D");
-  hepmctree->Branch("mpi",&mpi,"mpi/I");
-  hepmctree->Branch("process_id",&process_id,"process_id/I");
-  hepmctree->Branch("truthenergy",&truthenergy,"truthenergy/D");
-  hepmctree->Branch("trutheta",&trutheta,"trutheta/D");
-  hepmctree->Branch("truthphi",&truthphi,"truthphi/D");
-  hepmctree->Branch("truthpx",&truthpx,"truthpx/D");
-  hepmctree->Branch("truthpy",&truthpy,"truthpy/D");
-  hepmctree->Branch("truthpz",&truthpz,"truthpz/D");
-  hepmctree->Branch("truthpt",&truthpt,"truthpt/D");
-  hepmctree->Branch("numparticlesinevent",&numparticlesinevent,"numparticlesinevent/I");
-  hepmctree->Branch("truthpid",&truthpid,"truthpid/I");
-  
+  hepmctree = new TTree("hepmctree", "A tree with hepmc truth particles");
+  hepmctree->Branch("partid1", &partid1, "partid1/I");
+  hepmctree->Branch("partid2", &partid2, "partid2/I");
+  hepmctree->Branch("x1", &x1, "x1/D");
+  hepmctree->Branch("x2", &x2, "x2/D");
+  hepmctree->Branch("mpi", &mpi, "mpi/I");
+  hepmctree->Branch("process_id", &process_id, "process_id/I");
+  hepmctree->Branch("truthenergy", &truthenergy, "truthenergy/D");
+  hepmctree->Branch("trutheta", &trutheta, "trutheta/D");
+  hepmctree->Branch("truthphi", &truthphi, "truthphi/D");
+  hepmctree->Branch("truthpx", &truthpx, "truthpx/D");
+  hepmctree->Branch("truthpy", &truthpy, "truthpy/D");
+  hepmctree->Branch("truthpz", &truthpz, "truthpz/D");
+  hepmctree->Branch("truthpt", &truthpt, "truthpt/D");
+  hepmctree->Branch("numparticlesinevent", &numparticlesinevent, "numparticlesinevent/I");
+  hepmctree->Branch("truthpid", &truthpid, "truthpid/I");
 
-  truthtree = new TTree("truthg4tree","A tree with truth g4 particles");
+  truthtree = new TTree("truthg4tree", "A tree with truth g4 particles");
   truthtree->Branch("truthenergy", &truthenergy, "truthenergy/D");
   truthtree->Branch("truthp", &truthp, "truthp/D");
   truthtree->Branch("truthpx", &truthpx, "truthpx/D");
@@ -767,15 +760,15 @@ void AnaTutorial::initializeTrees()
   truthtree->Branch("truthpid", &truthpid, "truthpid/I");
 
   clustertree = new TTree("clustertree", "A tree with emcal clusters");
-  clustertree->Branch("clusenergy",&clusenergy,"clusenergy/D");
-  clustertree->Branch("cluseta",&cluseta,"cluseta/D");
-  clustertree->Branch("clustheta",&clustheta,"clustheta/D");
-  clustertree->Branch("cluspt",&cluspt,"cluspt/D");
-  clustertree->Branch("clusphi",&clusphi,"clusphi/D");
-  clustertree->Branch("cluspx",&cluspx,"cluspx/D");
-  clustertree->Branch("cluspy",&cluspy,"cluspy/D");
-  clustertree->Branch("cluspz",&cluspz,"cluspz/D");
-
+  clustertree->Branch("clusenergy", &clusenergy, "clusenergy/D");
+  clustertree->Branch("cluseta", &cluseta, "cluseta/D");
+  clustertree->Branch("clustheta", &clustheta, "clustheta/D");
+  clustertree->Branch("cluspt", &cluspt, "cluspt/D");
+  clustertree->Branch("clusphi", &clusphi, "clusphi/D");
+  clustertree->Branch("cluspx", &cluspx, "cluspx/D");
+  clustertree->Branch("cluspy", &cluspy, "cluspy/D");
+  clustertree->Branch("cluspz", &cluspz, "cluspz/D");
+  clustertree->Branch("E_4x4", &E_4x4, "E_4x4/D");
 }
 
 /**
@@ -783,7 +776,7 @@ void AnaTutorial::initializeTrees()
  * are no variables that might not be set before e.g. writing them to the output
  * trees. 
  */
-void AnaTutorial::initializeVariables() 
+void AnaTutorial::initializeVariables()
 {
   partid1 = -99;
   partid2 = -99;
@@ -801,7 +794,7 @@ void AnaTutorial::initializeVariables()
   truthpt = -99;
   numparticlesinevent = -99;
   truthpid = -99;
-  
+
   tr_px = -99;
   tr_py = -99;
   tr_pz = -99;
@@ -826,7 +819,7 @@ void AnaTutorial::initializeVariables()
   truthtrackphi = -99;
   truthtracketa = -99;
   truthtrackpid = -99;
-  
+
   recojetpt = -99;
   recojetid = -99;
   recojetpx = -99;
@@ -846,8 +839,4 @@ void AnaTutorial::initializeVariables()
   truthjetpy = -99;
   truthjetpz = -99;
   dR = -99;
-  
-  
-  
-
 }

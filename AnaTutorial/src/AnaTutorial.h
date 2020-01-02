@@ -25,14 +25,14 @@ class PHHepMCGenEvent;
 class CaloTriggerInfo;
 class JetTruthEval;
 class SvtxEvalStack;
-   
+
 /// Definition of this analysis module class
 class AnaTutorial : public SubsysReco
 {
  public:
   /// Constructor
-  AnaTutorial(const std::string &name = "AnaTutorial", 
-	      const std::string &fname = "AnaTutorial.root");
+  AnaTutorial(const std::string &name = "AnaTutorial",
+              const std::string &fname = "AnaTutorial.root");
 
   // Destructor
   virtual ~AnaTutorial();
@@ -47,19 +47,18 @@ class AnaTutorial : public SubsysReco
   int End(PHCompositeNode *);
 
   /// Set the minimum jet pT to cut on
-  void setMinJetPt(float minjetpt){_minjetpt = minjetpt;}
-  
-  /// Set the minimum cluster pT to cut on
-  void setMinClusPt(float mincluspt){_mincluspt = mincluspt;}
-  
-  /// Set things to analyze
-  void analyzeTracks(bool analyzeTracks){_analyzeTracks = analyzeTracks;}
-  void analyzeClusters(bool analyzeClusters){_analyzeClusters = analyzeClusters;}
-  void analyzeJets(bool analyzeJets){_analyzeJets = analyzeJets;}
-  void analyzeTruth(bool analyzeTruth){_analyzeTruth = analyzeTruth;}
-  
- protected:
+  void setMinJetPt(float minjetpt) { _minjetpt = minjetpt; }
 
+  /// Set the minimum cluster pT to cut on
+  void setMinClusPt(float mincluspt) { _mincluspt = mincluspt; }
+
+  /// Set things to analyze
+  void analyzeTracks(bool analyzeTracks) { _analyzeTracks = analyzeTracks; }
+  void analyzeClusters(bool analyzeClusters) { _analyzeClusters = analyzeClusters; }
+  void analyzeJets(bool analyzeJets) { _analyzeJets = analyzeJets; }
+  void analyzeTruth(bool analyzeTruth) { _analyzeTruth = analyzeTruth; }
+
+ protected:
   /// String to contain the outfile name containing the trees
   std::string outfilename;
 
@@ -102,8 +101,6 @@ class AnaTutorial : public SubsysReco
   void getEMCalClusters(PHCompositeNode *topNode);
   void getHEPMCTruth(PHCompositeNode *topNode);
   void getPHG4Truth(PHCompositeNode *topNode);
-  void getTriggerInfo(PHCompositeNode *topNode);
-  void getIHCalClusters(PHCompositeNode *topNode);
 
   void initializeVariables();
   void initializeTrees();
@@ -111,7 +108,7 @@ class AnaTutorial : public SubsysReco
   /**
    * Make variables for the relevant trees
    */
-  
+
   /// HEPMC Tree variables
   int partid1;
   int partid2;
@@ -129,7 +126,6 @@ class AnaTutorial : public SubsysReco
   double truthp;
   int numparticlesinevent;
   int truthpid;
-
 
   /// Track variables
   double tr_px;
@@ -187,8 +183,7 @@ class AnaTutorial : public SubsysReco
   double cluspx;
   double cluspy;
   double cluspz;
-  
-
+  double E_4x4;
 };
 
 #endif

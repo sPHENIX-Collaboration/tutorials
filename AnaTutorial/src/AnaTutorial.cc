@@ -77,6 +77,10 @@ AnaTutorial::AnaTutorial(const std::string &name, const std::string &filename)
   , m_analyzeJets(true)
   , m_analyzeTruth(false)
 {
+  /// Initialize variables and trees so we don't accidentally access 
+  /// memory that was never allocated
+  initializeVariables();
+  initializeTrees();
 }
 
 /**
@@ -100,9 +104,7 @@ int AnaTutorial::Init(PHCompositeNode *topNode)
   {
     cout << "Beginning Init in AnaTutorial" << endl;
   }
-  initializeVariables();
-  initializeTrees();
-
+ 
   m_hm = new Fun4AllHistoManager(Name());
   // create and register your histos (all types) here
   // TH1 *h1 = new TH1F("h1",....)
@@ -511,21 +513,21 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
        recoIter != reco_jets->end();
        ++recoIter)
   {
-    const Jet *jet = recoIter->second;
-    m_recojetpt = jet->get_pt();
+    const Jet *recoJet = recoIter->second;
+    m_recojetpt = recoJet->get_pt();
     if (m_recojetpt < m_minjetpt)
       continue;
 
-    m_recojeteta = jet->get_eta();
+    m_recojeteta = recoJet->get_eta();
 
     // Get reco jet characteristics
-    m_recojetid = jet->get_id();
-    m_recojetpx = jet->get_px();
-    m_recojetpy = jet->get_py();
-    m_recojetpz = jet->get_pz();
-    m_recojetphi = jet->get_phi();
-    m_recojetp = jet->get_p();
-    m_recojetenergy = jet->get_e();
+    m_recojetid = recoJet->get_id();
+    m_recojetpx = recoJet->get_px();
+    m_recojetpy = recoJet->get_py();
+    m_recojetpz = recoJet->get_pz();
+    m_recojetphi = recoJet->get_phi();
+    m_recojetp = recoJet->get_p();
+    m_recojetenergy = recoJet->get_e();
 
     if (Verbosity() > 1)
     {
@@ -553,14 +555,14 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
            truthIter != truth_jets->end();
            ++truthIter)
       {
-        const Jet *jet = truthIter->second;
+        const Jet *truthJet = truthIter->second;
 
-        float thisjetpt = jet->get_pt();
+        float thisjetpt = truthJet->get_pt();
         if (thisjetpt < m_minjetpt)
           continue;
 
-        float thisjeteta = jet->get_eta();
-        float thisjetphi = jet->get_phi();
+        float thisjeteta = truthJet->get_eta();
+        float thisjetphi = truthJet->get_phi();
 
         float dphi = m_recojetphi - thisjetphi;
         if (dphi > 3. * TMath::Pi() / 2.)
@@ -578,14 +580,14 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
         if (m_dR < reco_jets->get_par() && m_dR < closestjet)
         {
           m_truthjetid = -9999;
-          m_truthjetp = jet->get_p();
-          m_truthjetphi = jet->get_phi();
-          m_truthjeteta = jet->get_eta();
-          m_truthjetpt = jet->get_pt();
-          m_truthjetenergy = jet->get_e();
-          m_truthjetpx = jet->get_px();
-          m_truthjetpy = jet->get_py();
-          m_truthjetpz = jet->get_pz();
+          m_truthjetp = truthJet->get_p();
+          m_truthjetphi = truthJet->get_phi();
+          m_truthjeteta = truthJet->get_eta();
+          m_truthjetpt = truthJet->get_pt();
+          m_truthjetenergy = truthJet->get_e();
+          m_truthjetpx = truthJet->get_px();
+          m_truthjetpy = truthJet->get_py();
+          m_truthjetpz = truthJet->get_pz();
           closestjet = m_dR;
         }
       }
@@ -785,6 +787,10 @@ void AnaTutorial::initializeTrees()
  */
 void AnaTutorial::initializeVariables()
 {
+  m_outfile = new TFile();
+  m_phi_h = new TH1F();
+  m_eta_phi_h = new TH2F();
+
   m_partid1 = -99;
   m_partid2 = -99;
   m_x1 = -99;

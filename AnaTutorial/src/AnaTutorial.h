@@ -47,52 +47,52 @@ class AnaTutorial : public SubsysReco
   int End(PHCompositeNode *);
 
   /// Set the minimum jet pT to cut on
-  void setMinJetPt(float minjetpt) { _minjetpt = minjetpt; }
+  void setMinJetPt(float minjetpt) { m_minjetpt = minjetpt; }
 
   /// Set the minimum cluster pT to cut on
-  void setMinClusPt(float mincluspt) { _mincluspt = mincluspt; }
+  void setMinClusPt(float mincluspt) { m_mincluspt = mincluspt; }
 
   /// Set things to analyze
-  void analyzeTracks(bool analyzeTracks) { _analyzeTracks = analyzeTracks; }
-  void analyzeClusters(bool analyzeClusters) { _analyzeClusters = analyzeClusters; }
-  void analyzeJets(bool analyzeJets) { _analyzeJets = analyzeJets; }
-  void analyzeTruth(bool analyzeTruth) { _analyzeTruth = analyzeTruth; }
+  void analyzeTracks(bool analyzeTracks) { m_analyzeTracks = analyzeTracks; }
+  void analyzeClusters(bool analyzeClusters) { m_analyzeClusters = analyzeClusters; }
+  void analyzeJets(bool analyzeJets) { m_analyzeJets = analyzeJets; }
+  void analyzeTruth(bool analyzeTruth) { m_analyzeTruth = analyzeTruth; }
 
- protected:
+ private:
   /// String to contain the outfile name containing the trees
-  std::string outfilename;
+  std::string m_outfilename;
 
   /// Fun4All Histogram Manager tool
-  Fun4AllHistoManager *hm;
+  Fun4AllHistoManager *m_hm;
 
   /// A float for cutting on jet pt
-  float _minjetpt;
+  float m_minjetpt;
 
   /// A float for cutting on cluster pt
-  float _mincluspt;
+  float m_mincluspt;
 
   /// A boolean for running over tracks
-  bool _analyzeTracks;
+  bool m_analyzeTracks;
 
   /// A boolean for running over clusters
-  bool _analyzeClusters;
+  bool m_analyzeClusters;
 
   /// A boolean for running over jets
-  bool _analyzeJets;
+  bool m_analyzeJets;
 
   /// A boolean for collecting hepmc information
-  bool _analyzeTruth;
+  bool m_analyzeTruth;
 
   /// TFile to hold the following TTrees and histograms
-  TFile *outfile;
-  TTree *clustertree;
-  TTree *tracktree;
-  TTree *hepmctree;
-  TTree *truthtree;
-  TTree *recojettree;
-  TTree *truthjettree;
-  TH1 *phi_h;
-  TH2 *eta_phi_h;
+  TFile *m_outfile;
+  TTree *m_clustertree;
+  TTree *m_tracktree;
+  TTree *m_hepmctree;
+  TTree *m_truthtree;
+  TTree *m_recojettree;
+  TTree *m_truthjettree;
+  TH1 *m_phi_h;
+  TH2 *m_eta_phi_h;
 
   /// Methods for grabbing the data
   void getTracks(PHCompositeNode *topNode);
@@ -110,80 +110,80 @@ class AnaTutorial : public SubsysReco
    */
 
   /// HEPMC Tree variables
-  int partid1;
-  int partid2;
-  double x1;
-  double x2;
-  int mpi;
-  int process_id;
-  double truthenergy;
-  double trutheta;
-  double truthphi;
-  double truthpx;
-  double truthpy;
-  double truthpz;
-  double truthpt;
-  double truthp;
-  int numparticlesinevent;
-  int truthpid;
+  int m_partid1;
+  int m_partid2;
+  double m_x1;
+  double m_x2;
+  int m_mpi;
+  int m_process_id;
+  double m_truthenergy;
+  double m_trutheta;
+  double m_truthphi;
+  double m_truthpx;
+  double m_truthpy;
+  double m_truthpz;
+  double m_truthpt;
+  double m_truthp;
+  int m_numparticlesinevent;
+  int m_truthpid;
 
   /// Track variables
-  double tr_px;
-  double tr_py;
-  double tr_pz;
-  double tr_p;
-  double tr_pt;
-  double tr_phi;
-  double tr_eta;
-  int charge;
-  double chisq;
-  int ndf;
-  double dca;
-  double tr_x;
-  double tr_y;
-  double tr_z;
-  int truth_is_primary;
-  double truthtrackpx;
-  double truthtrackpy;
-  double truthtrackpz;
-  double truthtrackp;
-  double truthtracke;
-  double truthtrackpt;
-  double truthtrackphi;
-  double truthtracketa;
-  int truthtrackpid;
+  double m_tr_px;
+  double m_tr_py;
+  double m_tr_pz;
+  double m_tr_p;
+  double m_tr_pt;
+  double m_tr_phi;
+  double m_tr_eta;
+  int m_charge;
+  double m_chisq;
+  int m_ndf;
+  double m_dca;
+  double m_tr_x;
+  double m_tr_y;
+  double m_tr_z;
+  int m_truth_is_primary;
+  double m_truthtrackpx;
+  double m_truthtrackpy;
+  double m_truthtrackpz;
+  double m_truthtrackp;
+  double m_truthtracke;
+  double m_truthtrackpt;
+  double m_truthtrackphi;
+  double m_truthtracketa;
+  int m_truthtrackpid;
 
   /// Reconstructed jet variables
-  double recojetpt;
-  int recojetid;
-  double recojetpx;
-  double recojetpy;
-  double recojetpz;
-  double recojetphi;
-  double recojetp;
-  double recojetenergy;
-  double recojeteta;
-  int truthjetid;
-  double truthjetp;
-  double truthjetphi;
-  double truthjeteta;
-  double truthjetpt;
-  double truthjetenergy;
-  double truthjetpx;
-  double truthjetpy;
-  double truthjetpz;
-  double dR;
+  double m_recojetpt;
+  int m_recojetid;
+  double m_recojetpx;
+  double m_recojetpy;
+  double m_recojetpz;
+  double m_recojetphi;
+  double m_recojetp;
+  double m_recojetenergy;
+  double m_recojeteta;
+  int m_truthjetid;
+  double m_truthjetp;
+  double m_truthjetphi;
+  double m_truthjeteta;
+  double m_truthjetpt;
+  double m_truthjetenergy;
+  double m_truthjetpx;
+  double m_truthjetpy;
+  double m_truthjetpz;
+  double m_dR;
 
   /// Cluster variables
-  double clusenergy;
-  double cluseta;
-  double clustheta;
-  double cluspt;
-  double clusphi;
-  double cluspx;
-  double cluspy;
-  double cluspz;
-  double E_4x4;
+  double m_clusenergy;
+  double m_cluseta;
+  double m_clustheta;
+  double m_cluspt;
+  double m_clusphi;
+  double m_cluspx;
+  double m_cluspy;
+  double m_cluspz;
+  double m_E_4x4;
 };
 
 #endif

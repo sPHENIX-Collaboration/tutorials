@@ -1,6 +1,6 @@
 This is an example [sPHENIX](https://github.com/sPHENIX-Collaboration/) [ROOT Jupyter Notebook](https://root.cern.ch/notebooks/HowTos/HowTo_ROOT-Notebooks.html) to run the sPHENIX anaysis on the [BNL SDCC Jupyter Lab](https://jupyter.sdcc.bnl.gov/). 
 
-At https://jupyter.sdcc.bnl.gov/, please use `lauch` button on the **HTC** Jupyter hub for this tutorial. The username / password is the same for your BNL RCF / SDCC account. At the 1st time login, SDCC will ask you to setup a two factor anthentication, such as using Google Authenticator ([Android](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US)/[iPhone](https://apps.apple.com/us/app/google-authenticator/id388497605)).
+Starting from https://jupyter.sdcc.bnl.gov/jupyterhub/htc ( = `lauch` button on the **HTC** Jupyter hub) for this tutorial, the username / password is the same for your BNL RCF / SDCC account. At the 1st time login, SDCC will ask you to setup a two factor anthentication, such as using Google Authenticator ([Android](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_US)/[iPhone](https://apps.apple.com/us/app/google-authenticator/id388497605)).
 
 ![SDCC HTC Jupyter Hub](https://jupyter.sdcc.bnl.gov/images/jupyterhub-logo-card-htc.png)
 

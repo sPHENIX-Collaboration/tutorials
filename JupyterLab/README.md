@@ -8,7 +8,9 @@ Starting from https://jupyter.sdcc.bnl.gov/jupyterhub/htc ( = `lauch` button on 
 
 Jupyter Notebook provide an analysis interface that can integrate documentation, code and output plot in a single file. It supports all sPHENIX environment. It is suitable for final analysis step, while large scale analysis and reconstruction should go through the compiled `c++` analysis module.  
 
-Two examples are provided: 
+Two examples are provided in this tutorial:
+
 * An analysis in ROOT `C++` macros: [example_tpc_testbeam2019_root.ipynb](./example_tpc_testbeam2019_root.ipynb)
 * `pyROOT` macro perform similar task if you would like to use `python` for analysis:  [example_tpc_testbeam2019_python.ipynb](./example_tpc_testbeam2019_python.ipynb)
 
+Both can be previewed on GitHub and edit/run on [BNL SDCC Jupyter Lab](https://jupyter.sdcc.bnl.gov/).

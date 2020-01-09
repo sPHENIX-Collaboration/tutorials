@@ -13,6 +13,5 @@ Two examples are provided in this tutorial, one for each supported sPHENIX Jupyt
 * `sPHENIX ROOT C++` kernel: An analysis in ROOT `C++` macros: [example_tpc_testbeam2019_root.ipynb](./example_tpc_testbeam2019_root.ipynb)
 * `Python (sPHENIX)` kernel: `pyROOT` macro perform similar task if you would like to use `python` for analysis:  [example_tpc_testbeam2019_python.ipynb](./example_tpc_testbeam2019_python.ipynb)
 
-Both can be previewed on GitHub once uploaded, and edited/run on [BNL SDCC Jupyter Lab](https://jupyter.sdcc.bnl.gov/). 
+When you make a new notebook, please select one of these two kernels, which carry the most recent sPHENIX software environment on SDCC/RACF. Notebooks can be previewed on GitHub, and edited/run on [BNL SDCC Jupyter Lab](https://jupyter.sdcc.bnl.gov/). 
 
-When you make a new notebook, please select one of these two kernels, which carry the most recent sPHENIX software environment on SDCC/RACF. 

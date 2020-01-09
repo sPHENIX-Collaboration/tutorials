@@ -15,3 +15,4 @@ Two examples are provided in this tutorial, one for each supported sPHENIX Jupyt
 
 When you make a new notebook, please select one of these two kernels, which carry the most recent sPHENIX software environment on SDCC/RACF. Notebooks can be previewed on GitHub, and edited/run on [BNL SDCC Jupyter Lab](https://jupyter.sdcc.bnl.gov/). 
 
+The JupyterLab interface can also be launched on your computer/local computing cluster via [sPHENIX Singularity Container](https://github.com/sPHENIX-Collaboration/Singularity). Instruction to come, and please contact Jin Huang if you would like to try early releases. 

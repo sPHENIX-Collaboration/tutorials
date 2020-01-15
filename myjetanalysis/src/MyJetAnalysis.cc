@@ -95,7 +95,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
   //      int m_nComponent;
   m_T->Branch("nComponent", &m_nComponent, "nComponent/I");
   //      float m_eta;
-  m_T->Branch("m_eta", &m_eta, "eta/I");
+  m_T->Branch("eta", &m_eta, "eta/F");
   //      float m_phi;
   m_T->Branch("phi", &m_phi, "phi/F");
   //      float m_e;

@@ -18,14 +18,12 @@ $ make install
 
 Here, this assumes that you have set an environment variable `$MYINSTALL` that points to your install directory. For example, `$ echo $MYINSTALL` returns `/home/vagrant/install` for me, where the install directory is set on my virtual machine when running the Singularity container. The install directory can be wherever you like, but it is generally good practice to have one where all of your installation libraries will live.
 
-You should also make sure that your `$LD_LIBRARY_PATH` and `$ROOT_INCLUDE_PATH` point to the correct place for your install directory. See [here](https://wiki.bnl.gov/sPHENIX/index.php/Example_of_using_DST_nodes) and [here](https://wiki.bnl.gov/sPHENIX/index.php/Sphenix_root6) for more details. You can create a setup script which does this for you, by adding (for example) these lines in a script which you run at login time:
+You should also make sure that your `$LD_LIBRARY_PATH` and `$ROOT_INCLUDE_PATH` point to the correct place for your install directory. See [here](https://wiki.bnl.gov/sPHENIX/index.php/Example_of_using_DST_nodes) and [here](https://wiki.bnl.gov/sPHENIX/index.php/Sphenix_root6) for more details. You can use the following script to do this for you:
+
 
 ```bash
-export MYINSTALL=/home/vagrant/install
-export LD_LIBRARY_PATH=$MYINSTALL/lib:$LD_LIBRARY_PATH
-export ROOT_INCLUDE_PATH=$MYINSTALL/include:$ROOT_INCLUDE_PATH
+source /opt/sphenix/core/bin/setup_local.csh $MYINSTALL
 ```
-or alternatively use the setup script mentioned in the above link.
 
 
 ## Running the example macro

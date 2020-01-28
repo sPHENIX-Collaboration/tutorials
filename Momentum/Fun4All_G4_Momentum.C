@@ -39,11 +39,10 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
   // PHG4ParticleGenerator generates particle
   // distributions in eta/phi/mom range
   PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
-  //gen->set_name("gamma");
   gen->set_name("e+");
   gen->set_vtx(0, 0, 0);
   gen->set_eta_range(-0.05, +0.05);
-  gen->set_mom_range(0.4, 10.0);
+  gen->set_mom_range(4, 4); // GeV/c
   gen->set_phi_range(0., 90. / 180. * TMath::Pi());  // 0-90 deg
   se->registerSubsystem(gen);
 
@@ -69,23 +68,14 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
     }
     g4Reco->registerSubsystem(cyl);
   }
-  // EMC
-  cyl = new PHG4CylinderSubsystem("EMC", 0);
+
+  // Black hole swallows everything - prevent loopers from returning
+  // to inner detectors
+  cyl = new PHG4CylinderSubsystem("BlackHole", 0);
   cyl->set_double_param("radius", 80);        // 80 cm
-  cyl->set_string_param("material", "G4_W");  // tungsten
-  cyl->set_double_param("thickness", 12);     // 12 cm
+  cyl->set_double_param("thickness", 0.1); // does not matter (but > 0)
   cyl->SetActive();
-  if (whether_to_sim_calorimeter == false)
-    cyl->BlackHole(); // eats everything touching EMCal and disable calorimeter simulation.
-  cyl->SuperDetector("EMC");
-  g4Reco->registerSubsystem(cyl);
-  // HCal
-  cyl = new PHG4CylinderSubsystem("HCAL", 0);
-  cyl->set_double_param("radius", 100);        // 80 cm
-  cyl->set_string_param("material", "G4_Fe");  // tungsten
-  cyl->set_double_param("thickness", 60);      // 60 cm
-  cyl->SetActive();
-  cyl->SuperDetector("HCAL");
+  cyl->BlackHole(); // eats everything
   g4Reco->registerSubsystem(cyl);
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();

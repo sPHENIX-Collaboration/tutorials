@@ -3,6 +3,20 @@
 #include <fun4all/Fun4AllServer.h>
 #include <g4main/PHG4Reco.h>
 #endif
+
+// This starts the QT based G4 gui which takes control
+// when x'ed out it will return a pointer to PHG4Reco so
+// the gui can be startrd again
+PHG4Reco *QTGui()
+{
+  Fun4AllServer *se = Fun4AllServer::instance();
+  PHG4Reco *g4 = (PHG4Reco *) se->getSubsysReco("PHG4RECO");
+  g4->InitRun(se->topNode());
+  g4->ApplyDisplayAction();
+  g4->StartGui();
+  return g4;
+}
+
 // stupid macro to turn on the geant4 display
 // we ask Fun4All for a pointer to PHG4Reco
 // using the ApplyCommand will start up the
@@ -36,7 +50,5 @@ void displaycmd()
   cout << "print to eps:" << endl;
   cout << " g4->ApplyCommand(\"/vis/ogl/printEPS\")" << endl;
   cout << "set background color:" << endl;
-  cout << " g4->ApplyCommand(\"/vis/viewer/set/background white\")" << endl;
-  cout << "cut detector to see inside" << endl;
-  cout << "g4->ApplyCommand(\"/vis/viewer/set/viewpointThetaPhi 240 10\")" << endl;
+  cout << " g4->ApplyCommand(\"/vis/viewer/addCutawayPlane 0 0 0 m 1 0 0\")" << endl;
 }

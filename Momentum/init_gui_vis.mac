@@ -1,0 +1,24 @@
+# Macro file for the initialization of example B3
+# in interactive session
+#
+# Set some default verbose
+#
+/control/verbose 2
+/control/saveHistory
+/run/verbose 2
+#
+#
+# Initialize kernel
+/run/initialize
+#
+# create empty scene
+#
+/vis/scene/create
+# open graphics (opengl QT)
+/vis/open OGL
+# Draw trajectories at end of event, showing trajectory points as
+# markers of size 2 pixels
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2

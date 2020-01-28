@@ -32,7 +32,7 @@
 # increase display limit for more complex detectors
 #/vis/ogl/set/displayListLimit 500000
 /vis/viewer/set/viewpointThetaPhi 10 0
-# make the circles nice and smoot
+# make the circles nice and smooth
 /vis/viewer/set/lineSegmentsPerCircle 200
 #/vis/viewer/set/background white
 # our world is 4x4 meters, the detector is about 1m across

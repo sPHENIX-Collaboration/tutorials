@@ -212,8 +212,8 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     m_e = jet->get_e();
     m_pt = jet->get_pt();
 
-    m_truthID = NAN;
-    m_truthNComponent = NAN;
+    m_truthID = -1;
+    m_truthNComponent = -1;
     m_truthEta = NAN;
     m_truthPhi = NAN;
     m_truthE = NAN;

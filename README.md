@@ -12,6 +12,7 @@ This tutorial respository carries a few example cases of analysis for [sPHENIX c
   * __materialscan__: scan radiation and hadronic interaction length in ROOT command prompt
   * __PHG4DSTReader__: poke at simulation results with ROOT command lines. For official analysis please use analysis module such as the next a few items below
 * Example analysis modules
+  * __CreateSubsysRecoModule__: Create a SubsysReco module template yourself - no cut and paste anymore
   * __AnaTutorial__: analysis tutorial with compiled module processing track, clusters and jets. See [Recording and slides by Joe Osborn](https://indico.bnl.gov/event/7254/).
   * __MyOwnTTree__: two examples to create your own TTree using analysis module in the Fun4All framework
   * __myjetanalysis__: example to analysis jet and to perform jet fragmentation and jet shape analysis

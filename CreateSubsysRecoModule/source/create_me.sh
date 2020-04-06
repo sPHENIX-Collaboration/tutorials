@@ -10,13 +10,16 @@ CreateSubsysRecoModule.pl MySimpleReco --all --overwrite
 local_installdir=`pwd`/install
 
 echo
-echo "now create an installation dir and a build subdir, go to it and run"
+echo "now create a build subdir, go to it and run autogen.sh and make"
+echo "the installation directory (--prefix) will be created if it does not exist"
 echo
-echo "../autogen.sh --prefix=$local_installdir"
-echo "make install"
+echo "  mkdir build"
+echo "  cd build"
+echo "  ../autogen.sh --prefix=$local_installdir"
+echo "  make install"
 echo
 echo "before testing, do not forget to source the setup_local.csh"
 echo
-echo "source /opt/sphenix/core/bin/setup_local.csh $local_installdir"
+echo "  source /opt/sphenix/core/bin/setup_local.csh $local_installdir"
 echo
 unset local_installdir

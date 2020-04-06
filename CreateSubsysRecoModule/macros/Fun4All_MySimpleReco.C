@@ -25,7 +25,7 @@ void Fun4All_MySimpleReco(const int nEvents = 3)
   {
     return;
   }
-  cout << endl << "Running over " << nEvents << " Events" endl;
+  cout << endl << "Running over " << nEvents << " Events" << endl;
   se->run(nEvents);
   cout << endl << "Calling End in Fun4All_MySimpleReco.C" << endl;
   se->End();

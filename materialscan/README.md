@@ -1,4 +1,6 @@
-***Be aware that the following instructions will run the material scan with our default world volume which is air and the default world is a cylinder with 5m radius.*** The cylinder shape will ensure azimuthal symmetry of the world but the air can add significantly to the X0. If you do a material scan consider to replace the world material by G4_Galactic. To do this find where our G4 module is created in the macro and add SetWorldMaterial("G4_Galactic"):
+***Be aware that the following instructions will run the material scan with our default world volume which is air and the default world is a cylinder with 5m radius.*** 
+
+The cylinder shape will ensure azimuthal symmetry of the world but the air can add significantly to the X0. If you do a material scan consider to replace the world material by G4_Galactic. To do this find where our G4 module is created in the macro and add SetWorldMaterial("G4_Galactic"):
 ```
 PHG4Reco* g4Reco = new PHG4Reco();
 g4Reco->SetWorldMaterial("G4_Galactic")

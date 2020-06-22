@@ -22,7 +22,11 @@ You should also make sure that your `$LD_LIBRARY_PATH` and `$ROOT_INCLUDE_PATH` 
 
 
 ```bash
-source /opt/sphenix/core/bin/setup_local.csh $MYINSTALL
+# for bash
+source $OPT_SPHENIX/bin/setup_local.sh $MYINSTALL  
+
+# for csh/tcsh
+source $OPT_SPHENIX/bin/setup_local.csh $MYINSTALL  
 ```
 
 

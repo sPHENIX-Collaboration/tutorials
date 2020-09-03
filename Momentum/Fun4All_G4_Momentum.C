@@ -1,32 +1,33 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 00, 0)
+#ifndef FUN4ALL_G4_MOMENTUM_C
+#define FUN4ALL_G4_MOMENTUM_C
+
+#include <g4detectors/PHG4CylinderSubsystem.h>
+
+#include <g4trackfastsim/PHG4TrackFastSim.h>
+#include <g4trackfastsim/PHG4TrackFastSimEval.h>
+
+#include <g4main/PHG4ParticleGenerator.h>
+#include <g4main/PHG4TruthSubsystem.h>
+#include <g4main/PHG4Reco.h>
+
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllDummyInputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/SubsysReco.h>
-#include <g4detectors/PHG4CylinderSubsystem.h>
-#include <g4trackfastsim/PHG4TrackFastSim.h>
-#include <g4trackfastsim/PHG4TrackFastSimEval.h>
-#include <g4main/PHG4ParticleGenerator.h>
-#include <g4main/PHG4TruthSubsystem.h>
-#include <g4main/PHG4Reco.h>
+
 #include <phool/recoConsts.h>
+
+#include <cmath>
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 R__LOAD_LIBRARY(libg4detectors.so)
 R__LOAD_LIBRARY(libg4trackfastsim.so)
-#endif
 
-int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
+int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "FastTrackingEval.root", const string &outfile = "")
 {
-  gSystem->Load("libfun4all");
-  gSystem->Load("libg4detectors.so");
-  gSystem->Load("libg4testbench.so");
-  gSystem->Load("libg4trackfastsim.so");
-
-  const bool whether_to_sim_calorimeter = false;
 
   ///////////////////////////////////////////
   // Make the Server
@@ -36,18 +37,19 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
 
   recoConsts *rc = recoConsts::instance();
   //  rc->set_IntFlag("RANDOMSEED", 12345); // if you want to use a fixed seed
+
   // PHG4ParticleGenerator generates particle
   // distributions in eta/phi/mom range
   PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
-  gen->set_name("e+");
+  gen->set_name("pi-");
   gen->set_vtx(0, 0, 0);
-  gen->set_eta_range(-0.05, +0.05);
-  gen->set_mom_range(4, 4); // GeV/c
-  gen->set_phi_range(0., 90. / 180. * TMath::Pi());  // 0-90 deg
+  gen->set_eta_range(-0.05, 0.05); // around midrapidity
+  gen->set_mom_range(4, 4); // fixed 4 GeV/c
+  gen->set_phi_range(0., 90. / 180. * M_PI);  // 0-90 deg
   se->registerSubsystem(gen);
 
   PHG4Reco *g4Reco = new PHG4Reco();
-  g4Reco->set_field(1.5);  // 1.5 T solenoidal field
+  g4Reco->set_field(1.5);  // 1.5 T constant solenoidal field
 
   double si_thickness[6] = {0.02, 0.02, 0.0625, 0.032, 0.032, 0.032};
   double svxrad[6] = {2.71, 4.63, 11.765, 25.46, 41.38, 63.66};
@@ -58,7 +60,7 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
   {
     cyl = new PHG4CylinderSubsystem("SVTX", ilayer);
     cyl->set_double_param("radius", svxrad[ilayer]);
-    cyl->set_string_param("material", "G4_Si");
+    cyl->set_string_param("material", "G4_Si"); // Silicon (G4 definition)
     cyl->set_double_param("thickness", si_thickness[ilayer]);
     cyl->SetActive();
     cyl->SuperDetector("SVTX");
@@ -72,7 +74,7 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
   // Black hole swallows everything - prevent loopers from returning
   // to inner detectors
   cyl = new PHG4CylinderSubsystem("BlackHole", 0);
-  cyl->set_double_param("radius", 80);        // 80 cm
+  cyl->set_double_param("radius", 80); // 80 cm - everything stops here
   cyl->set_double_param("thickness", 0.1); // does not matter (but > 0)
   cyl->SetActive();
   cyl->BlackHole(); // eats everything
@@ -102,17 +104,19 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const char *outfile = NULL)
       1,                           //      efficiency,
       0                            //      noise hits
   );
+
+
   se->registerSubsystem(kalman);
 
   PHG4TrackFastSimEval *fast_sim_eval = new PHG4TrackFastSimEval("FastTrackingEval");
-  fast_sim_eval->set_filename("FastTrackingEval.root");
+  fast_sim_eval->set_filename(evalfile);
   se->registerSubsystem(fast_sim_eval);
   //---------------------------
 
   //---------------------------
-  // output DST file for further offlien analysis
+  // output DST file for further offline analysis
   //---------------------------
-  if (outfile)
+  if (!outfile.empty())
   {
     Fun4AllOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outfile);
     se->registerOutputManager(out);
@@ -140,3 +144,5 @@ PHG4ParticleGenerator *get_gen(const char *name = "PGENERATOR")
   PHG4ParticleGenerator *pgun = (PHG4ParticleGenerator *) se->getSubsysReco(name);
   return pgun;
 }
+
+#endif

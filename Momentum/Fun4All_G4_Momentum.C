@@ -7,8 +7,8 @@
 #include <g4trackfastsim/PHG4TrackFastSimEval.h>
 
 #include <g4main/PHG4ParticleGenerator.h>
-#include <g4main/PHG4TruthSubsystem.h>
 #include <g4main/PHG4Reco.h>
+#include <g4main/PHG4TruthSubsystem.h>
 
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllDummyInputManager.h>
@@ -28,7 +28,6 @@ R__LOAD_LIBRARY(libg4trackfastsim.so)
 
 int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "FastTrackingEval.root", const string &outfile = "")
 {
-
   ///////////////////////////////////////////
   // Make the Server
   //////////////////////////////////////////
@@ -36,15 +35,16 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
   se->Verbosity(0);
 
   recoConsts *rc = recoConsts::instance();
-  //  rc->set_IntFlag("RANDOMSEED", 12345); // if you want to use a fixed seed
+  // if you want to use a fixed seed for reproducible results
+  //  rc->set_IntFlag("RANDOMSEED", 12345);
 
   // PHG4ParticleGenerator generates particle
   // distributions in eta/phi/mom range
   PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
   gen->set_name("pi-");
   gen->set_vtx(0, 0, 0);
-  gen->set_eta_range(-0.05, 0.05); // around midrapidity
-  gen->set_mom_range(4, 4); // fixed 4 GeV/c
+  gen->set_eta_range(-0.05, 0.05);            // around midrapidity
+  gen->set_mom_range(4, 4);                   // fixed 4 GeV/c
   gen->set_phi_range(0., 90. / 180. * M_PI);  // 0-90 deg
   se->registerSubsystem(gen);
 
@@ -60,7 +60,7 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
   {
     cyl = new PHG4CylinderSubsystem("SVTX", ilayer);
     cyl->set_double_param("radius", svxrad[ilayer]);
-    cyl->set_string_param("material", "G4_Si"); // Silicon (G4 definition)
+    cyl->set_string_param("material", "G4_Si");  // Silicon (G4 definition)
     cyl->set_double_param("thickness", si_thickness[ilayer]);
     cyl->SetActive();
     cyl->SuperDetector("SVTX");
@@ -72,12 +72,12 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
   }
 
   // Black hole swallows everything - prevent loopers from returning
-  // to inner detectors
+  // to inner detectors, length is given by default eta = +-1.1 range
   cyl = new PHG4CylinderSubsystem("BlackHole", 0);
-  cyl->set_double_param("radius", 80); // 80 cm - everything stops here
-  cyl->set_double_param("thickness", 0.1); // does not matter (but > 0)
+  cyl->set_double_param("radius", 80);      // 80 cm - everything stops here
+  cyl->set_double_param("thickness", 0.1);  // does not matter (but > 0)
   cyl->SetActive();
-  cyl->BlackHole(); // eats everything
+  cyl->BlackHole();  // eats everything
   g4Reco->registerSubsystem(cyl);
 
   PHG4TruthSubsystem *truth = new PHG4TruthSubsystem();
@@ -104,7 +104,6 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
       1,                           //      efficiency,
       0                            //      noise hits
   );
-
 
   se->registerSubsystem(kalman);
 

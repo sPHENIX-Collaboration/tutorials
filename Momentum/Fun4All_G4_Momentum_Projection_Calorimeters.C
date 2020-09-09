@@ -1,5 +1,7 @@
-#ifndef FUN4ALL_G4_MOMENTUM_C
-#define FUN4ALL_G4_MOMENTUM_C
+#ifndef FUN4ALL_G4_MOMENTUM_PROJECTION_CALORIMETERS_C
+#define FUN4ALL_G4_MOMENTUM_PROJECTION_CALORIMETERS_C
+
+#include "G4_CEmc_Spacal.C"
 
 #include <g4detectors/PHG4CylinderSubsystem.h>
 
@@ -7,6 +9,7 @@
 #include <g4trackfastsim/PHG4TrackFastSimEval.h>
 
 #include <g4main/PHG4ParticleGenerator.h>
+#include <g4main/PHG4ParticleGun.h>
 #include <g4main/PHG4Reco.h>
 #include <g4main/PHG4TruthSubsystem.h>
 
@@ -19,14 +22,12 @@
 
 #include <phool/recoConsts.h>
 
-#include <cmath>
-
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 R__LOAD_LIBRARY(libg4detectors.so)
 R__LOAD_LIBRARY(libg4trackfastsim.so)
 
-int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "FastTrackingEval.root", const string &outfile = "")
+int Fun4All_G4_Momentum_Projection_Calorimeters(const int nEvents = 1000, const string &evalfile = "FastTrackingEval.root", const string &outfile = "")
 {
   ///////////////////////////////////////////
   // Make the Server
@@ -36,20 +37,19 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
 
   recoConsts *rc = recoConsts::instance();
   // if you want to use a fixed seed for reproducible results
-  //  rc->set_IntFlag("RANDOMSEED", 12345);
-
+  //  rc->set_IntFlag("RANDOMSEED", 12345); // if you want to use a fixed seed
   // PHG4ParticleGenerator generates particle
   // distributions in eta/phi/mom range
   PHG4ParticleGenerator *gen = new PHG4ParticleGenerator("PGENERATOR");
   gen->set_name("pi-");
   gen->set_vtx(0, 0, 0);
-  gen->set_eta_range(-0.05, 0.05);            // around midrapidity
-  gen->set_mom_range(4, 4);                   // fixed 4 GeV/c
-  gen->set_phi_range(0., 90. / 180. * M_PI);  // 0-90 deg
+  gen->set_eta_range(-1, 1.);
+  gen->set_mom_range(2, 2);                          // GeV/c
+  gen->set_phi_range(0., 90. / 180. * TMath::Pi());  // 0-90 deg
   se->registerSubsystem(gen);
 
   PHG4Reco *g4Reco = new PHG4Reco();
-  g4Reco->set_field(1.5);  // 1.5 T constant solenoidal field
+  g4Reco->set_field(1.5);  // 1.5 T solenoidal field
 
   double si_thickness[6] = {0.02, 0.02, 0.0625, 0.032, 0.032, 0.032};
   double svxrad[6] = {2.71, 4.63, 11.765, 25.46, 41.38, 63.66};
@@ -60,7 +60,7 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
   {
     cyl = new PHG4CylinderSubsystem("SVTX", ilayer);
     cyl->set_double_param("radius", svxrad[ilayer]);
-    cyl->set_string_param("material", "G4_Si");  // Silicon (G4 definition)
+    cyl->set_string_param("material", "G4_Si");
     cyl->set_double_param("thickness", si_thickness[ilayer]);
     cyl->SetActive();
     cyl->SuperDetector("SVTX");
@@ -71,10 +71,12 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
     g4Reco->registerSubsystem(cyl);
   }
 
+  CEmc(g4Reco, 25, 4);
+
   // Black hole swallows everything - prevent loopers from returning
-  // to inner detectors, length is given by default eta = +-1.1 range
+  // to inner detectors
   cyl = new PHG4CylinderSubsystem("BlackHole", 0);
-  cyl->set_double_param("radius", 80);      // 80 cm - everything stops here
+  cyl->set_double_param("radius", 100);     // 80 cm
   cyl->set_double_param("thickness", 0.1);  // does not matter (but > 0)
   cyl->SetActive();
   cyl->BlackHole();  // eats everything
@@ -84,6 +86,9 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
   g4Reco->registerSubsystem(truth);
 
   se->registerSubsystem(g4Reco);
+
+  CEMC_Cells();
+  CEMC_Towers();
 
   //---------------------------
   // fast pattern recognition and full Kalman filter
@@ -105,22 +110,25 @@ int Fun4All_G4_Momentum(const int nEvents = 1000, const string &evalfile = "Fast
       0                            //      noise hits
   );
 
+  kalman->add_state_name("CEMC");
+
   se->registerSubsystem(kalman);
 
   PHG4TrackFastSimEval *fast_sim_eval = new PHG4TrackFastSimEval("FastTrackingEval");
   fast_sim_eval->set_filename(evalfile);
+  fast_sim_eval->AddProjection("CEMC");
+
   se->registerSubsystem(fast_sim_eval);
-  //---------------------------
 
   //---------------------------
-  // output DST file for further offline analysis
+  // output DST file for further offlien analysis
   //---------------------------
   if (!outfile.empty())
   {
     Fun4AllOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outfile);
     se->registerOutputManager(out);
   }
-  Fun4AllInputManager *in = new Fun4AllDummyInputManager("JADE");
+  Fun4AllInputManager *in = new Fun4AllDummyInputManager("ANA");
   se->registerInputManager(in);
 
   if (nEvents > 0)

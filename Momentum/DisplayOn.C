@@ -1,8 +1,9 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-#include <fun4all/Fun4AllServer.h>
+#ifndef FUN4ALL_TUTORIAL_G4_DISPLAYON_C
+#define FUN4ALL_TUTORIAL_G4_DISPLAYON_C
+
 #include <g4main/PHG4Reco.h>
-#endif
+
+#include <fun4all/Fun4AllServer.h>
 
 // This starts the QT based G4 gui which takes control
 // when x'ed out it will return a pointer to PHG4Reco so
@@ -25,7 +26,7 @@ PHG4Reco *QTGui()
 // start up the visualization, the next event will
 // be displayed. Do not execute this macro
 // before PHG4Reco was registered with Fun4All
-PHG4Reco * DisplayOn(const char *mac = "vis.mac")
+PHG4Reco *DisplayOn(const char *mac = "vis.mac")
 {
   char cmd[100];
   Fun4AllServer *se = Fun4AllServer::instance();
@@ -52,3 +53,5 @@ void displaycmd()
   cout << "set background color:" << endl;
   cout << " g4->ApplyCommand(\"/vis/viewer/addCutawayPlane 0 0 0 m 1 0 0\")" << endl;
 }
+
+#endif

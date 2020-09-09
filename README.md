@@ -8,6 +8,7 @@ This tutorial respository carries a few example cases of analysis for [sPHENIX c
 * Simulation setups
   * __block__: build a simple block-shaped detector in Geant4
   * __cylinder__: build a simple cylinder-shaped detector in Geant4
+  * __Momentum__: simulation/reconstruction for quick tracker tuning
 * Simulation checks
   * __materialscan__: scan radiation and hadronic interaction length in ROOT command prompt
   * __PHG4DSTReader__: poke at simulation results with ROOT command lines. For official analysis please use analysis module such as the next a few items below

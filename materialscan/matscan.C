@@ -10,7 +10,7 @@
 // .q
 
 // the span is the delta phi/theta you want to cover, not the maximum
-// angle. The default is 10 bins in azimuth at theta=0.1 (almost 
+// angle. The default is 10 bins in azimuth at theta=0.1 (almost
 // midrapidity, exact midrapidity we have gaps in the calorimeters and inner tracking
 
 #include <fun4all/Fun4AllServer.h>
@@ -18,16 +18,15 @@
 
 R__LOAD_LIBRARY(libg4testbench.so)
 
-
 namespace MATSCAN
 {
   float phimin = 0.;
   float phispan = 360.;
   int phibins = 10;
-  float thetamin = 0.1; // theta = 0 is perpendicular to beam axis
+  float thetamin = 0.1;  // theta = 0 is perpendicular to beam axis
   float thetaspan = 360.;
   int thetabins = 1;
-}
+}  // namespace MATSCAN
 
 void matscan()
 {
@@ -36,11 +35,11 @@ void matscan()
   g4->InitRun(se->topNode());
   char cmd[200];
   // set the desired phi range and binning (10 bins from 0-90 deg)
-  sprintf(cmd,"/control/matScan/phi %d %f %f deg",MATSCAN::phibins,MATSCAN::phimin,MATSCAN::phispan);
+  sprintf(cmd, "/control/matScan/phi %d %f %f deg", MATSCAN::phibins, MATSCAN::phimin, MATSCAN::phispan);
   cout << "executing " << cmd << endl;
   g4->ApplyCommand(cmd);
   // set theta range - one at theta=0 which is vertically w.r.t. the beam axis
-  sprintf(cmd,"/control/matScan/theta  %d %f %f deg",MATSCAN::thetabins,MATSCAN::thetamin,MATSCAN::thetaspan);
+  sprintf(cmd, "/control/matScan/theta  %d %f %f deg", MATSCAN::thetabins, MATSCAN::thetamin, MATSCAN::thetaspan);
   cout << "executing " << cmd << endl;
   g4->ApplyCommand(cmd);
   // do the scan
@@ -48,7 +47,6 @@ void matscan()
   g4->ApplyCommand("/control/matScan/scan");
   cout << "All done" << endl;
 }
-
 
 void set_phimin(const float f)
 {
@@ -105,7 +103,7 @@ void setmidrap()
 void set_thetascan()
 {
   set_phibins(1);
-  set_phimin(1.); // do phi=1deg to avoid phi=0 in case there are discontinuities
+  set_phimin(1.);  // do phi=1deg to avoid phi=0 in case there are discontinuities
   set_phispan(1);
   set_thetamin(-60);
   set_thetaspan(120);

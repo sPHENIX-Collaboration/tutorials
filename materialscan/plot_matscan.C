@@ -1,6 +1,6 @@
-void plot_matscan(const char *datfile, const int plot_theta = 0)
+void plot_matscan(const std::string &datfile, const int plot_theta = 0)
 {
-  FILE *f = fopen(datfile,"r");
+  FILE *f = fopen(datfile.c_str(),"r");
   if (!f)
     {
       cout << "file " << datfile << " cannot be opened" << endl;
@@ -31,6 +31,11 @@ void plot_matscan(const char *datfile, const int plot_theta = 0)
 	   << ", x0: " << x0
 	   << ", lamda0: " << lamda0
 	   << endl;
+      if (plot_theta == 2)
+      {
+      theta = (90+theta)/180.*M_PI;
+      theta = log(TMath::Tan(theta/2.));
+      }
       if (theta > thetamax)
 	{
 	  thetamax = theta;
@@ -91,10 +96,21 @@ void plot_matscan(const char *datfile, const int plot_theta = 0)
 
   if (plot_theta)
   {
+    if (plot_theta == 1)
+    {
   sprintf(htitlex,"x0 vs theta");
   sprintf(htitlelamda,"lamda0 vs theta");
   xmin = thetamin - 1;
   xmax = thetamax + 1;
+    }
+    else
+    {
+  sprintf(htitlex,"x0 vs eta");
+  sprintf(htitlelamda,"lamda0 vs eta");
+  xmin = thetamin - 0.1;
+  xmax = thetamax + 0.1;
+    }
+
   gr = new TGraph(thetavec.size(),thetaarr,x0arr);
   grl = new TGraph(thetavec.size(),thetaarr,lamda0arr);
   }

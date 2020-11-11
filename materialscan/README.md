@@ -1,4 +1,4 @@
-***Be aware that the following instructions will run the material scan with our default world volume which is air and the default world is a cylinder with 5m radius. This can add significantly to the radiation length X0*** 
+***Be aware that the following instructions will run the material scan with our default world volume which is air and the default world is a cylinder with 5m radius. This can add significantly to the radiation length X0***
 
 The cylinder shape will ensure azimuthal symmetry of the world but the air can add significantly to the X0. If you do a material scan consider to replace the world material by G4_Galactic. To do this find where our G4 module is created in the macro and add SetWorldMaterial("G4_Galactic"):
 ```
@@ -30,12 +30,18 @@ Load the matscan.C macro
 By default it scans 10 bins in phi at midrapidity (theta=0.1 deg to avoid the gap many detectors have at exactly midrapidity). You can set the theta/phi ranges and number of bins you want with
 
 ```
-set_phimin() // in degrees
-set_phispan() // in degrees, phi range is phimin - phimin+phispan
-set_phibins() // number of bins in this phi range
+set_phimin(float val) // in degrees
+set_phispan(float val) // in degrees, phi range is phimin to phimin+phispan
+set_phibins(float val) // number of bins in this phi range
 ```
 
 same for theta.
+```
+set_thetamin(float val) // in degrees
+set_thetaspan(float val) // in degrees, theta range is thetamin to thetamin+thetaspan
+set_thetabins(float val) // number of bins in this theta range
+```
+
 For scans in phi use theta_span = theta_min and theta_bins = 1, for midrapidity
 scans you can use
 

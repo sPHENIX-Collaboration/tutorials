@@ -95,7 +95,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
   //      int m_nComponent;
   m_T->Branch("nComponent", &m_nComponent, "nComponent/I");
   //      float m_eta;
-  m_T->Branch("m_eta", &m_eta, "eta/I");
+  m_T->Branch("eta", &m_eta, "eta/F");
   //      float m_phi;
   m_T->Branch("phi", &m_phi, "phi/F");
   //      float m_e;
@@ -212,8 +212,8 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     m_e = jet->get_e();
     m_pt = jet->get_pt();
 
-    m_truthID = NAN;
-    m_truthNComponent = NAN;
+    m_truthID = -1;
+    m_truthNComponent = -1;
     m_truthEta = NAN;
     m_truthPhi = NAN;
     m_truthE = NAN;

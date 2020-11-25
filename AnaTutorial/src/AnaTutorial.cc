@@ -167,6 +167,7 @@ int AnaTutorial::End(PHCompositeNode *topNode)
   {
     cout << "Ending AnaTutorial analysis package" << endl;
   }
+  
   /// Change to the outfile
   m_outfile->cd();
 
@@ -197,15 +198,10 @@ int AnaTutorial::End(PHCompositeNode *topNode)
   /// Write out any other histograms
   m_phi_h->Write();
   m_eta_phi_h->Write();
-
+  
   /// Write and close the outfile
   m_outfile->Write();
   m_outfile->Close();
-
-  delete m_outfile;
-
-  /// Let the histogram manager deal with dumping the histogram memory
-  m_hm->dumpHistos(m_outfilename, "UPDATE");
 
   if (Verbosity() > 1)
   {
@@ -451,6 +447,11 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
   /// Get the truth jet node
   JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
 
+  /// Get reco jets associated to truth jets to study e.g. jet efficiencies
+  JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
+  JetEvalStack *_jetevalstack =  new JetEvalStack(topNode, "AntiKt_Tower_r04", "AntiKt_Truth_r04");
+  JetTruthEval *trutheval = _jetevalstack->get_truth_eval();
+
   if (!truth_jets)
   {
     cout << PHWHERE
@@ -464,21 +465,98 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
        iter != truth_jets->end();
        ++iter)
   {
-    const Jet *jet = iter->second;
+    Jet *truthJet = iter->second;
 
-    m_truthjetpt = jet->get_pt();
+    m_truthjetpt = truthJet->get_pt();
 
+    std::set<PHG4Particle *> truthjetcomp =
+        trutheval->all_truth_particles(truthJet);
+    int ntruthconstituents = 0;
+    //loop over the constituents of the truth jet
+    for (std::set<PHG4Particle *>::iterator iter2 = truthjetcomp.begin();
+         iter2 != truthjetcomp.end();
+         ++iter2)
+    {
+      //get the particle of the truthjet
+      PHG4Particle *truthpart = *iter2;
+      if (!truthpart)
+      {
+        cout << "no truth particles in the jet??" << endl;
+        break;
+      }
+
+      ntruthconstituents++;
+    }
+
+    if(ntruthconstituents < 3)
+      continue;
     /// Only collect truthjets above the _minjetpt cut
     if (m_truthjetpt < m_minjetpt)
       continue;
 
-    m_truthjeteta = jet->get_eta();
-    m_truthjetpx = jet->get_px();
-    m_truthjetpy = jet->get_py();
-    m_truthjetpz = jet->get_pz();
-    m_truthjetphi = jet->get_phi();
-    m_truthjetp = jet->get_p();
-    m_truthjetenergy = jet->get_e();
+    m_truthjeteta = truthJet->get_eta();
+    m_truthjetpx = truthJet->get_px();
+    m_truthjetpy = truthJet->get_py();
+    m_truthjetpz = truthJet->get_pz();
+    m_truthjetphi = truthJet->get_phi();
+    m_truthjetp = truthJet->get_p();
+    m_truthjetenergy = truthJet->get_e();
+
+    m_recojetpt = 0;
+    m_recojetid = 0;
+    m_recojetpx = 0;
+    m_recojetpy = 0;
+    m_recojetpz = 0;
+    m_recojetphi = 0;
+    m_recojetp = 0;
+    m_recojetenergy = 0;
+    m_dR = -99;
+    float closestjet = 9999;
+    /// Iterate over the reconstructed jets
+    for (JetMap::Iter recoIter = reco_jets->begin();
+	 recoIter != reco_jets->end();
+	 ++recoIter)
+      {
+	const Jet *recoJet = recoIter->second;
+	m_recojetpt = recoJet->get_pt();
+	if (m_recojetpt < m_minjetpt-m_minjetpt*0.4)
+	  continue;
+		
+	m_recojeteta = recoJet->get_eta();
+	m_recojetphi = recoJet->get_phi();
+
+	if (Verbosity() > 1)
+	  {
+	    cout << "matching by distance jet" << endl;
+	  }
+	
+        float dphi = m_recojetphi - m_truthjetphi;
+        if (dphi > TMath::Pi())
+          dphi -= TMath::Pi() * 2.;
+        if (dphi < -1 * TMath::Pi())
+          dphi += TMath::Pi() * 2.;
+	
+        float deta = m_recojeteta - m_truthjeteta;
+        /// Determine the distance in eta phi space between the reconstructed
+        /// and truth jets
+        m_dR = sqrt(pow(dphi, 2.) + pow(deta, 2.));
+	
+        /// If this truth jet is closer than the previous truth jet, it is
+        /// closer and thus should be considered the truth jet
+        if (m_dR < truth_jets->get_par() && m_dR < closestjet)
+	  {
+	    // Get reco jet characteristics
+	    m_recojetid = recoJet->get_id();
+	    m_recojetpx = recoJet->get_px();
+	    m_recojetpy = recoJet->get_py();
+	    m_recojetpz = recoJet->get_pz();
+	    m_recojetphi = recoJet->get_phi();
+	    m_recojetp = recoJet->get_p();
+	    m_recojetenergy = recoJet->get_e();
+	    
+	  }
+      }
+	
 
     /// Fill the truthjet tree
     m_truthjettree->Fill();
@@ -494,7 +572,8 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
   JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
   /// Get the truth jets
   JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
-
+  JetEvalStack *_jetevalstack = new JetEvalStack(topNode, "AntiKt_Tower_r04", "AntiKt_Truth_r04");
+  JetRecoEval *recoeval = _jetevalstack->get_reco_eval();
   if (!reco_jets)
   {
     cout << PHWHERE
@@ -513,7 +592,7 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
        recoIter != reco_jets->end();
        ++recoIter)
   {
-    const Jet *recoJet = recoIter->second;
+    Jet *recoJet = recoIter->second;
     m_recojetpt = recoJet->get_pt();
     if (m_recojetpt < m_minjetpt)
       continue;
@@ -545,8 +624,22 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
     m_truthjetpy = 0;
     m_truthjetpz = 0;
 
+    Jet *truthjet = recoeval->max_truth_jet_by_energy(recoJet);
+    if(truthjet){
+      m_truthjetid = truthjet->get_id();
+      m_truthjetp = truthjet->get_p();
+      m_truthjetpx = truthjet->get_px();
+      m_truthjetpy = truthjet->get_py();
+      m_truthjetpz = truthjet->get_pz();
+      m_truthjeteta = truthjet->get_eta();
+      m_truthjetphi = truthjet->get_phi();
+      m_truthjetenergy = truthjet->get_e();
+      m_truthjetpt = sqrt(m_truthjetpx * m_truthjetpx 
+			  + m_truthjetpy * m_truthjetpy);
+    }
+
     /// Check to make sure the truth jet node is available
-    if (truth_jets)
+    else if(truth_jets)
     {
       /// Match the reconstructed jet to the closest truth jet in delta R space
       /// Iterate over the truth jets
@@ -565,9 +658,9 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
         float thisjetphi = truthJet->get_phi();
 
         float dphi = m_recojetphi - thisjetphi;
-        if (dphi > 3. * TMath::Pi() / 2.)
+        if (dphi >TMath::Pi())
           dphi -= TMath::Pi() * 2.;
-        if (dphi < -1. * TMath::Pi() / 2.)
+        if (dphi < -1. * TMath::Pi())
           dphi += TMath::Pi() * 2.;
 
         float deta = m_recojeteta - thisjeteta;
@@ -639,12 +732,15 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
 
   /// Trigger emulator
   CaloTriggerInfo *trigger = findNode::getClass<CaloTriggerInfo>(topNode, "CaloTriggerInfo");
+  
   /// Can obtain some trigger information if desired
-  m_E_4x4 = trigger->get_best_EMCal_4x4_E();
-
+  if(trigger)
+    {
+      m_E_4x4 = trigger->get_best_EMCal_4x4_E();
+    }
   RawClusterContainer::ConstRange begin_end = clusters->getClusters();
   RawClusterContainer::ConstIterator clusIter;
-
+ 
   /// Loop over the EMCal clusters
   for (clusIter = begin_end.first;
        clusIter != begin_end.second;
@@ -713,7 +809,15 @@ void AnaTutorial::initializeTrees()
   m_truthjettree->Branch("m_truthjetpx", &m_truthjetpx, "m_truthjetpx/D");
   m_truthjettree->Branch("m_truthjetpy", &m_truthjetpy, "m_truthjetpy/D");
   m_truthjettree->Branch("m_truthjetpz", &m_truthjetpz, "m_truthjetpz/D");
-
+  m_truthjettree->Branch("m_dR", &m_dR, "m_dR/D");
+  m_truthjettree->Branch("m_recojetpt", &m_recojetpt, "m_recojetpt/D");
+  m_truthjettree->Branch("m_recojetid", &m_recojetid, "m_recojetid/I");
+  m_truthjettree->Branch("m_recojetpx", &m_recojetpx, "m_recojetpx/D");
+  m_truthjettree->Branch("m_recojetpy", &m_recojetpy, "m_recojetpy/D");
+  m_truthjettree->Branch("m_recojetpz", &m_recojetpz, "m_recojetpz/D");
+  m_truthjettree->Branch("m_recojetphi", &m_recojetphi, "m_recojetphi/D");
+  m_truthjettree->Branch("m_recojeteta", &m_recojeteta, "m_recojeteta/D");
+  m_truthjettree->Branch("m_recojetenergy", &m_recojetenergy, "m_recojetenergy/D");
   m_tracktree = new TTree("tracktree", "A tree with svtx tracks");
   m_tracktree->Branch("m_tr_px", &m_tr_px, "m_tr_px/D");
   m_tracktree->Branch("m_tr_py", &m_tr_py, "m_tr_py/D");

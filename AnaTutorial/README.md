@@ -34,10 +34,7 @@ source $OPT_SPHENIX/bin/setup_local.csh $MYINSTALL
 
 The example macro, found in `macro/Fun4All_AnaTutorial.C`, is just the default `Fun4All_G4_sPHENIX.C` macro with the AnaTutorial package added to it. If you would like to see how the default macro and this macro are different, you can just open `Fun4All_AnaTutorial.C` in your favorite text editor and search for `anatutorial`, or run a `diff` command on the two files. 
 
-Running the macro requires the rest of the sPHENIX macro repository. If you have already cloned it from git, you can simply do
 
-```
-$ cp Fun4All_AnaTutorial.C /the/path/to/macros/macros/g4simulations
-```
+The macro can be run out of the box with `root Fun4All_AnaTutorial.C`, and the type of event can be changed within the macro itself (e.g. between running single particle and pythia simulations).
 
-and then run `$ root -l Fun4All_AnaTutorial.C`. Otherwise, first clone the macros repository as directed [here](https://wiki.bnl.gov/sPHENIX/index.php/Code_Repository), and then move the macro to your newly cloned `macros` directory.
+In the event that the macro does not work, you should look at the default macro (which should always work) available [here](https://github.com/sPHENIX-Collaboration/macros/blob/master/detectors/sPHENIX/Fun4All_G4_sPHENIX.C). You can always run the AnaTutorial package by adding to the default macro `Fun4All_G4_sPHENIX.C` the relevant code that calls AnaTutorial in `Fun4All_AnaTutorial.C`. Just search for `anatutorial` in your favorite text editor in `Fun4All_AnaTutorial.C` to see the lines of code that should be added to `Fun4All_G4_sPHENIX.C`.

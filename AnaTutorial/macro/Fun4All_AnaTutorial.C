@@ -474,7 +474,7 @@ int Fun4All_AnaTutorial(
   anaTutorial->analyzeTracks(true);
   anaTutorial->analyzeClusters(true);
   anaTutorial->analyzeJets(true);
-  anaTutorial->analyzeTruth(true);
+  anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
 
   if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");

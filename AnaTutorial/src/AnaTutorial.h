@@ -25,6 +25,7 @@ class PHHepMCGenEvent;
 class CaloTriggerInfo;
 class JetTruthEval;
 class SvtxEvalStack;
+class JetEvalStack;
 
 /// Definition of this analysis module class
 class AnaTutorial : public SubsysReco
@@ -93,6 +94,9 @@ class AnaTutorial : public SubsysReco
   TTree *m_truthjettree;
   TH1 *m_phi_h;
   TH2 *m_eta_phi_h;
+
+  SvtxEvalStack *m_svtxEvalStack = nullptr;
+  JetEvalStack *m_jetEvalStack = nullptr;
 
   /// Methods for grabbing the data
   void getTracks(PHCompositeNode *topNode);

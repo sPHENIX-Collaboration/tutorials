@@ -203,6 +203,9 @@ int AnaTutorial::End(PHCompositeNode *topNode)
   m_outfile->Write();
   m_outfile->Close();
 
+  /// Clean up pointers and associated histos/trees in TFile
+  delete m_outfile;
+
   if (Verbosity() > 1)
   {
     cout << "Finished AnaTutorial analysis package" << endl;
@@ -372,11 +375,16 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
   }
 
   /// EvalStack for truth track matching
-  SvtxEvalStack *svtxevalstack = new SvtxEvalStack(topNode);
-  svtxevalstack->next_event(topNode);
+  if(!m_svtxEvalStack)
+    {
+      m_svtxEvalStack = new SvtxEvalStack(topNode);
+      m_svtxEvalStack->set_verbosity(Verbosity());
+    }
+  
+  m_svtxEvalStack->next_event(topNode);
 
   /// Get the track evaluator
-  SvtxTrackEval *trackeval = svtxevalstack->get_track_eval();
+  SvtxTrackEval *trackeval = m_svtxEvalStack->get_track_eval();
 
   /// Get the range for primary tracks
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
@@ -449,8 +457,13 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
 
   /// Get reco jets associated to truth jets to study e.g. jet efficiencies
   JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
-  JetEvalStack *_jetevalstack =  new JetEvalStack(topNode, "AntiKt_Tower_r04", "AntiKt_Truth_r04");
-  JetTruthEval *trutheval = _jetevalstack->get_truth_eval();
+  if(!m_jetEvalStack)
+    {
+      m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
+					"AntiKt_Truth_r04");
+    }
+  m_jetEvalStack->next_event(topNode);
+  JetTruthEval *trutheval = m_jetEvalStack->get_truth_eval();
 
   if (!truth_jets)
   {
@@ -572,8 +585,14 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
   JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
   /// Get the truth jets
   JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
-  JetEvalStack *_jetevalstack = new JetEvalStack(topNode, "AntiKt_Tower_r04", "AntiKt_Truth_r04");
-  JetRecoEval *recoeval = _jetevalstack->get_reco_eval();
+
+  if(!m_jetEvalStack)
+    {
+      m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
+					"AntiKt_Truth_r04");
+    }
+  m_jetEvalStack->next_event(topNode);
+  JetRecoEval *recoeval = m_jetEvalStack->get_reco_eval();
   if (!reco_jets)
   {
     cout << PHWHERE
@@ -957,3 +976,5 @@ void AnaTutorial::initializeVariables()
   m_truthjetpz = -99;
   m_dR = -99;
 }
+
+

@@ -470,11 +470,11 @@ int Fun4All_AnaTutorial(
 
   AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
   anaTutorial->setMinJetPt(10.);
-  anaTutorial->Verbosity(100);
+  anaTutorial->Verbosity(0);
   anaTutorial->analyzeTracks(true);
   anaTutorial->analyzeClusters(true);
   anaTutorial->analyzeJets(true);
-  anaTutorial->analyzeTruth(true);
+  anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
 
   if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");

@@ -96,7 +96,7 @@ class AnaTutorial : public SubsysReco
   TH2 *m_eta_phi_h;
 
   SvtxEvalStack *m_svtxEvalStack = nullptr;
-  JetEvalStack *m_jetEvalStack;
+  JetEvalStack *m_jetEvalStack = nullptr;
 
   /// Methods for grabbing the data
   void getTracks(PHCompositeNode *topNode);

@@ -143,7 +143,7 @@ int MyJetAnalysis::End(PHCompositeNode* topNode)
 int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
 {
   m_jetEvalStack = shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
-
+  m_jetEvalStack->get_stvx_eval_stack()->set_use_initial_vertex(initial_vertex);
   return Fun4AllReturnCodes::EVENT_OK;
 }
 

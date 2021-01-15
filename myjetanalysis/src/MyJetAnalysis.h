@@ -7,9 +7,7 @@
 #include <string>
 #include <utility>  // std::pair, std::make_pair
 
-#if ! defined(__CINT__) || defined(__CLING__)
 #include <array>
-#endif  // #ifndef __CINT__
 
 class PHCompositeNode;
 class JetEvalStack;
@@ -48,12 +46,8 @@ class MyJetAnalysis : public SubsysReco
   int End(PHCompositeNode *topNode);
 
  private:
-
-#if ! defined(__CINT__) || defined(__CLING__)
-
   //! cache the jet evaluation modules
   std::shared_ptr<JetEvalStack> m_jetEvalStack;
-
 
   std::string m_recoJetName;
   std::string m_truthJetName;
@@ -101,8 +95,6 @@ class MyJetAnalysis : public SubsysReco
   };
   std::array<float, kMaxMatchedTrack> m_trackdR;
   std::array<float, kMaxMatchedTrack> m_trackpT;
-
-#endif  // #ifndef __CINT__
 };
 
 #endif  // MYJETANALYSIS_H

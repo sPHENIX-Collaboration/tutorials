@@ -129,7 +129,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
 
 int MyJetAnalysis::End(PHCompositeNode* topNode)
 {
-  cout << "MyJetAnalysis::End - Outoput to " << m_outputFileName << endl;
+  cout << "MyJetAnalysis::End - Output to " << m_outputFileName << endl;
   PHTFileServer::get().cd(m_outputFileName);
 
   m_hInclusiveE->Write();
@@ -170,11 +170,14 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
   SvtxTrackMap* trackmap = findNode::getClass<SvtxTrackMap>(topNode, "SvtxTrackMap");
   if (!trackmap)
   {
-    cout
-        << "MyJetAnalysis::process_event - Error can not find DST trackmap node SvtxTrackMap" << endl;
-    exit(-1);
+    trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
+    if (!trackmap)
+    {
+      cout
+          << "MyJetAnalysis::process_event - Error can not find DST trackmap node SvtxTrackMap" << endl;
+      exit(-1);
+    }
   }
-
   for (JetMap::Iter iter = jets->begin(); iter != jets->end(); ++iter)
   {
     Jet* jet = iter->second;

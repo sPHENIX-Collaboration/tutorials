@@ -39,7 +39,7 @@ class MyJetAnalysis : public SubsysReco
     m_ptRange.first = low;
     m_ptRange.second = high;
   }
-
+  void use_initial_vertex(const bool b = true) {initial_vertex = b;}
   int Init(PHCompositeNode *topNode);
   int InitRun(PHCompositeNode *topNode);
   int process_event(PHCompositeNode *topNode);
@@ -58,6 +58,9 @@ class MyJetAnalysis : public SubsysReco
 
   //! pT range
   std::pair<double, double> m_ptRange;
+
+  //! flag to use initial vertex in track evaluator
+  bool initial_vertex = false;
 
   //! max track-jet matching radius
   double m_trackJetMatchingRadius;

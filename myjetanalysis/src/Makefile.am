@@ -17,24 +17,12 @@ libmyjetanalysis_la_LIBADD = \
   -lg4dst \
   -lg4eval
 
-if ! MAKEROOT6
-  ROOT5_DICTS = \
-    MyJetAnalysis_Dict.cc
-endif
-
 libmyjetanalysis_la_SOURCES = \
-  $(ROOT5_DICTS) \
   MyJetAnalysis.cc
 
 pkginclude_HEADERS = \
   MyJetAnalysis.h
 
-
-%_Dict.cc: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
-
-#just to get the dependency, in case we ever add an i/o dictionary
-%_Dict_rdict.pcm: %_Dict.cc ;
 
 ################################################
 # linking tests
@@ -58,4 +46,4 @@ testexternals.cc:
 	echo "}" >> $@
 
 clean-local:
-	rm -f *Dict* $(BUILT_SOURCES) *.pcm 
+	rm -f $(BUILT_SOURCES)

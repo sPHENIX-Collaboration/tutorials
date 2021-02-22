@@ -29,8 +29,9 @@ int FieldMapReadBack::InitRun(PHCompositeNode *topNode)
 //____________________________________________________________________________..
 int FieldMapReadBack::process_event(PHCompositeNode *topNode)
 {
-  double p[4] = {0.,0.,0.,0.};
+  double p[4] = {0.*cm,0.*cm,0.*cm,0.*cm}; // input is cm (you can choose others
   double bfield[3];
+// the output needs to be converted into the unit you want - here it is tesla
   fieldmap->GetFieldValue(p,bfield);
   std::cout << "bx: " << bfield[0]/tesla
    << " by: " << bfield[1]/tesla

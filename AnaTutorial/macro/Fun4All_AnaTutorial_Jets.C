@@ -14,6 +14,7 @@
 #include <G4_HIJetReco.C>
 #include <G4_Input.C>
 #include <G4_Jets.C>
+#include <G4_KFParticle.C>
 #include <G4_ParticleFlow.C>
 #include <G4_Production.C>
 #include <G4_TopoClusterReco.C>
@@ -28,8 +29,8 @@
 #include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
 
-R__LOAD_LIBRARY(libanatutorial.so)
 R__LOAD_LIBRARY(libfun4all.so)
+R__LOAD_LIBRARY(libanatutorial.so)
 
 // For HepMC Hijing
 // try inputFile = /sphenix/sim/sim01/sphnxpro/sHijing_HepMC/sHijing_0-12fm.dat
@@ -43,7 +44,7 @@ int Fun4All_AnaTutorial_Jets(
     const string &outdir = ".")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
-  se->Verbosity(1);
+  se->Verbosity(0);
 
   //Opt to print all random seed used for debugging reproducibility. Comment out to reduce stdout prints.
   PHRandomSeed::Verbosity(1);
@@ -71,8 +72,9 @@ int Fun4All_AnaTutorial_Jets(
   // the simulations step completely. The G4Setup macro is only loaded to get information
   // about the number of layers used for the cell reco code
   //  Input::READHITS = true;
-  INPUTREADHITS::filename = inputFile;
-
+  INPUTREADHITS::filename[0] = inputFile;
+  // if you use a filelist
+  // INPUTREADHITS::listfile[0] = inputFile;
   // Or:
   // Use particle generator
   // And
@@ -80,24 +82,32 @@ int Fun4All_AnaTutorial_Jets(
   // In case embedding into a production output, please double check your G4Setup_sPHENIX.C and G4_*.C consistent with those in the production macro folder
   // E.g. /sphenix/sim//sim01/production/2016-07-21/single_particle/spacal2d/
   //  Input::EMBED = true;
-  INPUTEMBED::filename = embed_input_file;
+  INPUTEMBED::filename[0] = embed_input_file;
+  // if you use a filelist
+  //INPUTEMBED::listfile[0] = embed_input_file;
 
-  Input::SIMPLE = true;
+  Input::SIMPLE = false;
   // Input::SIMPLE_NUMBER = 2; // if you need 2 of them
   // Input::SIMPLE_VERBOSITY = 1;
 
   //  Input::PYTHIA6 = true;
 
-  // Input::PYTHIA8 = true;
+  Input::PYTHIA8 = true;
 
   //  Input::GUN = true;
   //  Input::GUN_NUMBER = 3; // if you need 3 of them
   // Input::GUN_VERBOSITY = 1;
 
+  //D0 generator
+  //Input::DZERO = false;
+  //Input::DZERO_VERBOSITY = 0;
+  //Lambda_c generator //Not ready yet
+  //Input::LAMBDAC = false;
+  //Input::LAMBDAC_VERBOSITY = 0;
   // Upsilon generator
-  //  Input::UPSILON = true;
-  // Input::UPSILON_NUMBER = 3; // if you need 3 of them
-  // Input::UPSILON_VERBOSITY = 0;
+  //Input::UPSILON = true;
+  //Input::UPSILON_NUMBER = 3; // if you need 3 of them
+  //Input::UPSILON_VERBOSITY = 0;
 
   //  Input::HEPMC = true;
   INPUTHEPMC::filename = inputFile;
@@ -149,6 +159,11 @@ int Fun4All_AnaTutorial_Jets(
     INPUTGENERATOR::VectorMesonGenerator[0]->set_pt_range(0., 10.);
     // Y species - select only one, last one wins
     INPUTGENERATOR::VectorMesonGenerator[0]->set_upsilon_1s();
+    if (Input::HEPMC || Input::EMBED)
+    {
+      INPUTGENERATOR::VectorMesonGenerator[0]->set_reuse_existing_vertex(true);
+      INPUTGENERATOR::VectorMesonGenerator[0]->set_existing_vertex_offset_vector(0.0, 0.0, 0.0);
+    }
   }
   // particle gun
   // if you run more than one of these Input::GUN_NUMBER > 1
@@ -159,6 +174,19 @@ int Fun4All_AnaTutorial_Jets(
     INPUTGENERATOR::Gun[0]->set_vtx(0, 0, 0);
   }
 
+  // pythia6
+  if (Input::PYTHIA6)
+  {
+    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    Input::ApplysPHENIXBeamParameter(INPUTGENERATOR::Pythia6);
+  }
+  // pythia8
+  if (Input::PYTHIA8)
+  {
+    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    Input::ApplysPHENIXBeamParameter(INPUTGENERATOR::Pythia8);
+  }
+
   //--------------
   // Set Input Manager specific options
   //--------------
@@ -166,10 +194,14 @@ int Fun4All_AnaTutorial_Jets(
 
   if (Input::HEPMC)
   {
-    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_width(100e-4, 100e-4, 8, 0);  //optional collision smear in space, time
-                                                                                           //    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_mean(0,0,0,0);//optional collision central position shift in space, time
+    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    Input::ApplysPHENIXBeamParameter(INPUTMANAGER::HepMCInputManager);
+
+    // optional overriding beam parameters
+    //INPUTMANAGER::HepMCInputManager->set_vertex_distribution_width(100e-4, 100e-4, 8, 0);  //optional collision smear in space, time
+    //    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_mean(0,0,0,0);//optional collision central position shift in space, time
     // //optional choice of vertex distribution function in space, time
-    INPUTMANAGER::HepMCInputManager->set_vertex_distribution_function(PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus);
+    //INPUTMANAGER::HepMCInputManager->set_vertex_distribution_function(PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus, PHHepMCGenHelper::Gaus);
     //! embedding ID for the event
     //! positive ID is the embedded event of interest, e.g. jetty event from pythia
     //! negative IDs are backgrounds, .e.g out of time pile up collisions
@@ -183,6 +215,11 @@ int Fun4All_AnaTutorial_Jets(
       // INPUTMANAGER::HepMCPileupInputManager->set_vertex_distribution_width(100e-4,100e-4,8,0);
     }
   }
+  if (Input::PILEUPRATE > 0)
+  {
+    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    Input::ApplysPHENIXBeamParameter(INPUTMANAGER::HepMCPileupInputManager);
+  }
   // register all input generators with Fun4All
   InputRegister();
 
@@ -193,7 +230,7 @@ int Fun4All_AnaTutorial_Jets(
   // Write the DST
   //======================
 
-  //  Enable::DSTOUT = true;
+  //Enable::DSTOUT = true;
   Enable::DSTOUT_COMPRESS = false;
   DstOut::OutputDir = outdir;
   DstOut::OutputFile = outputFile;
@@ -281,8 +318,7 @@ int Fun4All_AnaTutorial_Jets(
   // forward EMC
   //Enable::FEMC = true;
   Enable::FEMC_ABSORBER = true;
-  Enable::FEMC_CELL = Enable::FEMC && true;
-  Enable::FEMC_TOWER = Enable::FEMC_CELL && true;
+  Enable::FEMC_TOWER = Enable::FEMC && true;
   Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
   Enable::FEMC_EVAL = Enable::FEMC_CLUSTER and Enable::QA && true;
 
@@ -293,7 +329,11 @@ int Fun4All_AnaTutorial_Jets(
   Enable::PLUGDOOR_ABSORBER = true;
 
   Enable::GLOBAL_RECO = true;
-  //  Enable::GLOBAL_FASTSIM = true;
+  //Enable::GLOBAL_FASTSIM = true;
+  //Enable::KFPARTICLE = true;
+  //Enable::KFPARTICLE_VERBOSITY = 1;
+  //Enable::KFPARTICLE_TRUTH_MATCH = true;
+  //Enable::KFPARTICLE_SAVE_NTUPLE = true;
 
   Enable::CALOTRIGGER = Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER && false;
 
@@ -307,7 +347,7 @@ int Fun4All_AnaTutorial_Jets(
   Enable::HIJETS = false && Enable::JETS && Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER;
 
   // 3-D topoCluster reconstruction, potentially in all calorimeter layers
-  Enable::TOPOCLUSTER = true && Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER;
+  Enable::TOPOCLUSTER = false && Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER;
   // particle flow jet reconstruction - needs topoClusters!
   Enable::PARTICLEFLOW = true && Enable::TOPOCLUSTER;
 
@@ -322,7 +362,7 @@ int Fun4All_AnaTutorial_Jets(
   //---------------
   // World Settings
   //---------------
-  //  G4WORLD::PhysicsList = "QGSP_BERT"; //FTFP_BERT_HP best for calo
+  //  G4WORLD::PhysicsList = "FTFP_BERT"; //FTFP_BERT_HP best for calo
   //  G4WORLD::WorldMaterial = "G4_AIR"; // set to G4_GALACTIC for material scans
 
   //---------------
@@ -369,8 +409,6 @@ int Fun4All_AnaTutorial_Jets(
 
   if (Enable::HCALOUT_CELL) HCALOuter_Cells();
 
-  if (Enable::FEMC_CELL) FEMC_Cells();
-
   //-----------------------------
   // CEMC towering and clustering
   //-----------------------------
@@ -393,8 +431,6 @@ int Fun4All_AnaTutorial_Jets(
 
   if (Enable::FEMC_TOWER) FEMC_Towers();
   if (Enable::FEMC_CLUSTER) FEMC_Clusters();
-
-  if (Enable::DSTOUT_COMPRESS) ShowerCompress();
 
   //--------------
   // SVTX tracking
@@ -468,6 +504,10 @@ int Fun4All_AnaTutorial_Jets(
 
   if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
 
+  if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
+
+  if (Enable::USER) UserAnalysisInit();
+  
   AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
   anaTutorial->setMinJetPt(25.);
   anaTutorial->Verbosity(0);
@@ -477,9 +517,12 @@ int Fun4All_AnaTutorial_Jets(
   anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
 
-  if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
-
-  if (Enable::USER) UserAnalysisInit();
+  //======================
+  // Run KFParticle on evt
+  //======================
+  if (Enable::KFPARTICLE && Input::UPSILON) KFParticle_Upsilon_Reco();
+  if (Enable::KFPARTICLE && Input::DZERO) KFParticle_D0_Reco();
+  //if (Enable::KFPARTICLE && Input::LAMBDAC) KFParticle_Lambdac_Reco();
 
   //----------------------
   // Standard QAs
@@ -513,7 +556,11 @@ int Fun4All_AnaTutorial_Jets(
   {
     string FullOutFile = DstOut::OutputDir + "/" + DstOut::OutputFile;
     Fun4AllDstOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", FullOutFile);
-    if (Enable::DSTOUT_COMPRESS) DstCompress(out);
+    if (Enable::DSTOUT_COMPRESS)
+    {
+      ShowerCompress();
+      DstCompress(out);
+    }
     se->registerOutputManager(out);
   }
   //-----------------

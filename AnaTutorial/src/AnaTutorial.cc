@@ -105,16 +105,10 @@ int AnaTutorial::Init(PHCompositeNode *topNode)
     cout << "Beginning Init in AnaTutorial" << endl;
   }
  
-  m_hm = new Fun4AllHistoManager(Name());
-  // create and register your histos (all types) here
-  // TH1 *h1 = new TH1F("h1",....)
-  // hm->registerHisto(h1);
   m_outfile = new TFile(m_outfilename.c_str(), "RECREATE");
 
   m_phi_h = new TH1D("phi_h", ";Counts;#phi [rad]", 50, -6, 6);
-  m_hm->registerHisto(m_phi_h);
   m_eta_phi_h = new TH2F("phi_eta_h", ";#eta;#phi [rad]", 10, -1, 1, 50, -6, 6);
-  m_hm->registerHisto(m_eta_phi_h);
 
   return 0;
 }

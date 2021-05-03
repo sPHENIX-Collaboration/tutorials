@@ -35,7 +35,7 @@ R__LOAD_LIBRARY(libanatutorial.so)
 // For HepMC Hijing
 // try inputFile = /sphenix/sim/sim01/sphnxpro/sHijing_HepMC/sHijing_0-12fm.dat
 
-int Fun4All_AnaTutorial(
+int Fun4All_AnaTutorial_sPHENIX_Jets(
     const int nEvents = 1,
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4sPHENIX.root",
@@ -48,7 +48,7 @@ int Fun4All_AnaTutorial(
 
   //Opt to print all random seed used for debugging reproducibility. Comment out to reduce stdout prints.
   PHRandomSeed::Verbosity(1);
- 
+
   // just if we set some flags somewhere in this macro
   recoConsts *rc = recoConsts::instance();
   // By default every random number generator uses
@@ -86,13 +86,13 @@ int Fun4All_AnaTutorial(
   // if you use a filelist
   //INPUTEMBED::listfile[0] = embed_input_file;
 
-  Input::SIMPLE = true;
+  Input::SIMPLE = false;
   // Input::SIMPLE_NUMBER = 2; // if you need 2 of them
   // Input::SIMPLE_VERBOSITY = 1;
 
   //  Input::PYTHIA6 = true;
 
-  // Input::PYTHIA8 = true;
+  Input::PYTHIA8 = true;
 
   //  Input::GUN = true;
   //  Input::GUN_NUMBER = 3; // if you need 3 of them
@@ -507,12 +507,12 @@ int Fun4All_AnaTutorial(
   if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
 
   if (Enable::USER) UserAnalysisInit();
-
+  
   AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
-  anaTutorial->setMinJetPt(10.);
+  anaTutorial->setMinJetPt(25.);
   anaTutorial->Verbosity(0);
-  anaTutorial->analyzeTracks(true);
-  anaTutorial->analyzeClusters(true);
+  anaTutorial->analyzeTracks(false);
+  anaTutorial->analyzeClusters(false);
   anaTutorial->analyzeJets(true);
   anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);

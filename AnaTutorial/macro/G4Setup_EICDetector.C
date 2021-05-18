@@ -152,7 +152,8 @@ int G4Setup()
 
   if (Enable::PIPE) radius = Pipe(g4Reco, radius);
   if (Enable::HFARFWD_MAGNETS_IP6 || Enable::HFARFWD_MAGNETS_IP8) hFarFwdDefineMagnets(g4Reco);
-  if (Enable::HFARFWD_VIRTUAL_DETECTORS_IP6 || Enable::HFARFWD_VIRTUAL_DETECTORS_IP8) hFarFwdDefineDetectors(g4Reco);
+  if (Enable::HFARFWD_VIRTUAL_DETECTORS_IP6) hFarFwdDefineDetectorsIP6(g4Reco);
+  if (Enable::HFARFWD_VIRTUAL_DETECTORS_IP8) hFarFwdDefineDetectorsIP8(g4Reco);
   if (Enable::EGEM) EGEMSetup(g4Reco);
   if (Enable::FGEM || Enable::FGEM_ORIG) FGEMSetup(g4Reco);
   if (Enable::FST) FSTSetup(g4Reco);

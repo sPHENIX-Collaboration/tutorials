@@ -38,3 +38,28 @@ The example macro, found in `macro/Fun4All_AnaTutorial.C`, is just the default `
 The macro can be run out of the box with `root Fun4All_AnaTutorial.C`, and the type of event can be changed within the macro itself (e.g. between running single particle and pythia simulations).
 
 In the event that the macro does not work, you should look at the default macro (which should always work) available [here](https://github.com/sPHENIX-Collaboration/macros/blob/master/detectors/sPHENIX/Fun4All_G4_sPHENIX.C). You can always run the AnaTutorial package by adding to the default macro `Fun4All_G4_sPHENIX.C` the relevant code that calls AnaTutorial in `Fun4All_AnaTutorial.C`. Just search for `anatutorial` in your favorite text editor in `Fun4All_AnaTutorial.C` to see the lines of code that should be added to `Fun4All_G4_sPHENIX.C`.
+
+
+## Troubleshooting
+
+In the event that the macros do not work, that is because they have become out of sync with the main macros repository. Depending on which macro you are trying to run (sPHENIX or EIC) go to the main macros repository for the respective detector. In the Fun4All macro that you want to run, add the following to the header files:
+
+```
+#include <anatutorial/AnaTutorial.h>
+R__LOAD_LIBRARY(libanatutorial.so)
+```
+
+and add the following after the line `if (Enable::USER) UserAnalysisInit();`
+
+```
+AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
+anaTutorial->setMinJetPt(3.);
+anaTutorial->Verbosity(0);
+anaTutorial->analyzeTracks(true);
+anaTutorial->analyzeClusters(true);
+anaTutorial->analyzeJets(true);
+anaTutorial->analyzeTruth(false);
+se->registerSubsystem(anaTutorial);
+```
+
+If you developed your own analysis package, you would use a similar workflow to add your analysis package to the macro that you want to run.

@@ -13,10 +13,9 @@ class PHField;
 class FieldMapReadBack : public SubsysReco
 {
  public:
+  FieldMapReadBack(const std::string &name = "FieldMapReadBack") {}
 
-  FieldMapReadBack(const std::string &name = "FieldMapReadBack"){}
-
-  virtual ~FieldMapReadBack(){}
+  virtual ~FieldMapReadBack() {}
 
   /** Called for first event when run number is known.
       Typically this is where you may want to fetch data from
@@ -30,9 +29,14 @@ class FieldMapReadBack : public SubsysReco
    */
   int process_event(PHCompositeNode *topNode) override;
 
- private:
+  void Load3dCartMap(const std::string &fname, const float magfield_rescale = 1.0);
+  void PrintField(const double x, const double y, const double z, const double t = 0.);
+  void Verbosity(const int i) override;
+  void SetFieldPoint(const double x, const double y, const double z, const double t = 0.);
 
-  PHField *fieldmap;
+ private:
+  PHField *fieldmap = nullptr;
+  double Point[4] = {0};
 };
 
-#endif // FIELDMAPREADBACK_H
+#endif  // FIELDMAPREADBACK_H

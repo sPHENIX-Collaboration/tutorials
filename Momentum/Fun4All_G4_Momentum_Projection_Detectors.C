@@ -69,9 +69,9 @@ int Fun4All_G4_Momentum_Projection_Detectors(const int nEvents = 1000, const str
     g4Reco->registerSubsystem(cyl);
   }
 
-// projection volumes (thin cylinders)
+  // projection volumes (thin cylinders)
   // if no material is given, world material is chosen (typically G4_AIR)
-  double mycylinder1_radius = 2.; // in cm
+  double mycylinder1_radius = 2.;  // in cm
   cyl = new PHG4CylinderSubsystem("MyCylinder1");
   cyl->set_double_param("radius", mycylinder1_radius);
   cyl->set_double_param("thickness", 0.01);  // does not matter (but > 0)
@@ -81,9 +81,9 @@ int Fun4All_G4_Momentum_Projection_Detectors(const int nEvents = 1000, const str
   cyl->SaveAllHits();  // save all hits, also zero energy hits (which are normally discarded)
   g4Reco->registerSubsystem(cyl);
 
-  double mycylinder2_radius = 70.; // in cm
+  double mycylinder2_radius = 70.;  // in cm
   cyl = new PHG4CylinderSubsystem("MyCylinder2");
-  cyl->set_double_param("radius",  mycylinder2_radius);
+  cyl->set_double_param("radius", mycylinder2_radius);
   cyl->set_double_param("thickness", 0.01);  // does not matter (but > 0)
   cyl->SuperDetector("MyCylinder2");
   cyl->set_double_param("length", 90.);
@@ -93,9 +93,9 @@ int Fun4All_G4_Momentum_Projection_Detectors(const int nEvents = 1000, const str
 
   double myplane1_z = 100.;
   cyl = new PHG4CylinderSubsystem("MyPlane1");
-  cyl->set_double_param("radius", 0);              // 80 cm
-  cyl->set_double_param("thickness", 75);          // for a cylindrical plane thickness is diameter
-  cyl->set_double_param("length", 0.01);           // for a cylindrical plane length is depth
+  cyl->set_double_param("radius", 0);                    // 80 cm
+  cyl->set_double_param("thickness", 75);                // for a cylindrical plane thickness is diameter
+  cyl->set_double_param("length", 0.01);                 // for a cylindrical plane length is depth
   cyl->set_double_param("place_z", myplane1_z + 0.005);  // position in z, 1/2 depth needs to be added to put front at exactly 100 cm
   cyl->SuperDetector("MyPlane1");
   cyl->SetActive();

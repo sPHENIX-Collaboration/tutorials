@@ -27,7 +27,7 @@ This tutorial respository carries a few example cases of analysis for [sPHENIX c
   * [Most recent tutorial session](https://indico.bnl.gov/event/7254/)
 * Documentation
   * [Software wiki](https://wiki.bnl.gov/sPHENIX/index.php/Software)
-  * [Doxygen: easier way to browse code](https://www.phenix.bnl.gov/WWW/sPHENIX/doxygen/html/)
+  * [Doxygen: easier way to browse code](https://sphenix-collaboration.github.io/doxygen/)
   * [Build a package](https://wiki.bnl.gov/sPHENIX/index.php/Example_of_using_DST_nodes#Building%20a%20package)
 * Communication
   * [Simulation and software meeting series](https://indico.bnl.gov/categoryDisplay.py?categId=88)

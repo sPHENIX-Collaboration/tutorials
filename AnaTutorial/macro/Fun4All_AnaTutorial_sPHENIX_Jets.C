@@ -9,6 +9,7 @@
 #include <G4Setup_sPHENIX.C>
 #include <G4_Bbc.C>
 #include <G4_CaloTrigger.C>
+#include <G4_Centrality.C>
 #include <G4_DSTReader.C>
 #include <G4_Global.C>
 #include <G4_HIJetReco.C>
@@ -36,7 +37,7 @@ R__LOAD_LIBRARY(libanatutorial.so)
 // try inputFile = /sphenix/sim/sim01/sphnxpro/sHijing_HepMC/sHijing_0-12fm.dat
 
 int Fun4All_AnaTutorial_sPHENIX_Jets(
-    const int nEvents = 1,
+    const int nEvents = 10,
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4sPHENIX.root",
     const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
@@ -60,6 +61,17 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   //  rc->set_IntFlag("RANDOMSEED",PHRandomSeed());
   // or set it to a fixed value so you can debug your code
   //  rc->set_IntFlag("RANDOMSEED", 12345);
+
+  //===============
+  // conditions DB flags
+  //===============
+  // tag
+  rc->set_StringFlag("XPLOAD_TAG","sPHENIX_ExampleGT_1");
+  // database config
+  rc->set_StringFlag("XPLOAD_CONFIG","sPHENIX_cdb");
+  // 64 bit timestamp
+  rc->set_uint64Flag("TIMESTAMP",12345678912345);
+
 
   //===============
   // Input options
@@ -139,11 +151,11 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
     }
     else
     {
-      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_function(PHG4SimpleEventGenerator::Uniform,
-                                                                                PHG4SimpleEventGenerator::Uniform,
-                                                                                PHG4SimpleEventGenerator::Uniform);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_function(PHG4SimpleEventGenerator::Gaus,
+                                                                                PHG4SimpleEventGenerator::Gaus,
+                                                                                PHG4SimpleEventGenerator::Gaus);
       INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_mean(0., 0., 0.);
-      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0., 0., 5.);
+      INPUTGENERATOR::SimpleEventGenerator[0]->set_vertex_distribution_width(0.01, 0.01, 5.);
     }
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1, 1);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
@@ -239,7 +251,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   //  Enable::DSTREADER = true;
 
   // turn the display on (default off)
-  Enable::DISPLAY = false;
+   //Enable::DISPLAY = true;
 
   //======================
   // What to run
@@ -254,6 +266,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   //  Enable::VERBOSITY = 1;
 
   // Enable::BBC = true;
+  // Enable::BBC_SUPPORT = true; // save hist in bbc support structure
   Enable::BBCFAKE = true;  // Smeared vtx and t0, use if you don't want real BBC in simulation
 
   Enable::PIPE = true;
@@ -263,26 +276,30 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::MVTX = true;
   Enable::MVTX_CELL = Enable::MVTX && true;
   Enable::MVTX_CLUSTER = Enable::MVTX_CELL && true;
-  Enable::MVTX_QA = Enable::MVTX_CLUSTER and Enable::QA && true;
+  Enable::MVTX_QA = Enable::MVTX_CLUSTER && Enable::QA && true;
+  Enable::TrackingService = false;
 
   Enable::INTT = true;
+//  Enable::INTT_ABSORBER = true; // enables layerwise support structure readout
+//  Enable::INTT_SUPPORT = true; // enable global support structure readout
   Enable::INTT_CELL = Enable::INTT && true;
   Enable::INTT_CLUSTER = Enable::INTT_CELL && true;
-  Enable::INTT_QA = Enable::INTT_CLUSTER and Enable::QA && true;
+  Enable::INTT_QA = Enable::INTT_CLUSTER && Enable::QA && true;
 
   Enable::TPC = true;
   Enable::TPC_ABSORBER = true;
   Enable::TPC_CELL = Enable::TPC && true;
   Enable::TPC_CLUSTER = Enable::TPC_CELL && true;
-  Enable::TPC_QA = Enable::TPC_CLUSTER and Enable::QA && true;
+  Enable::TPC_QA = Enable::TPC_CLUSTER && Enable::QA && true;
 
-  //Enable::MICROMEGAS = true;
+  Enable::MICROMEGAS = true;
   Enable::MICROMEGAS_CELL = Enable::MICROMEGAS && true;
   Enable::MICROMEGAS_CLUSTER = Enable::MICROMEGAS_CELL && true;
+  Enable::MICROMEGAS_QA = Enable::MICROMEGAS_CLUSTER && Enable::QA && true;
 
   Enable::TRACKING_TRACK = true;
   Enable::TRACKING_EVAL = Enable::TRACKING_TRACK && true;
-  Enable::TRACKING_QA = Enable::TRACKING_TRACK and Enable::QA && true;
+  Enable::TRACKING_QA = Enable::TRACKING_TRACK && Enable::QA && true;
 
   //  cemc electronics + thin layer of W-epoxy to get albedo from cemc
   //  into the tracking, cannot run together with CEMC
@@ -294,7 +311,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::CEMC_TOWER = Enable::CEMC_CELL && true;
   Enable::CEMC_CLUSTER = Enable::CEMC_TOWER && true;
   Enable::CEMC_EVAL = Enable::CEMC_CLUSTER && true;
-  Enable::CEMC_QA = Enable::CEMC_CLUSTER and Enable::QA && true;
+  Enable::CEMC_QA = Enable::CEMC_CLUSTER && Enable::QA && true;
 
   Enable::HCALIN = true;
   Enable::HCALIN_ABSORBER = true;
@@ -302,7 +319,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::HCALIN_TOWER = Enable::HCALIN_CELL && true;
   Enable::HCALIN_CLUSTER = Enable::HCALIN_TOWER && true;
   Enable::HCALIN_EVAL = Enable::HCALIN_CLUSTER && true;
-  Enable::HCALIN_QA = Enable::HCALIN_CLUSTER and Enable::QA && true;
+  Enable::HCALIN_QA = Enable::HCALIN_CLUSTER && Enable::QA && true;
 
   Enable::MAGNET = true;
   Enable::MAGNET_ABSORBER = true;
@@ -313,16 +330,18 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::HCALOUT_TOWER = Enable::HCALOUT_CELL && true;
   Enable::HCALOUT_CLUSTER = Enable::HCALOUT_TOWER && true;
   Enable::HCALOUT_EVAL = Enable::HCALOUT_CLUSTER && true;
-  Enable::HCALOUT_QA = Enable::HCALOUT_CLUSTER and Enable::QA && true;
+  Enable::HCALOUT_QA = Enable::HCALOUT_CLUSTER && Enable::QA && true;
 
-  // forward EMC
-  //Enable::FEMC = true;
-  Enable::FEMC_ABSORBER = true;
-  Enable::FEMC_TOWER = Enable::FEMC && true;
-  Enable::FEMC_CLUSTER = Enable::FEMC_TOWER && true;
-  Enable::FEMC_EVAL = Enable::FEMC_CLUSTER and Enable::QA && true;
+  Enable::EPD = true;
 
-  Enable::EPD = false;
+  Enable::BEAMLINE = true;
+//  Enable::BEAMLINE_ABSORBER = true;  // makes the beam line magnets sensitive volumes
+//  Enable::BEAMLINE_BLACKHOLE = true; // turns the beamline magnets into black holes
+  Enable::ZDC = true;
+//  Enable::ZDC_ABSORBER = true;
+//  Enable::ZDC_SUPPORT = true;
+  Enable::ZDC_TOWER = Enable::ZDC && true;
+  Enable::ZDC_EVAL = Enable::ZDC_TOWER && true;
 
   //! forward flux return plug door. Out of acceptance and off by default.
   //Enable::PLUGDOOR = true;
@@ -330,6 +349,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   Enable::GLOBAL_RECO = true;
   //Enable::GLOBAL_FASTSIM = true;
+
   //Enable::KFPARTICLE = true;
   //Enable::KFPARTICLE_VERBOSITY = 1;
   //Enable::KFPARTICLE_TRUTH_MATCH = true;
@@ -339,7 +359,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   Enable::JETS = true;
   Enable::JETS_EVAL = Enable::JETS && true;
-  Enable::JETS_QA = Enable::JETS and Enable::QA && true;
+  Enable::JETS_QA = Enable::JETS && Enable::QA && true;
 
   // HI Jet Reco for p+Au / Au+Au collisions (default is false for
   // single particle / p+p-only simulations, or for p+Au / Au+Au
@@ -350,6 +370,8 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::TOPOCLUSTER = false && Enable::CEMC_TOWER && Enable::HCALIN_TOWER && Enable::HCALOUT_TOWER;
   // particle flow jet reconstruction - needs topoClusters!
   Enable::PARTICLEFLOW = true && Enable::TOPOCLUSTER;
+  // centrality reconstruction
+  Enable::CENTRALITY = true;
 
   // new settings using Enable namespace in GlobalVariables.C
   Enable::BLACKHOLE = true;
@@ -369,9 +391,9 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // Magnet Settings
   //---------------
 
-  //  const string magfield = "1.5"; // alternatively to specify a constant magnetic field, give a float number, which will be translated to solenoidal field in T, if string use as fieldmap name (including path)
-  //  G4MAGNET::magfield = string(getenv("CALIBRATIONROOT")) + string("/Field/Map/sPHENIX.2d.root");  // default map from the calibration database
-  G4MAGNET::magfield_rescale = -1.4 / 1.5;  // make consistent with expected Babar field strength of 1.4T
+  //  G4MAGNET::magfield =  string(getenv("CALIBRATIONROOT"))+ string("/Field/Map/sphenix3dbigmapxyz.root");  // default map from the calibration database
+  //  G4MAGNET::magfield = "1.5"; // alternatively to specify a constant magnetic field, give a float number, which will be translated to solenoidal field in T, if string use as fieldmap name (including path)
+//  G4MAGNET::magfield_rescale = 1.;  // make consistent with expected Babar field strength of 1.4T
 
   //---------------
   // Pythia Decayer
@@ -429,12 +451,13 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // if enabled, do topoClustering early, upstream of any possible jet reconstruction
   if (Enable::TOPOCLUSTER) TopoClusterReco();
 
-  if (Enable::FEMC_TOWER) FEMC_Towers();
-  if (Enable::FEMC_CLUSTER) FEMC_Clusters();
-
   //--------------
   // SVTX tracking
   //--------------
+  if(Enable::TRACKING_TRACK)
+    {
+      TrackingInit();
+    }
   if (Enable::MVTX_CLUSTER) Mvtx_Clustering();
   if (Enable::INTT_CLUSTER) Intt_Clustering();
   if (Enable::TPC_CLUSTER) TPC_Clustering();
@@ -442,7 +465,6 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   if (Enable::TRACKING_TRACK)
   {
-    TrackingInit();
     Tracking_Reco();
   }
   //-----------------
@@ -461,6 +483,15 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   else if (Enable::GLOBAL_FASTSIM)
   {
     Global_FastSim();
+  }
+
+  //-----------------
+  // Centrality Determination
+  //-----------------
+
+  if (Enable::CENTRALITY)
+  {
+      Centrality();
   }
 
   //-----------------
@@ -500,19 +531,17 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   if (Enable::HCALOUT_EVAL) HCALOuter_Eval(outputroot + "_g4hcalout_eval.root");
 
-  if (Enable::FEMC_EVAL) FEMC_Eval(outputroot + "_g4femc_eval.root");
-
   if (Enable::JETS_EVAL) Jet_Eval(outputroot + "_g4jet_eval.root");
 
   if (Enable::DSTREADER) G4DSTreader(outputroot + "_DSTReader.root");
 
   if (Enable::USER) UserAnalysisInit();
-  
+
   AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
-  anaTutorial->setMinJetPt(25.);
+  anaTutorial->setMinJetPt(10.);
   anaTutorial->Verbosity(0);
-  anaTutorial->analyzeTracks(false);
-  anaTutorial->analyzeClusters(false);
+  anaTutorial->analyzeTracks(true);
+  anaTutorial->analyzeClusters(true);
   anaTutorial->analyzeJets(true);
   anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
@@ -522,7 +551,6 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   //======================
   if (Enable::KFPARTICLE && Input::UPSILON) KFParticle_Upsilon_Reco();
   if (Enable::KFPARTICLE && Input::DZERO) KFParticle_D0_Reco();
-  //if (Enable::KFPARTICLE && Input::LAMBDAC) KFParticle_Lambdac_Reco();
 
   //----------------------
   // Standard QAs
@@ -537,9 +565,10 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   if (Enable::MVTX_QA) Mvtx_QA();
   if (Enable::INTT_QA) Intt_QA();
   if (Enable::TPC_QA) TPC_QA();
+  if (Enable::MICROMEGAS_QA) Micromegas_QA();
   if (Enable::TRACKING_QA) Tracking_QA();
 
-  if (Enable::TRACKING_QA and Enable::CEMC_QA and Enable::HCALIN_QA and Enable::HCALOUT_QA) QA_G4CaloTracking();
+  if (Enable::TRACKING_QA && Enable::CEMC_QA && Enable::HCALIN_QA && Enable::HCALOUT_QA) QA_G4CaloTracking();
 
   //--------------
   // Set up Input Managers
@@ -588,7 +617,8 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
     return 0;
   }
   // if we run the particle generator and use 0 it'll run forever
-  if (nEvents == 0 && !Input::HEPMC && !Input::READHITS)
+  // for embedding it runs forever if the repeat flag is set
+  if (nEvents == 0 && !Input::HEPMC && !Input::READHITS && INPUTEMBED::REPEAT)
   {
     cout << "using 0 for number of events is a bad idea when using particle generators" << endl;
     cout << "it will run forever, so I just return without running anything" << endl;

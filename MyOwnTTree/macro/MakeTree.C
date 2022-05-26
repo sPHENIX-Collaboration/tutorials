@@ -1,21 +1,23 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#ifndef MACRO_MAKETREE_C
+#define MACRO_MAKETREE_C
+
+// here you need your package name (set in configure.ac)
+#include <mytree/MakeSimpleTree.h>
+
 #include <fun4all/SubsysReco.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllDummyInputManager.h>
+
 #include <phool/recoConsts.h>
-// here you need your package name (set in configure.ac)
-#include <mytree/MakeSimpleTree.h>
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libmytree.so)
-#endif
 
 void  MakeTree()
 {
-  gSystem->Load("libmytree.so");
   Fun4AllServer *se = Fun4AllServer::instance();
 
   // since it doesn't matter we use a dummy input manager which just
@@ -48,3 +50,5 @@ void  MakeTree()
   delete se;
   gSystem->Exit(0);
 }
+
+#endif

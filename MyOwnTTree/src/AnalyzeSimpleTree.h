@@ -12,12 +12,13 @@ class AnalyzeSimpleTree: public SubsysReco
  public:
 
   AnalyzeSimpleTree(const std::string &name = "ANALYZETREE");
-  virtual ~AnalyzeSimpleTree() {}
+  ~AnalyzeSimpleTree()  override {}
 
-  int Init(PHCompositeNode *topNode);
+  int Init(PHCompositeNode * /*topNode*/) override;
 
-  int process_event(PHCompositeNode *topNode);
+  int process_event(PHCompositeNode *topNode) override;
 
+  int End(PHCompositeNode * /*topNode*/) override;
  private:
 
   Fun4AllHistoManager *hm = nullptr;

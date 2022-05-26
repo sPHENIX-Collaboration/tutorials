@@ -18,9 +18,9 @@ class MyTClonesArray : public PHObject
 {
  public:
   MyTClonesArray();
-  virtual ~MyTClonesArray();
+  ~MyTClonesArray() override;
 
-  void Reset();
+  void Reset() override;
   MySimpleTree *GetNewItem();
   MySimpleTree *GetItem(const unsigned int i) const;
   int Entries();
@@ -34,7 +34,7 @@ class MyTClonesArray : public PHObject
   float myeventfloat = NAN;
   TClonesArray *MyTCArray = nullptr;
 
-  ClassDef(MyTClonesArray,1)
+  ClassDefOverride(MyTClonesArray,1)
 };
 
 #endif /*MYTCLONESARRAY_H__*/

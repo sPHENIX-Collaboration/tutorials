@@ -18,7 +18,7 @@ AnalyzeSimpleTree::AnalyzeSimpleTree(const std::string &name): SubsysReco(name)
 }
 
 int
-AnalyzeSimpleTree::Init(PHCompositeNode *topNode)
+AnalyzeSimpleTree::Init(PHCompositeNode * /*topNode*/)
 {
   Fun4AllServer *se = Fun4AllServer::instance();
   // this makes a Fun4AllHistoManager which can be used to save your histograms easily
@@ -53,4 +53,10 @@ AnalyzeSimpleTree::process_event(PHCompositeNode *topNode)
       my2dfloats->Fill(mytree->MyFloat(), item->MyFloat());
     }
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+int AnalyzeSimpleTree::End(PHCompositeNode * /*topNode*/)
+{
+  hm->dumpHistos("myhistos.root");
+  return  Fun4AllReturnCodes::EVENT_OK;
 }

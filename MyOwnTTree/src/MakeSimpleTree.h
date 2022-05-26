@@ -8,11 +8,11 @@ class MakeSimpleTree: public SubsysReco
  public:
 
   MakeSimpleTree(const std::string &name = "MAKETREE");
-  virtual ~MakeSimpleTree() {}
+  ~MakeSimpleTree() override {}
 
-  int Init(PHCompositeNode *topNode);
+  int Init(PHCompositeNode *topNode) override;
 
-  int process_event(PHCompositeNode *topNode);
+  int process_event(PHCompositeNode *topNode) override;
 
  private:
 

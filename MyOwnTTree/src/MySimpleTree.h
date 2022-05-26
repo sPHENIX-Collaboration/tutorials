@@ -25,9 +25,9 @@ class MySimpleTree: public PHObject
  public:
 
   MySimpleTree();
-  virtual ~MySimpleTree() {}
+  ~MySimpleTree() override {}
 
-  void Reset();
+  void Reset() override;
 
   void MyFloat(const float f) {myfloat = f;}
   float MyFloat() const {return myfloat;}
@@ -38,7 +38,7 @@ class MySimpleTree: public PHObject
   int myint = -9999;
   float myfloat = NAN;
 
-  ClassDef(MySimpleTree,1)
+  ClassDefOverride(MySimpleTree,1)
 
 };
 

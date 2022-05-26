@@ -17,6 +17,8 @@
 
 #include <phool/PHObject.h>
 
+#include <cmath> // for NAN
+
 class MySimpleTree: public PHObject
 {
 
@@ -32,9 +34,9 @@ class MySimpleTree: public PHObject
   void MyInt(const int i) {myint = i;}
   int MyInt() const {return myint;}
 
- protected:
-  int myint;
-  float myfloat;
+ private:
+  int myint = -9999;
+  float myfloat = NAN;
 
   ClassDef(MySimpleTree,1)
 

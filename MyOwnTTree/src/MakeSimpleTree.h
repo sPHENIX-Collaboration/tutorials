@@ -14,7 +14,7 @@ class MakeSimpleTree: public SubsysReco
 
   int process_event(PHCompositeNode *topNode);
 
- protected:
+ private:
 
 
 };

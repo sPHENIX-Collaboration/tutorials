@@ -6,11 +6,8 @@
 #include <phool/phool.h>
 
 #include <TClonesArray.h>
+
 #include <iostream>
-
-ClassImp(MyTClonesArray)
-
-using namespace std;
 
 // DEFAULTSIZE gives the initial number of entries
 // the TClonesArray can hold and also the step size
@@ -22,9 +19,7 @@ using namespace std;
 
 static int DEFAULTSIZE = 10;
 
-MyTClonesArray::MyTClonesArray():
-  myeventint(0),
-  myeventfloat(NAN)
+MyTClonesArray::MyTClonesArray()
 {
   MyTCArray = new TClonesArray("MySimpleTree",DEFAULTSIZE );
 }
@@ -83,8 +78,8 @@ MyTClonesArray::GetItem(const unsigned int i) const
 
   if (i > (unsigned int) MyTCArray->GetLast())
     {
-      cout << PHWHERE << " Index " << i 
-           << " out of range, max = " << MyTCArray->GetLast() << endl;
+      std::cout << PHWHERE << " Index " << i
+		<< " out of range, max = " << MyTCArray->GetLast() << std::endl;
       return 0;
     }
 

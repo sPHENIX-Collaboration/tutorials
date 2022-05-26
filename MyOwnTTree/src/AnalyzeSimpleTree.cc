@@ -12,9 +12,7 @@
 #include <TH1.h>
 #include <TH2.h>
 
-using namespace std;
-
-AnalyzeSimpleTree::AnalyzeSimpleTree(const string &name): SubsysReco(name)
+AnalyzeSimpleTree::AnalyzeSimpleTree(const std::string &name): SubsysReco(name)
 {
   return ;
 }

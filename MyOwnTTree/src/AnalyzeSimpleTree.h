@@ -18,11 +18,11 @@ class AnalyzeSimpleTree: public SubsysReco
 
   int process_event(PHCompositeNode *topNode);
 
- protected:
+ private:
 
-  Fun4AllHistoManager *hm;
-  TH1 *myfloats;
-  TH2 *my2dfloats;
+  Fun4AllHistoManager *hm = nullptr;
+  TH1 *myfloats = nullptr;
+  TH2 *my2dfloats = nullptr;
 };
 
 #endif /* ANALYZESIMPLETREE_H__ */

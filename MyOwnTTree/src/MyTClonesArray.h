@@ -9,6 +9,8 @@
 
 #include <phool/PHObject.h>
 
+#include <cmath> // for NAN
+
 class TClonesArray;
 class MySimpleTree;
 
@@ -27,10 +29,10 @@ class MyTClonesArray : public PHObject
   void MyEventFloat(const float f) {myeventfloat = f;}
   float MyEventFloat() const {return myeventfloat;}
 
- protected:
-  int myeventint;
-  float myeventfloat;
-  TClonesArray *MyTCArray;
+ private:
+  int myeventint = 0;
+  float myeventfloat = NAN;
+  TClonesArray *MyTCArray = nullptr;
 
   ClassDef(MyTClonesArray,1)
 };

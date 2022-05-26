@@ -1,9 +1,6 @@
 #include "MySimpleTree.h"
+
 #include <cmath>
-
-ClassImp(MySimpleTree)
-
-using namespace std;
 
 MySimpleTree::MySimpleTree()
 {

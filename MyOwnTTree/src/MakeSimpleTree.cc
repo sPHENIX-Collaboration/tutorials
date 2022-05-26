@@ -9,9 +9,7 @@
 #include <phool/PHIODataNode.h>
 #include <phool/PHNodeIterator.h>
 
-using namespace std;
-
-MakeSimpleTree::MakeSimpleTree(const string &name): SubsysReco(name)
+MakeSimpleTree::MakeSimpleTree(const std::string &name): SubsysReco(name)
 {
   return;
 }
@@ -25,7 +23,7 @@ MakeSimpleTree::Init(PHCompositeNode *topNode)
   dstNode = dynamic_cast<PHCompositeNode*>(iter.findFirst("PHCompositeNode", "DST"));
   if (!dstNode)
     {
-      cout << PHWHERE << "DST Node missing doing nothing" << endl;
+      std::cout << PHWHERE << "DST Node missing doing nothing" << std::endl;
       return -1;
     }
 

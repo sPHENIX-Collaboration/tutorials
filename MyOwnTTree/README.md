@@ -18,9 +18,8 @@ make install
 
 To run the macros you have to add your install area to the LD_LIBRARY_PATH and 
 to the ROOT_INCLUDE_PATH (where root6 looks for includes mentioned in the 
-macro). For the ROOT_INCLUDE_PATH we have a setup script which will add your install area but also the includes in OFFLINE_MAIN (and G4 and ROOT).
+macro). We have a setup script which will set all your paths accordingly.
 
-setenv LD_LIBRARY_PATH &lt;install area&gt;/lib:$LD_LIBRARY_PATH
-source /opt/sphenix/core/bin/setup_root6.csh  &lt;install area&gt;
+source /opt/sphenix/core/bin/setup_local.csh  &lt;install area&gt;
 
 With these settings you can run the macros in the macro directory.

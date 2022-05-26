@@ -1,5 +1,6 @@
 #ifndef MACRO_FUN4ALLMYSIMPLERECO_C
 #define MACRO_FUN4ALLMYSIMPLERECO_C
+
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllDummyInputManager.h>
@@ -35,5 +36,5 @@ void Fun4All_MySimpleReco(const int nEvents = 3)
   cout << endl << "gSystem->Exit(0)" << endl;
   gSystem->Exit(0);
 }
-#endif // MACRO_FUN4ALLMYSIMPLERECO_C
 
+#endif // MACRO_FUN4ALLMYSIMPLERECO_C

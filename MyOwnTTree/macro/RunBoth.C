@@ -1,22 +1,23 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
-#include <fun4all/SubsysReco.h>
-#include <fun4all/Fun4AllServer.h>
-#include <fun4all/Fun4AllInputManager.h>
-#include <fun4all/Fun4AllDummyInputManager.h>
-#include <phool/recoConsts.h>
+#ifndef MACRO_RUNBOTH_C
+#define MACRO_RUNBOTH_C
 
 // here you need your package name (set in configure.ac)
 #include <mytree/AnalyzeSimpleTree.h>
 #include <mytree/MakeSimpleTree.h>
 
+#include <fun4all/SubsysReco.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllDummyInputManager.h>
+
+#include <phool/recoConsts.h>
+
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libmytree.so)
-#endif
 
 void  RunBoth()
 {
-  gSystem->Load("libmytree.so");
   Fun4AllServer *se = Fun4AllServer::instance();
   // since it doesn't matter we use a dummy input manager which just
   // drives the event loop with a runnumber of 310000
@@ -36,3 +37,5 @@ void  RunBoth()
   se->dumpHistos();
   delete se;
 }
+
+#endif

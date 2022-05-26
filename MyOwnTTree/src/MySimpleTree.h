@@ -17,26 +17,28 @@
 
 #include <phool/PHObject.h>
 
+#include <cmath> // for NAN
+
 class MySimpleTree: public PHObject
 {
 
  public:
 
   MySimpleTree();
-  virtual ~MySimpleTree() {}
+  ~MySimpleTree() override {}
 
-  void Reset();
+  void Reset() override;
 
   void MyFloat(const float f) {myfloat = f;}
   float MyFloat() const {return myfloat;}
   void MyInt(const int i) {myint = i;}
   int MyInt() const {return myint;}
 
- protected:
-  int myint;
-  float myfloat;
+ private:
+  int myint = -9999;
+  float myfloat = NAN;
 
-  ClassDef(MySimpleTree,1)
+  ClassDefOverride(MySimpleTree,1)
 
 };
 

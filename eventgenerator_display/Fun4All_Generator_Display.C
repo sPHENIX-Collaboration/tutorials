@@ -1,5 +1,6 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#ifndef MACRO_FUN4ALLGENERATORDISPLAY_C
+#define MACRO_FUN4ALLGENERATORDISPLAY_C
+
 #include <fun4all/SubsysReco.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
@@ -9,6 +10,7 @@
 #include <g4main/PHG4SimpleEventGenerator.h>
 #include <g4main/PHG4ParticleGeneratorVectorMeson.h>
 #include <g4main/PHG4ParticleGun.h>
+#include <g4main/CosmicSpray.h>
 #include <g4main/PHG4Reco.h>
 #include <g4main/HepMCNodeReader.h>
 #include <g4main/ReadEICFiles.h>
@@ -17,14 +19,12 @@
 #include <phpythia6/PHPythia6.h>
 #include <phpythia8/PHPythia8.h>
 #include <phsartre/PHSartre.h>
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 R__LOAD_LIBRARY(libPHPythia6.so)
 R__LOAD_LIBRARY(libPHPythia8.so)
-//R__LOAD_LIBRARY(libPHSartre.so)
-#endif
-
-using namespace std;
+R__LOAD_LIBRARY(libPHSartre.so)
 
 PHG4Reco *g4 = nullptr;
 
@@ -52,10 +52,10 @@ int Fun4All_Generator_Display(
   const bool readeictree = false;
   // Or:
   // Use Pythia 8
-  const bool runpythia8 = false;
+  const bool runpythia8 = true;
   // Or:
   // Use Pythia 6
-  const bool runpythia6 = true;
+  const bool runpythia6 = false;
   // Or:
   // Use Sartre - DO NOT USE RIGHT NOW
   const bool runsartre = false;
@@ -71,7 +71,9 @@ int Fun4All_Generator_Display(
   // Throw single Upsilons, may be embedded in Hijing by setting readhepmc flag also  (note, careful to set Z vertex equal to Hijing events)
   const bool upsilons = false;
 
-  const double magfield = 1.5; // in T
+  const bool cosmic = false;
+
+  const double magfield = 1.4; // in T
 
   //---------------
   // Fun4All server
@@ -100,8 +102,6 @@ int Fun4All_Generator_Display(
   }
   else if (runpythia8)
   {
-    gSystem->Load("libPHPythia8.so");
-
     PHPythia8* pythia8 = new PHPythia8();
     // see coresoftware/generators/PHPythia8 for example config
     pythia8->set_config_file("phpythia8.cfg");
@@ -109,8 +109,6 @@ int Fun4All_Generator_Display(
   }
   else if (runpythia6)
   {
-    gSystem->Load("libPHPythia6.so");
-
     PHPythia6 *pythia6 = new PHPythia6();
     // see coresoftware/generators/PHPythia6 for example config
     pythia6->set_config_file("phpythia6.cfg");
@@ -119,7 +117,6 @@ int Fun4All_Generator_Display(
   else if (runsartre)
   {
     // see coresoftware/generators/PHSartre/README for setup instructions
-    gSystem->Load("libPHSartre.so");
     PHSartre* mysartre = new PHSartre();
     // see coresoftware/generators/PHSartre for example config
     mysartre->set_config_file("sartre.cfg");
@@ -175,6 +172,11 @@ int Fun4All_Generator_Display(
     pgen->set_phi_range(-1.0 * TMath::Pi(), 1.0 * TMath::Pi());
     se->registerSubsystem(pgen);
   }
+  if (cosmic)
+  {
+    CosmicSpray *cosmo = new CosmicSpray("CosmicGun",500.);
+    se->registerSubsystem(cosmo);
+  }
 
   // If "readhepMC" is also set, the Upsilons will be embedded in Hijing events, if 'particles" is set, the Upsilons will be embedded in whatever particles are thrown
   if(upsilons)
@@ -229,7 +231,7 @@ int Fun4All_Generator_Display(
   {
     Fun4AllInputManager *in = new Fun4AllHepMCInputManager( "DSTIN");
     se->registerInputManager( in );
-    se->fileopen( in->Name().c_str(), inputFile.c_str() );
+    se->fileopen( in->Name(), inputFile );
   }
   else
   {
@@ -241,6 +243,7 @@ int Fun4All_Generator_Display(
   // read-in HepMC events to Geant4 if there is any
   HepMCNodeReader *hr = new HepMCNodeReader();
   se->registerSubsystem(hr);
+
   g4 = new PHG4Reco();
   g4->set_rapidity_coverage(1.1); // according to drawings
   g4->set_field(magfield); 
@@ -248,11 +251,13 @@ int Fun4All_Generator_Display(
   se->registerSubsystem(g4);
 
 // Start the display
+
   g4->InitRun(se->topNode());
   g4->ApplyDisplayAction();
   g4->ApplyCommand("/control/execute vis.mac");
 // draw 1m long axis
   g4->ApplyCommand("/vis/scene/add/axes 0 0 0 100 cm");
+
   se->run(1);
 // print some empty lines so the instructions stick out
   for (int i=0; i<5; i++)
@@ -281,3 +286,5 @@ void displaycmd()
   cout << "set background color:" << endl;
   cout << " g4->ApplyCommand(\"/vis/viewer/set/background white\")" << endl;
 }
+
+#endif

@@ -1,5 +1,5 @@
-#ifndef ANATUTORIAL_H__
-#define ANATUTORIAL_H__
+#ifndef JETFINDER_H__
+#define JETFINDER_H__
 
 #include <fun4all/SubsysReco.h>
 

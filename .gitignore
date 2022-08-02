@@ -4,9 +4,6 @@ Makefile.in
 
 # http://www.gnu.org/software/autoconf
 
-/src/build/
-*.root
-
 autom4te.cache
 aclocal.m4
 compile
@@ -20,23 +17,6 @@ config.guess
 config.sub
 ltmain.sh
 
-MDC2_Jets/*.root
-MDC2_Jets/src/build/*
-
-MDC2_Jets/src/autom4te.cache
-MDC2_Jets/src/aclocal.m4
-MDC2_Jets/src/compile
-MDC2_Jets/src/configure
-MDC2_Jets/src/depcomp
-MDC2_Jets/src/install-sh
-MDC2_Jets/src/missing
-MDC2_Jets/src/stamp-h1
-
-MDC2_Jets/src/config.guess
-MDC2_Jets/src/config.sub
-MDC2_Jets/src/ltmain.sh
-
-MDC2_Jets/src/Makefile.in
 
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #

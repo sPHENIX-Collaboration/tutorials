@@ -1,4 +1,4 @@
-#include "MyJetAnalysis.h"
+#include "CaloJetRhoEst.h"
 
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
@@ -29,8 +29,8 @@
 
 using namespace std;
 
-MyJetAnalysis::MyJetAnalysis(const std::string& recojetname, const std::string& truthjetname, const std::string& outputfilename)
-  : SubsysReco("MyJetAnalysis_" + recojetname + "_" + truthjetname)
+CaloJetRhoEst::CaloJetRhoEst(const std::string& recojetname, const std::string& truthjetname, const std::string& outputfilename)
+  : SubsysReco("CaloJetRhoEst_" + recojetname + "_" + truthjetname)
   , m_recoJetName(recojetname)
   , m_truthJetName(truthjetname)
   , m_outputFileName(outputfilename)
@@ -60,14 +60,14 @@ MyJetAnalysis::MyJetAnalysis(const std::string& recojetname, const std::string& 
   m_trackpT.fill(numeric_limits<float>::signaling_NaN());
 }
 
-MyJetAnalysis::~MyJetAnalysis()
+CaloJetRhoEst::~CaloJetRhoEst()
 {
 }
 
-int MyJetAnalysis::Init(PHCompositeNode* topNode)
+int CaloJetRhoEst::Init(PHCompositeNode* topNode)
 {
-  if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
-    cout << "MyJetAnalysis::Init - Outoput to " << m_outputFileName << endl;
+  if (Verbosity() >= CaloJetRhoEst::VERBOSITY_SOME)
+    cout << "CaloJetRhoEst::Init - Outoput to " << m_outputFileName << endl;
 
   PHTFileServer::get().open(m_outputFileName, "RECREATE");
 
@@ -86,7 +86,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
           TString(m_recoJetName) + " inclusive jet #phi;#phi;Jet energy density", 50, -M_PI, M_PI);
 
   //Trees
-  m_T = new TTree("T", "MyJetAnalysis Tree");
+  m_T = new TTree("T", "CaloJetRhoEst Tree");
 
   //      int m_event;
   m_T->Branch("m_event", &m_event, "event/I");
@@ -127,9 +127,9 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-int MyJetAnalysis::End(PHCompositeNode* topNode)
+int CaloJetRhoEst::End(PHCompositeNode* topNode)
 {
-  cout << "MyJetAnalysis::End - Output to " << m_outputFileName << endl;
+  cout << "CaloJetRhoEst::End - Output to " << m_outputFileName << endl;
   PHTFileServer::get().cd(m_outputFileName);
 
   m_hInclusiveE->Write();
@@ -140,17 +140,20 @@ int MyJetAnalysis::End(PHCompositeNode* topNode)
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
+int CaloJetRhoEst::InitRun(PHCompositeNode* topNode)
 {
+  std::cout << " TOP NODE PRINT olives " << std::endl;
+  topNode->print();
   m_jetEvalStack = shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
   m_jetEvalStack->get_stvx_eval_stack()->set_use_initial_vertex(initial_vertex);
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-int MyJetAnalysis::process_event(PHCompositeNode* topNode)
+int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
 {
-  if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
-    cout << "MyJetAnalysis::process_event() entered" << endl;
+  return 0;
+  if (Verbosity() >= CaloJetRhoEst::VERBOSITY_SOME)
+    cout << "CaloJetRhoEst::process_event() entered" << endl;
 
   m_jetEvalStack->next_event(topNode);
   JetRecoEval* recoeval = m_jetEvalStack->get_reco_eval();
@@ -161,7 +164,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
   if (!jets)
   {
     cout
-        << "MyJetAnalysis::process_event - Error can not find DST JetMap node "
+        << "CaloJetRhoEst::process_event - Error can not find DST JetMap node "
         << m_recoJetName << endl;
     exit(-1);
   }
@@ -174,7 +177,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     if (!trackmap)
     {
       cout
-          << "MyJetAnalysis::process_event - Error can not find DST trackmap node SvtxTrackMap" << endl;
+          << "CaloJetRhoEst::process_event - Error can not find DST trackmap node SvtxTrackMap" << endl;
       exit(-1);
     }
   }
@@ -187,9 +190,9 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     bool pt_cut = (jet->get_pt() >= m_ptRange.first) and (jet->get_pt() <= m_ptRange.second);
     if ((not eta_cut) or (not pt_cut))
     {
-      if (Verbosity() >= MyJetAnalysis::VERBOSITY_MORE)
+      if (Verbosity() >= CaloJetRhoEst::VERBOSITY_MORE)
       {
-        cout << "MyJetAnalysis::process_event() - jet failed acceptance cut: ";
+        cout << "CaloJetRhoEst::process_event() - jet failed acceptance cut: ";
         cout << "eta cut: " << eta_cut << ", ptcut: " << pt_cut << endl;
         cout << "jet eta: " << jet->get_eta() << ", jet pt: " << jet->get_pt() << endl;
         jet->identify();
@@ -260,7 +263,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
 
       if (m_nMatchedTrack >= kMaxMatchedTrack)
       {
-        cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks" << endl;
+        cout << "CaloJetRhoEst::process_event() - reached max track that matching a jet. Quit iterating tracks" << endl;
         break;
       }
 

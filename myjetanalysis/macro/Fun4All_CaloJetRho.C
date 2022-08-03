@@ -7,18 +7,18 @@
 #include <fun4all/SubsysReco.h>
 
 // here you need your package name (set in configure.ac)
-#include <myjetanalysis/MyJetAnalysis.h>
+#include <calojetrhoest/CaloJetRhoEst.h>
 R__LOAD_LIBRARY(libfun4all.so)
-R__LOAD_LIBRARY(libmyjetanalysis.so)
+R__LOAD_LIBRARY(libcalojetrhoest.so)
 
-void Fun4All_JetAna(const int nevnt = 0, const char *inputfile = "/sphenix/sim/sim01/tutorials/myjetanalysis/G4sPHENIX_Pythia8.root")
+void Fun4All_CaloJetRho(const int nevnt = 0, const char *inputfile = "dst_tracks.list")
 {
-  gSystem->Load("libmyjetanalysis");
+  gSystem->Load("libcalojetrhoest");
   gSystem->Load("libg4dst");
 
   Fun4AllServer *se = Fun4AllServer::instance();
 
-  MyJetAnalysis *myJetAnalysis = new MyJetAnalysis("AntiKt_Tower_r04", "AntiKt_Truth_r04", "myjetanalysis.root");
+  CaloJetRhoEst *myJetAnalysis = new CaloJetRhoEst("AntiKt_Tower_r04", "AntiKt_Truth_r04", "myjetanalysis.root");
   //  myJetAnalysis->Verbosity(0);
   // change lower pt and eta cut to make them visible using the example
   //  pythia8 file
@@ -27,7 +27,7 @@ void Fun4All_JetAna(const int nevnt = 0, const char *inputfile = "/sphenix/sim/s
   se->registerSubsystem(myJetAnalysis);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTin");
-  in->fileopen(inputfile);
+  in->AddListFile(inputfile);
   se->registerInputManager(in);
 
   se->run(nevnt);

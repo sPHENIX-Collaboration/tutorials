@@ -1,5 +1,5 @@
-#ifndef MYJETANALYSIS_H
-#define MYJETANALYSIS_H
+#ifndef CALOJETRHOEST_H
+#define CALOJETRHOEST_H
 
 #include <fun4all/SubsysReco.h>
 
@@ -14,16 +14,16 @@ class JetEvalStack;
 class TTree;
 class TH1;
 
-/// \class MyJetAnalysis
-class MyJetAnalysis : public SubsysReco
+/// \class CaloJetRhoEst
+class CaloJetRhoEst : public SubsysReco
 {
  public:
-  MyJetAnalysis(
+  CaloJetRhoEst(
       const std::string &recojetname = "AntiKt_Tower_r04",
       const std::string &truthjetname = "AntiKt_Truth_r04",
-      const std::string &outputfilename = "myjetanalysis.root");
+      const std::string &outputfilename = "CaloJetRhoEst.root");
 
-  virtual ~MyJetAnalysis();
+  virtual ~CaloJetRhoEst();
 
   //! set eta range
   void
@@ -100,4 +100,4 @@ class MyJetAnalysis : public SubsysReco
   std::array<float, kMaxMatchedTrack> m_trackpT;
 };
 
-#endif  // MYJETANALYSIS_H
+#endif  // CALOJETRHOEST_H_H

@@ -142,10 +142,10 @@ int CaloJetRhoEst::End(PHCompositeNode* topNode)
 
 int CaloJetRhoEst::InitRun(PHCompositeNode* topNode)
 {
-  std::cout << " TOP NODE PRINT olives " << std::endl;
-  topNode->print();
   m_jetEvalStack = shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
   m_jetEvalStack->get_stvx_eval_stack()->set_use_initial_vertex(initial_vertex);
+
+  topNode->print();
   return Fun4AllReturnCodes::EVENT_OK;
 }
 

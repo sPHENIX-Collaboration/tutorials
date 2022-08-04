@@ -8,6 +8,7 @@
 #include <utility>  // std::pair, std::make_pair
 
 #include <array>
+#include <vector>
 
 class PHCompositeNode;
 class JetEvalStack;
@@ -29,26 +30,23 @@ class CaloJetRhoEst : public SubsysReco
   void
   setEtaRange(double low, double high)
   {
-    m_etaRange.first = low;
+    m_etaRange.first  = low;
     m_etaRange.second = high;
   }
   //! set eta range
   void
   setPtRange(double low, double high)
   {
-    m_ptRange.first = low;
+    m_ptRange.first  = low;
     m_ptRange.second = high;
   }
-  void use_initial_vertex(const bool b = true) {initial_vertex = b;}
-  int Init(PHCompositeNode *topNode);
-  int InitRun(PHCompositeNode *topNode);
-  int process_event(PHCompositeNode *topNode);
-  int End(PHCompositeNode *topNode);
+  /* void use_initial_vertex(const bool b = true) {initial_vertex = b;} */
+  int Init          (PHCompositeNode *topNode);
+  int InitRun       (PHCompositeNode *topNode);
+  int process_event (PHCompositeNode *topNode);
+  int End           (PHCompositeNode *topNode);
 
  private:
-  //! cache the jet evaluation modules
-  std::shared_ptr<JetEvalStack> m_jetEvalStack;
-
   std::string m_recoJetName;
   std::string m_truthJetName;
   std::string m_outputFileName;
@@ -62,42 +60,27 @@ class CaloJetRhoEst : public SubsysReco
   //! flag to use initial vertex in track evaluator
   bool initial_vertex = false;
 
-  //! max track-jet matching radius
-  double m_trackJetMatchingRadius;
-
-  //! Output histograms
-  TH1 *m_hInclusiveE;
-  TH1 *m_hInclusiveEta;
-  TH1 *m_hInclusivePhi;
-
   //! Output Tree variables
   TTree *m_T;
+  int   m_id;
+  float m_rho;
+  float m_centrality;
+  float m_impactparam;
 
-  int m_event;
-  int m_id;
-  int m_nComponent;
-  float m_eta;
-  float m_phi;
-  float m_e;
-  float m_pt;
+  //Calo Jets
+  std::vector<float> m_eta;
+  std::vector<float> m_phi;
+  std::vector<float> m_e;
+  std::vector<float> m_pt;
+  std::vector<float> m_area;
 
-  int m_truthID;
-  int m_truthNComponent;
-  float m_truthEta;
-  float m_truthPhi;
-  float m_truthE;
-  float m_truthPt;
+  //Truth Jets
+  std::vector<float> m_truthEta;
+  std::vector<float> m_truthPhi;
+  std::vector<float> m_truthE;
+  std::vector<float> m_truthPt;
+  std::vector<float> m_truthArea;
 
-  //! number of matched tracks
-  int m_nMatchedTrack;
-
-  enum
-  {
-    //! max number of tracks
-    kMaxMatchedTrack = 1000
-  };
-  std::array<float, kMaxMatchedTrack> m_trackdR;
-  std::array<float, kMaxMatchedTrack> m_trackpT;
 };
 
 #endif  // CALOJETRHOEST_H_H

@@ -132,20 +132,21 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
   }
 
   //centrality
-  CentralityInfo* cent_node = findNode::getClass<CentralityInfo>(topNode, "CentralityInfo");
-  if (!cent_node)
-  {
-    std::cout
-      << "MyJetAnalysis::process_event - Error can not find centrality node "
-      << std::endl;
-    exit(-1);
-  }
+  /* CentralityInfo* cent_node = findNode::getClass<CentralityInfo>(topNode, "CentralityInfo"); */
+  /* if (!cent_node) */
+  /* { */
+  /*   std::cout */
+  /*     << "MyJetAnalysis::process_event - Error can not find centrality node " */
+  /*     << std::endl; */
+  /*   exit(-1); */
+  /* } */
 
   //get the event centrality/impact parameter from HIJING
-  m_centrality  =  cent_node->get_centile(CentralityInfo::PROP::bimp);
-  m_impactparam =  cent_node->get_quantity(CentralityInfo::PROP::bimp);
+  /* m_centrality  =  cent_node->get_centile(CentralityInfo::PROP::bimp); */
+  /* m_impactparam =  cent_node->get_quantity(CentralityInfo::PROP::bimp); */
 
   //get reco jets
+  cout << " olives A0 " << endl;
   for (JetMap::Iter iter = jets->begin(); iter != jets->end(); ++iter)
   {
     Jet* jet = iter->second;
@@ -154,6 +155,7 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
     if  (pt < m_ptRange.first  || pt  > m_ptRange.second
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
 
+    cout << " olives: A1 " << jet->get_eta() << endl;
     m_eta.push_back(jet->get_eta());
     m_phi.push_back(jet->get_phi());
     m_e.push_back(jet->get_e());
@@ -168,6 +170,7 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
 
     m_truthEta.push_back(truthjet->get_eta());
+    cout << " olives: A2 MC " << truthjet->get_eta() << endl;
     m_truthPhi.push_back(truthjet->get_phi());
     m_truthE  .push_back(truthjet->get_e());
     m_truthPt .push_back(truthjet->get_pt());

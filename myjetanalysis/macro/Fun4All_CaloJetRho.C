@@ -6,6 +6,8 @@
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/SubsysReco.h>
 
+/* #include <GlobalVariables.C> */
+/* #include <G4_Global.C> */
 #include <g4jets/FastJetAlgo.h>
 #include <g4jets/JetReco.h>
 #include <g4jets/TowerJetInput.h>
@@ -29,9 +31,6 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
 
   int verbosity = 0;
 
-  gROOT->LoadMacro("G4_Global.C");
-  Global_Reco();
-  
   JetReco *towerjetreco = new JetReco();
   towerjetreco->add_input(new TowerJetInput(Jet::CEMC_TOWER_SUB1));
   towerjetreco->add_input(new TowerJetInput(Jet::HCALIN_TOWER_SUB1));
@@ -56,6 +55,8 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
   // need truth jets
   // need calo  jets
   // need event info
+  // need primary vertex
+// $ CreateFileList.pl -run 4 -n 1000 -type 11 DST_VERTEX DST_CALO_G4HIT DST_CALO_CLUSTER DST_TRUTH_JET
 
   Fun4AllInputManager *intrue = new Fun4AllDstInputManager("DSTtruth");
   intrue->AddListFile("dst_truth_jet.list");
@@ -65,9 +66,13 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
   incalo->AddListFile("dst_calo_g4hit.list");
   se->registerInputManager(incalo);
 
-  Fun4AllInputManager *incalocluster = new Fun4AllDstInputManager("DSTcalo");
+  Fun4AllInputManager *incalocluster = new Fun4AllDstInputManager("DSTcalocluster");
   incalocluster->AddListFile("dst_calo_cluster.list");
   se->registerInputManager(incalocluster);
+
+  Fun4AllInputManager *invertex = new Fun4AllDstInputManager("DSTvertex");
+  invertex->AddListFile("dst_vertex.list");
+  se->registerInputManager(invertex);
 
   se->run(nevnt);
   se->End();

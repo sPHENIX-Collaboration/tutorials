@@ -45,6 +45,7 @@ class CaloJetRhoEst : public SubsysReco
   int InitRun       (PHCompositeNode *topNode);
   int process_event (PHCompositeNode *topNode);
   int End           (PHCompositeNode *topNode);
+  void clear_vectors();
 
  private:
   std::string m_recoJetName;

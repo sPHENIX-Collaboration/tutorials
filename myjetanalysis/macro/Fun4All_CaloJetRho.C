@@ -48,7 +48,7 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
   // change lower pt and eta cut to make them visible using the example
   //  pythia8 file
   CaloJetRhoEst *myJetAnalysis = new CaloJetRhoEst("AntiKt_Tower_r04_Sub1", "AntiKt_Truth_r04", "myjetanalysis.root");
-  myJetAnalysis->setPtRange(1, 100);
+  myJetAnalysis->setPtRange(5, 100);
   myJetAnalysis->setEtaRange(-1.1, 1.1);
   se->registerSubsystem(myJetAnalysis);
 

@@ -154,12 +154,10 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
     float eta = jet->get_eta();
     if  (pt < m_ptRange.first  || pt  > m_ptRange.second
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
-
-    /* cout << " olives: A1 " << jet->get_eta() << endl; */
-    m_eta.push_back(jet->get_eta());
+    m_pt.push_back(pt);
+    m_eta.push_back(eta);
     m_phi.push_back(jet->get_phi());
     m_e.push_back(jet->get_e());
-    m_pt.push_back(jet->get_pt());
   }
   for (JetMap::Iter iter = jetsMC->begin(); iter != jetsMC->end(); ++iter)
   {
@@ -169,13 +167,31 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
     if  (pt < m_ptRange.first  || pt  > m_ptRange.second
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
 
-    m_truthEta.push_back(truthjet->get_eta());
+    m_truthPt .push_back(pt);
+    m_truthEta.push_back(eta);
     /* cout << " olives: A2 MC " << truthjet->get_eta() << endl; */
     m_truthPhi.push_back(truthjet->get_phi());
     m_truthE  .push_back(truthjet->get_e());
-    m_truthPt .push_back(truthjet->get_pt());
   }
   m_T->Fill();
+  clear_vectors();
+
 
   return Fun4AllReturnCodes::EVENT_OK;
+}
+
+
+void CaloJetRhoEst::clear_vectors() {
+  m_eta.clear();
+  m_phi.clear();
+  m_e.clear();
+  m_pt.clear();
+  m_area.clear();
+
+  
+  m_truthEta.clear();
+  m_truthPhi.clear();
+  m_truthE.clear();
+  m_truthPt.clear();
+  m_truthArea.clear();
 }

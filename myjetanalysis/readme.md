@@ -1,6 +1,17 @@
 # 2022.08.05
-Missing information for the CentralityInfo node -- so just cut it out for now
+* Missing information for the CentralityInfo node -- so just cut it out for now
+* Needed:
+    * modify the jet base class to have a field for Area
+    * add a fastjetalgo to save the jet area, took
 
+
+
+# Some important files:
+~/vv/coresoftware/offline/packages/jetbackground/FastJetAlgoSub.cc
+~/vv/coresoftware/offline/packages/jetbackground/FastJetAlgoSub.h
+~/vv/coresoftware/simulation/g4simulation/g4jets/FastJetAlgo.h
+~/vv/coresoftware/simulation/g4simulation/g4jets/FastJetAlgo.cc
+~/vv/coresoftware/simulation/g4simulation/g4jets/JetAlgo.h
 
 
 # Things to do:

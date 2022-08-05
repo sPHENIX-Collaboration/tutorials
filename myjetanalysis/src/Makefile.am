@@ -10,7 +10,8 @@ lib_LTLIBRARIES = \
 
 libcalojetrhoest_la_LDFLAGS = \
   -L$(libdir) \
-  -L$(OFFLINE_MAIN)/lib
+  -L$(OFFLINE_MAIN)/lib \
+  `fastjet-config --libs`
 
 libcalojetrhoest_la_LIBADD = \
   -lfun4all \

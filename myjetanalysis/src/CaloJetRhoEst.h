@@ -14,6 +14,7 @@ class PHCompositeNode;
 class JetEvalStack;
 class TTree;
 class TH1;
+class JetInput;
 
 /// \class CaloJetRhoEst
 class CaloJetRhoEst : public SubsysReco
@@ -46,6 +47,7 @@ class CaloJetRhoEst : public SubsysReco
   int process_event (PHCompositeNode *topNode);
   int End           (PHCompositeNode *topNode);
   void clear_vectors();
+  void add_input(JetInput *input) { _inputs.push_back(input); }
 
  private:
   std::string m_recoJetName;
@@ -82,6 +84,7 @@ class CaloJetRhoEst : public SubsysReco
   std::vector<float> m_truthPt;
   std::vector<float> m_truthArea;
 
+  std::vector<JetInput *> _inputs; // copied from /direct/sphenix+u/dstewart/vv/coresoftware/simulation/g4simulation/g4jets/JetReco.h .cc
 };
 
 #endif  // CALOJETRHOEST_H_H

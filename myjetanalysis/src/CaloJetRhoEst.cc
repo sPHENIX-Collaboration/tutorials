@@ -146,7 +146,7 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
   /* m_impactparam =  cent_node->get_quantity(CentralityInfo::PROP::bimp); */
 
   //get reco jets
-  cout << " olives A0 " << endl;
+  /* cout << " olives A0 " << endl; */
   for (JetMap::Iter iter = jets->begin(); iter != jets->end(); ++iter)
   {
     Jet* jet = iter->second;
@@ -155,7 +155,7 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
     if  (pt < m_ptRange.first  || pt  > m_ptRange.second
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
 
-    cout << " olives: A1 " << jet->get_eta() << endl;
+    /* cout << " olives: A1 " << jet->get_eta() << endl; */
     m_eta.push_back(jet->get_eta());
     m_phi.push_back(jet->get_phi());
     m_e.push_back(jet->get_e());
@@ -170,7 +170,7 @@ int CaloJetRhoEst::process_event(PHCompositeNode* topNode)
         || eta < m_etaRange.first || eta > m_etaRange.second) continue;
 
     m_truthEta.push_back(truthjet->get_eta());
-    cout << " olives: A2 MC " << truthjet->get_eta() << endl;
+    /* cout << " olives: A2 MC " << truthjet->get_eta() << endl; */
     m_truthPhi.push_back(truthjet->get_phi());
     m_truthE  .push_back(truthjet->get_e());
     m_truthPt .push_back(truthjet->get_pt());

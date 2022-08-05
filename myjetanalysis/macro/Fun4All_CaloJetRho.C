@@ -29,12 +29,12 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
 
   Fun4AllServer *se = Fun4AllServer::instance();
 
-  int verbosity = 0;
+  int verbosity = 1;
 
   JetReco *towerjetreco = new JetReco();
-  towerjetreco->add_input(new TowerJetInput(Jet::CEMC_TOWER_SUB1));
-  towerjetreco->add_input(new TowerJetInput(Jet::HCALIN_TOWER_SUB1));
-  towerjetreco->add_input(new TowerJetInput(Jet::HCALOUT_TOWER_SUB1));
+  towerjetreco->add_input(new TowerJetInput(Jet::CEMC_TOWER));
+  towerjetreco->add_input(new TowerJetInput(Jet::HCALIN_TOWER));
+  towerjetreco->add_input(new TowerJetInput(Jet::HCALOUT_TOWER));
   /* towerjetreco->add_algo(new FastJetAlgoSub(Jet::ANTIKT, 0.2, 1), "AntiKt_Tower_r02_Sub1"); */
   /* towerjetreco->add_algo(new FastJetAlgoSub(Jet::ANTIKT, 0.3, 1), "AntiKt_Tower_r03_Sub1"); */
   towerjetreco->add_algo(new FastJetAlgoSub(Jet::ANTIKT, 0.4, 1), "AntiKt_Tower_r04_Sub1");
@@ -44,10 +44,10 @@ void Fun4All_CaloJetRho(const int nevnt = 19)
   towerjetreco->Verbosity(verbosity);
   se->registerSubsystem(towerjetreco);
 
-  CaloJetRhoEst *myJetAnalysis = new CaloJetRhoEst("AntiKt_Tower_r04_Sub1", "AntiKt_Truth_r04", "myjetanalysis.root");
   //  myJetAnalysis->Verbosity(0);
   // change lower pt and eta cut to make them visible using the example
   //  pythia8 file
+  CaloJetRhoEst *myJetAnalysis = new CaloJetRhoEst("AntiKt_Tower_r04_Sub1", "AntiKt_Truth_r04", "myjetanalysis.root");
   myJetAnalysis->setPtRange(1, 100);
   myJetAnalysis->setEtaRange(-1.1, 1.1);
   se->registerSubsystem(myJetAnalysis);

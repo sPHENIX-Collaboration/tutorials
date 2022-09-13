@@ -36,12 +36,6 @@ CaloAna::CaloAna(const std::string& name, const std::string& filename)
   : SubsysReco(name)
   , detector("HCALIN")
   , outfilename(filename)
-  , hm(nullptr)
-  , outfile(nullptr)
-  , g4hitntuple(nullptr)
-  , g4cellntuple(nullptr)
-  , towerntuple(nullptr)
-  , clusterntuple(nullptr)
 {
 }
 
@@ -214,7 +208,7 @@ int CaloAna::process_clusters(PHCompositeNode* topNode)
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
-int CaloAna::End(PHCompositeNode* topNode)
+int CaloAna::End(PHCompositeNode* /*topNode*/)
 {
   outfile->cd();
   g4hitntuple->Write();

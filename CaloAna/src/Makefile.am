@@ -10,18 +10,12 @@ AM_LDFLAGS = \
 AM_CPPFLAGS = \
   -I$(includedir) \
   -I$(OFFLINE_MAIN)/include \
-  -I$(ROOTSYS)/include
+  -isystem$(ROOTSYS)/include
 
 pkginclude_HEADERS = \
   CaloAna.h
 
-if ! MAKEROOT6
-  ROOT5_DICTS = \
-    CaloAna_Dict.cc
-endif
-
 libcaloana_la_SOURCES = \
-  $(ROOT5_DICTS) \
   CaloAna.cc 
 
 libcaloana_la_LDFLAGS = \
@@ -54,4 +48,4 @@ testexternals.C:
 	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
 
 clean-local:
-	rm -f *Dict* $(BUILT_SOURCES) *.pcm
+	rm -f $(BUILT_SOURCES)

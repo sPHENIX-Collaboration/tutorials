@@ -37,12 +37,12 @@ class CaloAna : public SubsysReco
  protected:
   std::string detector;
   std::string outfilename;
-  Fun4AllHistoManager *hm;
-  TFile *outfile;
-  TNtuple *g4hitntuple;
-  TNtuple *g4cellntuple;
-  TNtuple *towerntuple;
-  TNtuple *clusterntuple;
+  Fun4AllHistoManager *hm = nullptr;
+  TFile *outfile = nullptr;
+  TNtuple *g4hitntuple = nullptr;
+  TNtuple *g4cellntuple = nullptr;
+  TNtuple *towerntuple = nullptr;
+  TNtuple *clusterntuple = nullptr;
 };
 
 #endif

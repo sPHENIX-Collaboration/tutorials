@@ -1,3 +1,9 @@
+The Fun4All_G4_sPHENIX.C and  G4Setup_sPHENIX.C macros which used to be here were outdated and therefore removed. Use a standard Fun4All_G4_sPHENIX.C macro instead. For the up to date version fetch it from
+
+https://github.com/sPHENIX-Collaboration/macros/tree/master/detectors/sPHENIX
+
+you will need Fun4All_G4_sPHENIX.C and G4Setup_sPHENIX.C
+
 ***Be aware that the following instructions will run the material scan with our default world volume which is air and the default world is a cylinder with 5m radius. This can add significantly to the radiation length X0***
 
 The cylinder shape will ensure azimuthal symmetry of the world but the air can add significantly to the X0. If you do a material scan consider to replace the world material by G4_Galactic. To do this find where our G4 module is created in the macro and add SetWorldMaterial("G4_Galactic"):

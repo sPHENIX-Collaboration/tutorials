@@ -1,5 +1,6 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#ifndef MACRO_MYHITTTREE_C
+#define MACRO_MYHITTTREE_C
+
 #include <fun4all/SubsysReco.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
@@ -7,11 +8,12 @@
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <g4histos/G4HitTTree.h>
+
 R__LOAD_LIBRARY(libg4histos.so)
-#endif
+
 void MyHitTTree(const char *fname, const int nevnt = 0, const char *outfile="hits.root")
 {
-  gSystem->Load("libg4histos");
+  gSystem->Load("libg4dst.so");
   Fun4AllServer *se = Fun4AllServer::instance();
   char detector[100];
   char outnode[100];
@@ -33,3 +35,5 @@ void MyHitTTree(const char *fname, const int nevnt = 0, const char *outfile="hit
   se->End();
   delete se;
 }
+
+#endif

@@ -1,5 +1,6 @@
-#pragma once
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6,00,0)
+#ifndef MACRO_FUN4ALLG4CYLINDER_C
+#define MACRO_FUN4ALLG4CYLINDER_C
+
 #include <fun4all/SubsysReco.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/Fun4AllInputManager.h>
@@ -12,17 +13,14 @@
 #include <g4main/PHG4Reco.h>
 #include <g4main/PHG4TruthSubsystem.h>
 #include <phool/recoConsts.h>
+
 R__LOAD_LIBRARY(libg4eval.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libg4testbench.so)
 R__LOAD_LIBRARY(libg4detectors.so)
-#endif
-int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
-{
 
-  gSystem->Load("libfun4all");
-  gSystem->Load("libg4detectors.so");
-  gSystem->Load("libg4testbench.so");
+int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = nullptr)
+{
 
   ///////////////////////////////////////////
   // Make the Server
@@ -44,7 +42,7 @@ int Fun4All_G4_Cylinder(const int nEvents = 10, const char * outfile = NULL)
   se->registerSubsystem(gen);
 
   PHG4Reco* g4Reco = new PHG4Reco();
-  g4Reco->set_field(1.5); // 1.5 T solenoidal field 
+  g4Reco->set_field(1.4); // 1.5 T solenoidal field 
 
 
   double si_thickness[6] = {0.02, 0.02, 0.0625, 0.032, 0.032, 0.032};
@@ -97,3 +95,5 @@ PHG4ParticleGenerator *get_gen(const char *name="PGENERATOR")
   PHG4ParticleGenerator *pgun = (PHG4ParticleGenerator *) se->getSubsysReco(name);
   return pgun;
 }
+
+#endif

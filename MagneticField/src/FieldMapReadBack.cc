@@ -52,7 +52,7 @@ void FieldMapReadBack::PrintField(const double x, const double y, const double z
 
   double Bf[3];
   fieldmap->GetFieldValue(Point, Bf);
-  std::cout << "Point: " << x / cm << "/" << y / cm << "/" << z / cm << std::endl;
+  std::cout << "Point: " << x << "/" << y << "/" << z << " cm" << std::endl;
   std::cout << "BField: " << Bf[0] / tesla << "/" << Bf[1] / tesla << "/" << Bf[2] / tesla << std::endl;
   return;
 }

@@ -1,0 +1,22 @@
+## This is an example condor job, used to submit 5 jobs of the simple
+## Fun4All_AnaTutorial_sPHENIX.C macro
+## After changing that, try  
+## $ condor_submit run_tutorial.job 
+## from the terminal
+
+Universe        = vanilla
+Notification    = Never
+Priority        = 1
+PeriodicHold = (NumJobStarts>=1 && JobStatus == 1)
+request_memory = 4.0GB
+
+#Change the initial directory to your initial directory where the .csh script is
+Initialdir      = /sphenix/user/jdosbo/git/sphenix/tutorials/AnaTutorial/macro/condor_scripts
+Executable      = $(Initialdir)/run_tutorial.csh
+Output          = $(Initialdir)/testout_$(Process).out
+Error           = $(Initialdir)/testerr_$(Process).err
+Log             = $(Initialdir)/testlog_$(Process).log
+
+Arguments = $(Process)
+
+Queue 2

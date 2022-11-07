@@ -68,3 +68,7 @@ se->registerSubsystem(anaTutorial);
 ```
 
 If you developed your own analysis package, you would use a similar workflow to add your analysis package to the macro that you want to run.
+
+## Example Condor Scripts
+There is a dummy example of a csh and condor job submission script that you could look at as well. These can run out of the box with a few modifications (e.g. you need to change some things to your working directory), but are not meant to be representative of a real production case. They simply show the basics for a very simple implementation of an example job script. For more details see the condor wiki page at [this link](https://wiki.sphenix.bnl.gov/index.php/Condor). 
+

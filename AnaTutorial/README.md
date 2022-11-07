@@ -2,6 +2,11 @@
 
 This package is intended to demonstrate some basic features of analysis tutorials and walk a new user through building a package, extracting physics information from the NodeTree, and then using that package to produce a root file that can be used for further analysis. The package demonstrates some basic features and contains some useful code for extracting physics information like reconstructed tracks, reconstructed EMCal clusters, and truth particle information (amongst some other things).
 
+To get started, first clone the repository to get the code with
+```bash
+$ git clone git@github.com:sPHENIX-Collaboration/tutorials.git
+```
+
 
 ## Building The Package
 

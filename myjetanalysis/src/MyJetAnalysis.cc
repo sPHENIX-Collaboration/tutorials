@@ -1,17 +1,15 @@
 #include "MyJetAnalysis.h"
 
+#include <trackbase_historic/SvtxTrackMap.h>
+
+#include <g4jets/JetMap.h>
+
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
 #include <fun4all/PHTFileServer.h>
 
 #include <phool/PHCompositeNode.h>
 #include <phool/getClass.h>
-
-#include <g4eval/JetEvalStack.h>
-
-#include <trackbase_historic/SvtxTrackMap.h>
-
-#include <g4jets/JetMap.h>
 
 #include <TFile.h>
 #include <TH1F.h>
@@ -27,8 +25,6 @@
 #include <limits>
 #include <stdexcept>
 
-using namespace std;
-
 MyJetAnalysis::MyJetAnalysis(const std::string& recojetname, const std::string& truthjetname, const std::string& outputfilename)
   : SubsysReco("MyJetAnalysis_" + recojetname + "_" + truthjetname)
   , m_recoJetName(recojetname)
@@ -37,37 +33,15 @@ MyJetAnalysis::MyJetAnalysis(const std::string& recojetname, const std::string& 
   , m_etaRange(-1, 1)
   , m_ptRange(5, 100)
   , m_trackJetMatchingRadius(.7)
-  , m_hInclusiveE(nullptr)
-  , m_hInclusiveEta(nullptr)
-  , m_hInclusivePhi(nullptr)
-  , m_T(nullptr)
-  , m_event(-1)
-  , m_id(-1)
-  , m_nComponent(-1)
-  , m_eta(numeric_limits<float>::signaling_NaN())
-  , m_phi(numeric_limits<float>::signaling_NaN())
-  , m_e(numeric_limits<float>::signaling_NaN())
-  , m_pt(numeric_limits<float>::signaling_NaN())
-  , m_truthID(-1)
-  , m_truthNComponent(-1)
-  , m_truthEta(numeric_limits<float>::signaling_NaN())
-  , m_truthPhi(numeric_limits<float>::signaling_NaN())
-  , m_truthE(numeric_limits<float>::signaling_NaN())
-  , m_truthPt(numeric_limits<float>::signaling_NaN())
-  , m_nMatchedTrack(-1)
 {
-  m_trackdR.fill(numeric_limits<float>::signaling_NaN());
-  m_trackpT.fill(numeric_limits<float>::signaling_NaN());
-}
-
-MyJetAnalysis::~MyJetAnalysis()
-{
+  m_trackdR.fill(std::numeric_limits<float>::signaling_NaN());
+  m_trackpT.fill(std::numeric_limits<float>::signaling_NaN());
 }
 
 int MyJetAnalysis::Init(PHCompositeNode* topNode)
 {
   if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
-    cout << "MyJetAnalysis::Init - Outoput to " << m_outputFileName << endl;
+    std::cout << "MyJetAnalysis::Init - Outoput to " << m_outputFileName << std::endl;
 
   PHTFileServer::get().open(m_outputFileName, "RECREATE");
 
@@ -129,7 +103,7 @@ int MyJetAnalysis::Init(PHCompositeNode* topNode)
 
 int MyJetAnalysis::End(PHCompositeNode* topNode)
 {
-  cout << "MyJetAnalysis::End - Output to " << m_outputFileName << endl;
+  std::cout << "MyJetAnalysis::End - Output to " << m_outputFileName << std::endl;
   PHTFileServer::get().cd(m_outputFileName);
 
   m_hInclusiveE->Write();
@@ -142,7 +116,7 @@ int MyJetAnalysis::End(PHCompositeNode* topNode)
 
 int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
 {
-  m_jetEvalStack = shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
+  m_jetEvalStack = std::shared_ptr<JetEvalStack>(new JetEvalStack(topNode, m_recoJetName, m_truthJetName));
   m_jetEvalStack->get_stvx_eval_stack()->set_use_initial_vertex(initial_vertex);
   return Fun4AllReturnCodes::EVENT_OK;
 }
@@ -150,7 +124,7 @@ int MyJetAnalysis::InitRun(PHCompositeNode* topNode)
 int MyJetAnalysis::process_event(PHCompositeNode* topNode)
 {
   if (Verbosity() >= MyJetAnalysis::VERBOSITY_SOME)
-    cout << "MyJetAnalysis::process_event() entered" << endl;
+    std::cout << "MyJetAnalysis::process_event() entered" << std::endl;
 
   m_jetEvalStack->next_event(topNode);
   JetRecoEval* recoeval = m_jetEvalStack->get_reco_eval();
@@ -160,9 +134,9 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
   JetMap* jets = findNode::getClass<JetMap>(topNode, m_recoJetName);
   if (!jets)
   {
-    cout
+    std::cout
         << "MyJetAnalysis::process_event - Error can not find DST JetMap node "
-        << m_recoJetName << endl;
+        << m_recoJetName << std::endl;
     exit(-1);
   }
 
@@ -173,8 +147,8 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
     if (!trackmap)
     {
-      cout
-          << "MyJetAnalysis::process_event - Error can not find DST trackmap node SvtxTrackMap" << endl;
+      std::cout
+          << "MyJetAnalysis::process_event - Error can not find DST trackmap node SvtxTrackMap" << std::endl;
       exit(-1);
     }
   }
@@ -189,9 +163,9 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
     {
       if (Verbosity() >= MyJetAnalysis::VERBOSITY_MORE)
       {
-        cout << "MyJetAnalysis::process_event() - jet failed acceptance cut: ";
-        cout << "eta cut: " << eta_cut << ", ptcut: " << pt_cut << endl;
-        cout << "jet eta: " << jet->get_eta() << ", jet pt: " << jet->get_pt() << endl;
+        std::cout << "MyJetAnalysis::process_event() - jet failed acceptance cut: ";
+        std::cout << "eta cut: " << eta_cut << ", ptcut: " << pt_cut << std::endl;
+        std::cout << "jet eta: " << jet->get_eta() << ", jet pt: " << jet->get_pt() << std::endl;
         jet->identify();
       }
       continue;
@@ -260,7 +234,7 @@ int MyJetAnalysis::process_event(PHCompositeNode* topNode)
 
       if (m_nMatchedTrack >= kMaxMatchedTrack)
       {
-        cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks" << endl;
+        std::cout << "MyJetAnalysis::process_event() - reached max track that matching a jet. Quit iterating tracks" << std::endl;
         break;
       }
 

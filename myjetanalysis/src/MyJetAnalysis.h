@@ -3,14 +3,15 @@
 
 #include <fun4all/SubsysReco.h>
 
+#include <g4eval/JetEvalStack.h>
+
+#include <array>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>  // std::pair, std::make_pair
 
-#include <array>
-
 class PHCompositeNode;
-class JetEvalStack;
 class TTree;
 class TH1;
 
@@ -23,7 +24,7 @@ class MyJetAnalysis : public SubsysReco
       const std::string &truthjetname = "AntiKt_Truth_r04",
       const std::string &outputfilename = "myjetanalysis.root");
 
-  virtual ~MyJetAnalysis();
+  ~MyJetAnalysis() override = default;
 
   //! set eta range
   void
@@ -63,33 +64,33 @@ class MyJetAnalysis : public SubsysReco
   bool initial_vertex = false;
 
   //! max track-jet matching radius
-  double m_trackJetMatchingRadius;
+  double m_trackJetMatchingRadius = std::numeric_limits<float>::signaling_NaN();
 
   //! Output histograms
-  TH1 *m_hInclusiveE;
-  TH1 *m_hInclusiveEta;
-  TH1 *m_hInclusivePhi;
+  TH1 *m_hInclusiveE = nullptr;
+  TH1 *m_hInclusiveEta = nullptr;
+  TH1 *m_hInclusivePhi = nullptr;
 
   //! Output Tree variables
-  TTree *m_T;
+  TTree *m_T = nullptr;
 
-  int m_event;
-  int m_id;
-  int m_nComponent;
-  float m_eta;
-  float m_phi;
-  float m_e;
-  float m_pt;
+  int m_event = -1;
+  int m_id = -1;
+  int m_nComponent = -1;
+  float m_eta = std::numeric_limits<float>::signaling_NaN();
+  float m_phi = std::numeric_limits<float>::signaling_NaN();
+  float m_e = std::numeric_limits<float>::signaling_NaN();
+  float m_pt = std::numeric_limits<float>::signaling_NaN();
 
-  int m_truthID;
-  int m_truthNComponent;
-  float m_truthEta;
-  float m_truthPhi;
-  float m_truthE;
-  float m_truthPt;
+  int m_truthID = -1;
+  int m_truthNComponent = -1;
+  float m_truthEta = std::numeric_limits<float>::signaling_NaN();
+  float m_truthPhi = std::numeric_limits<float>::signaling_NaN();
+  float m_truthE = std::numeric_limits<float>::signaling_NaN();
+  float m_truthPt = std::numeric_limits<float>::signaling_NaN();
 
   //! number of matched tracks
-  int m_nMatchedTrack;
+  int m_nMatchedTrack = -1;
 
   enum
   {

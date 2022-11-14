@@ -41,10 +41,10 @@ class MyJetAnalysis : public SubsysReco
     m_ptRange.second = high;
   }
   void use_initial_vertex(const bool b = true) {initial_vertex = b;}
-  int Init(PHCompositeNode *topNode);
-  int InitRun(PHCompositeNode *topNode);
-  int process_event(PHCompositeNode *topNode);
-  int End(PHCompositeNode *topNode);
+  int Init(PHCompositeNode *topNode) override;
+  int InitRun(PHCompositeNode *topNode) override;
+  int process_event(PHCompositeNode *topNode) override;
+  int End(PHCompositeNode *topNode) override;
 
  private:
   //! cache the jet evaluation modules

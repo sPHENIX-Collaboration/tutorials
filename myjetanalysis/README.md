@@ -91,6 +91,12 @@ and change package and class names. Welcome to edit it for your analysis cases.
 
 Please upload your analysis module back to the [analysis repository](https://github.com/sPHENIX-Collaboration/analysis) at the end too so it could be shared with others. 
 
+
+## Use Mock Data Challenge Output
+
+The Fun4All_JetAna_MDC.C uses the current Mock Data Challenge Output. Jets are not reconstructed during production, so we need to run the jet reconstruction using the Jet_Reco() function in the installed G4_Jets.C macro. As input we need Tracks, Calorimeter Clusters and the Truth info. Use the CreateFileList.pl script to get the lists of those files (here type 16 which are photon jet samples:
+`CreateFileList.pl -type 16 DST_TRACKS DST_TRUTH DST_CALO_CLUSTER`
+
 # Read more
 
 Many next-step topics are listed in the [software](https://wiki.bnl.gov/sPHENIX/index.php/Software) page. And specifically, to use the simulation for your study, a few thing you might want to try:

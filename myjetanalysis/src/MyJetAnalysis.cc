@@ -17,10 +17,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TString.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wbitwise-instead-of-logical"
 #include <TTree.h>
-#pragma GCC diagnostic pop
 #include <TVector3.h>
 
 #include <algorithm>

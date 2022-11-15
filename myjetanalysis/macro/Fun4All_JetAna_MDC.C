@@ -2,7 +2,6 @@
 #define MACRO_FUN4ALLJETANA_C
 
 #include <G4_Jets.C>
-#include <G4_Global.C>
 
 #include <fun4all/Fun4AllDstInputManager.h>
 #include <fun4all/Fun4AllInputManager.h>
@@ -25,17 +24,17 @@ void Fun4All_JetAna_MDC(const int nevnt = 0, const std::string &inlist1 = "dst_t
   gSystem->Load("libmyjetanalysis");
   gSystem->Load("libg4dst");
 
-  //  Global_Reco();
   Jet_Reco();
 
   Fun4AllServer *se = Fun4AllServer::instance();
-
+  // uncomment if you want the event counter printed
+  //se->Verbosity(1);
   MyJetAnalysis *myJetAnalysis = new MyJetAnalysis("AntiKt_Tower_r04", "AntiKt_Truth_r04", "myjetanalysis.root");
   //myJetAnalysis->Verbosity(10);
-  // change lower pt and eta cut to make them visible using the example
-  //  pythia8 file
+  // change lower pt and eta cut to make them visible
   myJetAnalysis->setPtRange(1, 100);
   myJetAnalysis->setEtaRange(-1.1, 1.1);
+  myJetAnalysis->use_initial_vertex(true);
   se->registerSubsystem(myJetAnalysis);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTin1");

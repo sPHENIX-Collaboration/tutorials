@@ -31,12 +31,11 @@ void Fun4All_JetAna_MDC(const int nevnt = 0, const std::string &inlist1 = "dst_t
   Fun4AllServer *se = Fun4AllServer::instance();
 
   MyJetAnalysis *myJetAnalysis = new MyJetAnalysis("AntiKt_Tower_r04", "AntiKt_Truth_r04", "myjetanalysis.root");
-  myJetAnalysis->Verbosity(100);
+  //myJetAnalysis->Verbosity(10);
   // change lower pt and eta cut to make them visible using the example
   //  pythia8 file
   myJetAnalysis->setPtRange(1, 100);
   myJetAnalysis->setEtaRange(-1.1, 1.1);
-  //  myJetAnalysis->use_initial_vertex(true);
   se->registerSubsystem(myJetAnalysis);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTin1");

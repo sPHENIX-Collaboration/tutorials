@@ -49,22 +49,20 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
-#include <TMath.h>
 #include <TNtuple.h>
 #include <TTree.h>
 
 /// C++ includes
 #include <cassert>
+#include <cmath>
 #include <sstream>
 #include <string>
 
-using namespace std;
-
 /**
- * This class demonstrates the construction and use of an analysis module 
- * within the sPHENIX Fun4All framework. It is intended to show how to 
+ * This class demonstrates the construction and use of an analysis module
+ * within the sPHENIX Fun4All framework. It is intended to show how to
  * obtain physics objects from the analysis tree, and then write them out
- * to a ROOT tree and file for further offline analysis.  
+ * to a ROOT tree and file for further offline analysis.
  */
 
 /**
@@ -81,7 +79,7 @@ AnaTutorial::AnaTutorial(const std::string &name, const std::string &filename)
   , m_analyzeJets(true)
   , m_analyzeTruth(false)
 {
-  /// Initialize variables and trees so we don't accidentally access 
+  /// Initialize variables and trees so we don't accidentally access
   /// memory that was never allocated
   initializeVariables();
   initializeTrees();
@@ -102,13 +100,13 @@ AnaTutorial::~AnaTutorial()
 /**
  * Initialize the module and prepare looping over events
  */
-int AnaTutorial::Init(PHCompositeNode *topNode)
+int AnaTutorial::Init(PHCompositeNode * /*topNode*/)
 {
   if (Verbosity() > 5)
   {
-    cout << "Beginning Init in AnaTutorial" << endl;
+    std::cout << "Beginning Init in AnaTutorial" << std::endl;
   }
- 
+
   m_outfile = new TFile(m_outfilename.c_str(), "RECREATE");
 
   m_phi_h = new TH1D("phi_h", ";Counts;#phi [rad]", 50, -6, 6);
@@ -118,14 +116,14 @@ int AnaTutorial::Init(PHCompositeNode *topNode)
 }
 
 /**
- * Main workhorse function where each event is looped over and 
+ * Main workhorse function where each event is looped over and
  * data from each event is collected from the node tree for analysis
  */
 int AnaTutorial::process_event(PHCompositeNode *topNode)
 {
   if (Verbosity() > 5)
   {
-    cout << "Beginning process_event in AnaTutorial" << endl;
+    std::cout << "Beginning process_event in AnaTutorial" << std::endl;
   }
   /// Get the truth information
   if (m_analyzeTruth)
@@ -159,19 +157,21 @@ int AnaTutorial::process_event(PHCompositeNode *topNode)
  * End the module and finish any data collection. Clean up any remaining
  * loose ends
  */
-int AnaTutorial::End(PHCompositeNode *topNode)
+int AnaTutorial::End(PHCompositeNode * /*topNode*/)
 {
   if (Verbosity() > 1)
   {
-    cout << "Ending AnaTutorial analysis package" << endl;
+    std::cout << "Ending AnaTutorial analysis package" << std::endl;
   }
-  
+
   /// Change to the outfile
   m_outfile->cd();
 
   /// If we analyzed the tracks, write the tree out
   if (m_analyzeTracks)
+  {
     m_tracktree->Write();
+  }
 
   /// If we analyzed the jets, write them out
   if (m_analyzeJets)
@@ -196,7 +196,7 @@ int AnaTutorial::End(PHCompositeNode *topNode)
   /// Write out any other histograms
   m_phi_h->Write();
   m_eta_phi_h->Write();
-  
+
   /// Write and close the outfile
   m_outfile->Write();
   m_outfile->Close();
@@ -206,7 +206,7 @@ int AnaTutorial::End(PHCompositeNode *topNode)
 
   if (Verbosity() > 1)
   {
-    cout << "Finished AnaTutorial analysis package" << endl;
+    std::cout << "Finished AnaTutorial analysis package" << std::endl;
   }
 
   return 0;
@@ -214,7 +214,7 @@ int AnaTutorial::End(PHCompositeNode *topNode)
 
 /**
  * This method gets all of the HEPMC truth particles from the node tree
- * and stores them in a ROOT TTree. The HEPMC truth particles are what, 
+ * and stores them in a ROOT TTree. The HEPMC truth particles are what,
  * for example, directly comes out of PYTHIA and thus gives you all of
  * the associated parton information
  */
@@ -226,16 +226,16 @@ void AnaTutorial::getHEPMCTruth(PHCompositeNode *topNode)
   /// If the node was not properly put on the tree, return
   if (!hepmceventmap)
   {
-    cout << PHWHERE
-         << "HEPMC event map node is missing, can't collected HEPMC truth particles"
-         << endl;
+    std::cout << PHWHERE
+              << "HEPMC event map node is missing, can't collected HEPMC truth particles"
+              << std::endl;
     return;
   }
 
   /// Could have some print statements for debugging with verbosity
   if (Verbosity() > 1)
   {
-    cout << "Getting HEPMC truth particles " << endl;
+    std::cout << "Getting HEPMC truth particles " << std::endl;
   }
 
   /// You can iterate over the number of events in a hepmc event
@@ -253,9 +253,9 @@ void AnaTutorial::getHEPMCTruth(PHCompositeNode *topNode)
       HepMC::GenEvent *truthevent = hepmcevent->getEvent();
       if (!truthevent)
       {
-        cout << PHWHERE
-             << "no evt pointer under phhepmvgeneventmap found "
-             << endl;
+        std::cout << PHWHERE
+                  << "no evt pointer under phhepmvgeneventmap found "
+                  << std::endl;
         return;
       }
 
@@ -276,7 +276,7 @@ void AnaTutorial::getHEPMCTruth(PHCompositeNode *topNode)
 
       if (Verbosity() > 2)
       {
-        cout << " Iterating over an event" << endl;
+        std::cout << " Iterating over an event" << std::endl;
       }
       /// Loop over all the truth particles and get their information
       for (HepMC::GenEvent::particle_const_iterator iter = truthevent->particles_begin();
@@ -315,9 +315,9 @@ void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
 
   if (!truthinfo)
   {
-    cout << PHWHERE
-         << "PHG4TruthInfoContainer node is missing, can't collect G4 truth particles"
-         << endl;
+    std::cout << PHWHERE
+              << "PHG4TruthInfoContainer node is missing, can't collect G4 truth particles"
+              << std::endl;
     return;
   }
 
@@ -345,8 +345,10 @@ void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
 
     m_trutheta = atanh(m_truthpz / m_truthenergy);
     /// Check for nans
-    if (m_trutheta != m_trutheta)
+    if (!std::isfinite(m_trutheta))
+    {
       m_trutheta = -99;
+    }
     m_truthpid = truth->get_pid();
 
     /// Fill the g4 truth tree
@@ -357,7 +359,7 @@ void AnaTutorial::getPHG4Truth(PHCompositeNode *topNode)
 /**
  * This method gets the tracks as reconstructed from the tracker. It also
  * compares the reconstructed track to its truth track counterpart as determined
- * by the 
+ * by the
  */
 void AnaTutorial::getTracks(PHCompositeNode *topNode)
 {
@@ -366,19 +368,19 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
 
   if (!trackmap)
   {
-    cout << PHWHERE
-         << "SvtxTrackMap node is missing, can't collect tracks"
-         << endl;
+    std::cout << PHWHERE
+              << "SvtxTrackMap node is missing, can't collect tracks"
+              << std::endl;
     return;
   }
 
   /// EvalStack for truth track matching
-  if(!m_svtxEvalStack)
-    {
-      m_svtxEvalStack = new SvtxEvalStack(topNode);
-      m_svtxEvalStack->set_verbosity(Verbosity());
-    }
-  
+  if (!m_svtxEvalStack)
+  {
+    m_svtxEvalStack = new SvtxEvalStack(topNode);
+    m_svtxEvalStack->set_verbosity(Verbosity());
+  }
+
   m_svtxEvalStack->next_event(topNode);
 
   /// Get the track evaluator
@@ -389,13 +391,11 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
 
   if (Verbosity() > 1)
   {
-    cout << "Get the SVTX tracks" << endl;
+    std::cout << "Get the SVTX tracks" << std::endl;
   }
-  for (SvtxTrackMap::Iter iter = trackmap->begin();
-       iter != trackmap->end();
-       ++iter)
+  for (auto &iter : *trackmap)
   {
-    SvtxTrack *track = iter->second;
+    SvtxTrack *track = iter.second;
 
     /// Get the reconstructed track info
     m_tr_px = track->get_px();
@@ -407,8 +407,9 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
 
     // Make some cuts on the track to clean up sample
     if (m_tr_pt < 0.5)
+    {
       continue;
-
+    }
     m_tr_phi = track->get_phi();
     m_tr_eta = track->get_eta();
 
@@ -427,7 +428,7 @@ void AnaTutorial::getTracks(PHCompositeNode *topNode)
     m_truthtrackpx = truthtrack->get_px();
     m_truthtrackpy = truthtrack->get_py();
     m_truthtrackpz = truthtrack->get_pz();
-    m_truthtrackp = sqrt(m_truthtrackpx * m_truthtrackpx + m_truthtrackpy * m_truthtrackpy + m_truthtrackpz * m_truthtrackpz);
+    m_truthtrackp = std::sqrt(m_truthtrackpx * m_truthtrackpx + m_truthtrackpy * m_truthtrackpy + m_truthtrackpz * m_truthtrackpz);
 
     m_truthtracke = truthtrack->get_e();
 
@@ -447,7 +448,7 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
 {
   if (Verbosity() > 1)
   {
-    cout << "get the truth jets" << endl;
+    std::cout << "get the truth jets" << std::endl;
   }
 
   /// Get the truth jet node
@@ -455,19 +456,19 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
 
   /// Get reco jets associated to truth jets to study e.g. jet efficiencies
   JetMap *reco_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Tower_r04");
-  if(!m_jetEvalStack)
-    {
-      m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
-					"AntiKt_Truth_r04");
-    }
+  if (!m_jetEvalStack)
+  {
+    m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
+                                      "AntiKt_Truth_r04");
+  }
   m_jetEvalStack->next_event(topNode);
   JetTruthEval *trutheval = m_jetEvalStack->get_truth_eval();
 
   if (!truth_jets)
   {
-    cout << PHWHERE
-         << "Truth jet node is missing, can't collect truth jets"
-         << endl;
+    std::cout << PHWHERE
+              << "Truth jet node is missing, can't collect truth jets"
+              << std::endl;
     return;
   }
 
@@ -483,27 +484,28 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
     std::set<PHG4Particle *> truthjetcomp =
         trutheval->all_truth_particles(truthJet);
     int ntruthconstituents = 0;
-    //loop over the constituents of the truth jet
-    for (std::set<PHG4Particle *>::iterator iter2 = truthjetcomp.begin();
-         iter2 != truthjetcomp.end();
-         ++iter2)
+    // loop over the constituents of the truth jet
+    for (auto truthpart : truthjetcomp)
     {
-      //get the particle of the truthjet
-      PHG4Particle *truthpart = *iter2;
+      // get the particle of the truthjet
       if (!truthpart)
       {
-        cout << "no truth particles in the jet??" << endl;
+        std::cout << "no truth particles in the jet??" << std::endl;
         break;
       }
 
       ntruthconstituents++;
     }
 
-    if(ntruthconstituents < 3)
+    if (ntruthconstituents < 3)
+    {
       continue;
+    }
     /// Only collect truthjets above the _minjetpt cut
     if (m_truthjetpt < m_minjetpt)
+    {
       continue;
+    }
 
     m_truthjeteta = truthJet->get_eta();
     m_truthjetpx = truthJet->get_px();
@@ -524,50 +526,52 @@ void AnaTutorial::getTruthJets(PHCompositeNode *topNode)
     m_dR = -99;
     float closestjet = 9999;
     /// Iterate over the reconstructed jets
-    for (JetMap::Iter recoIter = reco_jets->begin();
-	 recoIter != reco_jets->end();
-	 ++recoIter)
+    for (auto &reco_jet : *reco_jets)
+    {
+      const Jet *recoJet = reco_jet.second;
+      m_recojetpt = recoJet->get_pt();
+      if (m_recojetpt < m_minjetpt - m_minjetpt * 0.4)
       {
-	const Jet *recoJet = recoIter->second;
-	m_recojetpt = recoJet->get_pt();
-	if (m_recojetpt < m_minjetpt-m_minjetpt*0.4)
-	  continue;
-		
-	m_recojeteta = recoJet->get_eta();
-	m_recojetphi = recoJet->get_phi();
-
-	if (Verbosity() > 1)
-	  {
-	    cout << "matching by distance jet" << endl;
-	  }
-	
-        float dphi = m_recojetphi - m_truthjetphi;
-        if (dphi > TMath::Pi())
-          dphi -= TMath::Pi() * 2.;
-        if (dphi < -1 * TMath::Pi())
-          dphi += TMath::Pi() * 2.;
-	
-        float deta = m_recojeteta - m_truthjeteta;
-        /// Determine the distance in eta phi space between the reconstructed
-        /// and truth jets
-        m_dR = sqrt(pow(dphi, 2.) + pow(deta, 2.));
-	
-        /// If this truth jet is closer than the previous truth jet, it is
-        /// closer and thus should be considered the truth jet
-        if (m_dR < truth_jets->get_par() && m_dR < closestjet)
-	  {
-	    // Get reco jet characteristics
-	    m_recojetid = recoJet->get_id();
-	    m_recojetpx = recoJet->get_px();
-	    m_recojetpy = recoJet->get_py();
-	    m_recojetpz = recoJet->get_pz();
-	    m_recojetphi = recoJet->get_phi();
-	    m_recojetp = recoJet->get_p();
-	    m_recojetenergy = recoJet->get_e();
-	    
-	  }
+        continue;
       }
-	
+
+      m_recojeteta = recoJet->get_eta();
+      m_recojetphi = recoJet->get_phi();
+
+      if (Verbosity() > 1)
+      {
+        std::cout << "matching by distance jet" << std::endl;
+      }
+
+      float dphi = m_recojetphi - m_truthjetphi;
+      if (dphi > M_PI)
+      {
+        dphi -= M_PI * 2.;
+      }
+      if (dphi < -1 * M_PI)
+      {
+        dphi += M_PI * 2.;
+      }
+
+      float deta = m_recojeteta - m_truthjeteta;
+      /// Determine the distance in eta phi space between the reconstructed
+      /// and truth jets
+      m_dR = std::sqrt(pow(dphi, 2.) + pow(deta, 2.));
+
+      /// If this truth jet is closer than the previous truth jet, it is
+      /// closer and thus should be considered the truth jet
+      if (m_dR < truth_jets->get_par() && m_dR < closestjet)
+      {
+        // Get reco jet characteristics
+        m_recojetid = recoJet->get_id();
+        m_recojetpx = recoJet->get_px();
+        m_recojetpy = recoJet->get_py();
+        m_recojetpz = recoJet->get_pz();
+        m_recojetphi = recoJet->get_phi();
+        m_recojetp = recoJet->get_p();
+        m_recojetenergy = recoJet->get_e();
+      }
+    }
 
     /// Fill the truthjet tree
     m_truthjettree->Fill();
@@ -584,24 +588,24 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
   /// Get the truth jets
   JetMap *truth_jets = findNode::getClass<JetMap>(topNode, "AntiKt_Truth_r04");
 
-  if(!m_jetEvalStack)
-    {
-      m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
-					"AntiKt_Truth_r04");
-    }
+  if (!m_jetEvalStack)
+  {
+    m_jetEvalStack = new JetEvalStack(topNode, "AntiKt_Tower_r04",
+                                      "AntiKt_Truth_r04");
+  }
   m_jetEvalStack->next_event(topNode);
   JetRecoEval *recoeval = m_jetEvalStack->get_reco_eval();
   if (!reco_jets)
   {
-    cout << PHWHERE
-         << "Reconstructed jet node is missing, can't collect reconstructed jets"
-         << endl;
+    std::cout << PHWHERE
+              << "Reconstructed jet node is missing, can't collect reconstructed jets"
+              << std::endl;
     return;
   }
 
   if (Verbosity() > 1)
   {
-    cout << "Get all Reco Jets" << endl;
+    std::cout << "Get all Reco Jets" << std::endl;
   }
 
   /// Iterate over the reconstructed jets
@@ -612,7 +616,9 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
     Jet *recoJet = recoIter->second;
     m_recojetpt = recoJet->get_pt();
     if (m_recojetpt < m_minjetpt)
+    {
       continue;
+    }
 
     m_recojeteta = recoJet->get_eta();
 
@@ -627,7 +633,7 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
 
     if (Verbosity() > 1)
     {
-      cout << "matching by distance jet" << endl;
+      std::cout << "matching by distance jet" << std::endl;
     }
 
     /// Set the matched truth jet characteristics to 0
@@ -642,7 +648,8 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
     m_truthjetpz = 0;
 
     Jet *truthjet = recoeval->max_truth_jet_by_energy(recoJet);
-    if(truthjet){
+    if (truthjet)
+    {
       m_truthjetid = truthjet->get_id();
       m_truthjetp = truthjet->get_p();
       m_truthjetpx = truthjet->get_px();
@@ -651,34 +658,37 @@ void AnaTutorial::getReconstructedJets(PHCompositeNode *topNode)
       m_truthjeteta = truthjet->get_eta();
       m_truthjetphi = truthjet->get_phi();
       m_truthjetenergy = truthjet->get_e();
-      m_truthjetpt = sqrt(m_truthjetpx * m_truthjetpx 
-			  + m_truthjetpy * m_truthjetpy);
+      m_truthjetpt = sqrt(m_truthjetpx * m_truthjetpx + m_truthjetpy * m_truthjetpy);
     }
 
     /// Check to make sure the truth jet node is available
-    else if(truth_jets)
+    else if (truth_jets)
     {
       /// Match the reconstructed jet to the closest truth jet in delta R space
       /// Iterate over the truth jets
       float closestjet = 9999;
-      for (JetMap::Iter truthIter = truth_jets->begin();
-           truthIter != truth_jets->end();
-           ++truthIter)
+      for (auto &truth_jet : *truth_jets)
       {
-        const Jet *truthJet = truthIter->second;
+        const Jet *truthJet = truth_jet.second;
 
         float thisjetpt = truthJet->get_pt();
         if (thisjetpt < m_minjetpt)
+        {
           continue;
+        }
 
         float thisjeteta = truthJet->get_eta();
         float thisjetphi = truthJet->get_phi();
 
         float dphi = m_recojetphi - thisjetphi;
-        if (dphi >TMath::Pi())
-          dphi -= TMath::Pi() * 2.;
-        if (dphi < -1. * TMath::Pi())
-          dphi += TMath::Pi() * 2.;
+        if (dphi > M_PI)
+        {
+          dphi -= M_PI * 2.;
+        }
+        if (dphi < -1. * M_PI)
+        {
+          dphi += M_PI * 2.;
+        }
 
         float deta = m_recojeteta - thisjeteta;
         /// Determine the distance in eta phi space between the reconstructed
@@ -721,9 +731,9 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
 
   if (!clusters)
   {
-    cout << PHWHERE
-         << "EMCal cluster node is missing, can't collect EMCal clusters"
-         << endl;
+    std::cout << PHWHERE
+              << "EMCal cluster node is missing, can't collect EMCal clusters"
+              << std::endl;
     return;
   }
 
@@ -731,7 +741,7 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
   GlobalVertexMap *vertexmap = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
   {
-    cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    std::cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << std::endl;
     assert(vertexmap);  // force quit
 
     return;
@@ -739,25 +749,27 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
 
   if (vertexmap->empty())
   {
-    cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    std::cout << "AnaTutorial::getEmcalClusters - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << std::endl;
     return;
   }
 
   GlobalVertex *vtx = vertexmap->begin()->second;
   if (vtx == nullptr)
+  {
     return;
+  }
 
   /// Trigger emulator
   CaloTriggerInfo *trigger = findNode::getClass<CaloTriggerInfo>(topNode, "CaloTriggerInfo");
-  
+
   /// Can obtain some trigger information if desired
-  if(trigger)
-    {
-      m_E_4x4 = trigger->get_best_EMCal_4x4_E();
-    }
+  if (trigger)
+  {
+    m_E_4x4 = trigger->get_best_EMCal_4x4_E();
+  }
   RawClusterContainer::ConstRange begin_end = clusters->getClusters();
   RawClusterContainer::ConstIterator clusIter;
- 
+
   /// Loop over the EMCal clusters
   for (clusIter = begin_end.first;
        clusIter != begin_end.second;
@@ -779,13 +791,15 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
     m_clusphi = E_vec_cluster.getPhi();
 
     if (m_cluspt < m_mincluspt)
+    {
       continue;
+    }
 
     m_cluspx = m_cluspt * cos(m_clusphi);
     m_cluspy = m_cluspt * sin(m_clusphi);
     m_cluspz = sqrt(m_clusenergy * m_clusenergy - m_cluspx * m_cluspx - m_cluspy * m_cluspy);
 
-    //fill the cluster tree with all emcal clusters
+    // fill the cluster tree with all emcal clusters
     m_clustertree->Fill();
   }
 }
@@ -904,7 +918,7 @@ void AnaTutorial::initializeTrees()
 /**
  * This function initializes all of the member variables in this class so that there
  * are no variables that might not be set before e.g. writing them to the output
- * trees. 
+ * trees.
  */
 void AnaTutorial::initializeVariables()
 {
@@ -974,5 +988,3 @@ void AnaTutorial::initializeVariables()
   m_truthjetpz = -99;
   m_dR = -99;
 }
-
-

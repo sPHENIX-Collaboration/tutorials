@@ -15,13 +15,7 @@ AM_CPPFLAGS = \
 pkginclude_HEADERS = \
   AnaTutorial.h
 
-if ! MAKEROOT6
-  ROOT5_DICTS = \
-    AnaTutorial_Dict.cc
-endif
-
 libanatutorial_la_SOURCES = \
-  $(ROOT5_DICTS) \
   AnaTutorial.cc 
 
 libanatutorial_la_LDFLAGS = \
@@ -38,22 +32,20 @@ libanatutorial_la_LDFLAGS = \
 ################################################
 # linking tests
 
+BUILT_SOURCES = testexternals.cc
+
 noinst_PROGRAMS = \
   testexternals
 
-testexternals_SOURCES = testexternals.C
+testexternals_SOURCES = testexternals.cc
 testexternals_LDADD = libanatutorial.la
 
-testexternals.C:
+testexternals.cc:
 	echo "//*** this is a generated file. Do not commit, do not edit" > $@
 	echo "int main()" >> $@
 	echo "{" >> $@
 	echo "  return 0;" >> $@
 	echo "}" >> $@
 
-# Rule for generating table CINT dictionaries.
-%_Dict.cc: %.h %LinkDef.h
-	rootcint -f $@ @CINTDEFS@ -c $(DEFAULT_INCLUDES) $(AM_CPPFLAGS) $^
-
 clean-local:
-	rm -f *Dict* $(BUILT_SOURCES) *.pcm
+	rm -f $(BUILT_SOURCES)

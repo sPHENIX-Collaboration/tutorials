@@ -29,7 +29,7 @@ void Fun4All_AnaTutorial_DSTReadBack(const int nevnt = 0, const std::string & in
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTin");
   in->fileopen(inputfile);
   // or
-  // in->listopen(inputfile);
+  // in->AddListFile(inputfile);
   se->registerInputManager(in);
 
   se->run(nevnt);

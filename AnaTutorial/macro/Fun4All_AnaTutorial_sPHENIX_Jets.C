@@ -17,14 +17,24 @@
 #include <G4_ParticleFlow.C>
 #include <G4_Production.C>
 #include <G4_TopoClusterReco.C>
-#include <G4_Tracking.C>
+
+#include <Trkr_RecoInit.C>
+#include <Trkr_Clustering.C>
+#include <Trkr_LaserClustering.C>
+#include <Trkr_Reco.C>
+#include <Trkr_Eval.C>
+#include <Trkr_QA.C>
+
+#include <Trkr_Diagnostics.C>
 #include <G4_User.C>
 #include <QA.C>
+
+#include <anatutorial/AnaTutorial.h>
 
 #include <ffamodules/FlagHandler.h>
 #include <ffamodules/HeadReco.h>
 #include <ffamodules/SyncReco.h>
-#include <ffamodules/XploadInterface.h>
+#include <ffamodules/CDBInterface.h>
 
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
@@ -32,12 +42,10 @@
 
 #include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
-#include <anatutorial/AnaTutorial.h>
 
-R__LOAD_LIBRARY(libanatutorial.so)
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffamodules.so)
-
+R__LOAD_LIBRARY(libanatutorial.so)
 // For HepMC Hijing
 // try inputFile = /sphenix/sim/sim01/sphnxpro/sHijing_HepMC/sHijing_0-12fm.dat
 
@@ -93,14 +101,17 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // if you use a filelist
   //INPUTEMBED::listfile[0] = embed_input_file;
 
-  Input::SIMPLE = false;
+  Input::SIMPLE = true;
   // Input::SIMPLE_NUMBER = 2; // if you need 2 of them
   // Input::SIMPLE_VERBOSITY = 1;
+
+  // Enable this is emulating the nominal pp/pA/AA collision vertex distribution
+  // Input::BEAM_CONFIGURATION = Input::AA_COLLISION; // Input::AA_COLLISION (default), Input::pA_COLLISION, Input::pp_COLLISION
 
   //  Input::PYTHIA6 = true;
 
   Input::PYTHIA8 = true;
-
+  PYTHIA8::config_file = "phpythia8.cfg";
   //  Input::GUN = true;
   //  Input::GUN_NUMBER = 3; // if you need 3 of them
   // Input::GUN_VERBOSITY = 1;
@@ -184,13 +195,13 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // pythia6
   if (Input::PYTHIA6)
   {
-    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    //! Nominal collision geometry is selected by Input::BEAM_CONFIGURATION
     Input::ApplysPHENIXBeamParameter(INPUTGENERATOR::Pythia6);
   }
   // pythia8
   if (Input::PYTHIA8)
   {
-    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    //! Nominal collision geometry is selected by Input::BEAM_CONFIGURATION
     Input::ApplysPHENIXBeamParameter(INPUTGENERATOR::Pythia8);
   }
 
@@ -201,7 +212,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   if (Input::HEPMC)
   {
-    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    //! Nominal collision geometry is selected by Input::BEAM_CONFIGURATION
     Input::ApplysPHENIXBeamParameter(INPUTMANAGER::HepMCInputManager);
 
     // optional overriding beam parameters
@@ -224,7 +235,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   }
   if (Input::PILEUPRATE > 0)
   {
-    //! apply sPHENIX nominal beam parameter with 2mrad crossing as defined in sPH-TRG-2020-001
+    //! Nominal collision geometry is selected by Input::BEAM_CONFIGURATION
     Input::ApplysPHENIXBeamParameter(INPUTMANAGER::HepMCPileupInputManager);
   }
   // register all input generators with Fun4All
@@ -278,6 +289,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   // Enable::BBC = true;
   // Enable::BBC_SUPPORT = true; // save hist in bbc support structure
+  // Enable::BBCRECO = Enable::BBC && true
   Enable::BBCFAKE = true;  // Smeared vtx and t0, use if you don't want real BBC in simulation
 
   Enable::PIPE = true;
@@ -311,6 +323,11 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::TRACKING_EVAL = Enable::TRACKING_TRACK && true;
   Enable::TRACKING_QA = Enable::TRACKING_TRACK && Enable::QA && true;
 
+  //Additional tracking tools 
+  //Enable::TRACKING_DIAGNOSTICS = Enable::TRACKING_TRACK && true;
+  //G4TRACKING::filter_conversion_electrons = true;
+
+
   //  cemc electronics + thin layer of W-epoxy to get albedo from cemc
   //  into the tracking, cannot run together with CEMC
   //  Enable::CEMCALBEDO = true;
@@ -343,6 +360,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   Enable::HCALOUT_QA = Enable::HCALOUT_CLUSTER && Enable::QA && true;
 
   Enable::EPD = true;
+  Enable::EPD_TILE = Enable::EPD && true;
 
   Enable::BEAMLINE = true;
 //  Enable::BEAMLINE_ABSORBER = true;  // makes the beam line magnets sensitive volumes
@@ -395,14 +413,11 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   //===============
   // conditions DB flags
   //===============
-  //Enable::XPLOAD = true;
-  // tag
-  rc->set_StringFlag("XPLOAD_TAG",XPLOAD::tag);
-  // database config
-  rc->set_StringFlag("XPLOAD_CONFIG",XPLOAD::config);
+  Enable::CDB = true;
+  // global tag
+  rc->set_StringFlag("CDB_GLOBALTAG",CDB::global_tag);
   // 64 bit timestamp
-  rc->set_uint64Flag("TIMESTAMP",XPLOAD::timestamp);
-
+  rc->set_uint64Flag("TIMESTAMP",CDB::timestamp);
   //---------------
   // World Settings
   //---------------
@@ -440,7 +455,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // Detector Division
   //------------------
 
-  if (Enable::BBC || Enable::BBCFAKE) Bbc_Reco();
+  if ((Enable::BBC && Enable::BBCRECO) || Enable::BBCFAKE) Bbc_Reco();
 
   if (Enable::MVTX_CELL) Mvtx_Cells();
   if (Enable::INTT_CELL) Intt_Cells();
@@ -459,6 +474,12 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   if (Enable::CEMC_TOWER) CEMC_Towers();
   if (Enable::CEMC_CLUSTER) CEMC_Clusters();
+
+  //--------------
+  // EPD tile reconstruction
+  //--------------
+
+  if (Enable::EPD_TILE) EPD_Tiles();
 
   //-----------------------------
   // HCAL towering and clustering
@@ -482,13 +503,33 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
     }
   if (Enable::MVTX_CLUSTER) Mvtx_Clustering();
   if (Enable::INTT_CLUSTER) Intt_Clustering();
-  if (Enable::TPC_CLUSTER) TPC_Clustering();
+  if (Enable::TPC_CLUSTER)
+    {
+      if(G4TPC::ENABLE_DIRECT_LASER_HITS || G4TPC::ENABLE_CENTRAL_MEMBRANE_HITS)
+	{
+	  TPC_LaserClustering();
+	}
+      else
+	{
+	  TPC_Clustering();
+	}
+    }
   if (Enable::MICROMEGAS_CLUSTER) Micromegas_Clustering();
 
   if (Enable::TRACKING_TRACK)
   {
     Tracking_Reco();
   }
+
+  if(Enable::TRACKING_DIAGNOSTICS)
+    {
+      const std::string kshortFile = "./kshort_" + outputFile;
+      const std::string residualsFile = "./residuals_" + outputFile;
+ 
+      G4KshortReconstruction(kshortFile);
+      seedResiduals(residualsFile);
+    }
+
   //-----------------
   // Global Vertexing
   //-----------------
@@ -559,7 +600,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
 
   if (Enable::USER) UserAnalysisInit();
 
-  AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
+    AnaTutorial *anaTutorial = new AnaTutorial("anaTutorial", outputroot + "_anaTutorial.root");
   anaTutorial->setMinJetPt(10.);
   anaTutorial->Verbosity(0);
   anaTutorial->analyzeTracks(true);
@@ -567,6 +608,10 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   anaTutorial->analyzeJets(true);
   anaTutorial->analyzeTruth(false);
   se->registerSubsystem(anaTutorial);
+
+  // Writes electrons from conversions to a new track map on the node tree
+  // the ntuple file is for diagnostics, it is produced only if the flag is set in G4_Tracking.C
+  if(G4TRACKING::filter_conversion_electrons) Filter_Conversion_Electrons(outputroot + "_secvert_ntuple.root");
 
   //======================
   // Run KFParticle on evt
@@ -660,6 +705,7 @@ int Fun4All_AnaTutorial_sPHENIX_Jets(
   // Exit
   //-----
 
+//  CDBInterface::instance()->Print(); // print used DB files
   se->End();
   std::cout << "All done" << std::endl;
   delete se;

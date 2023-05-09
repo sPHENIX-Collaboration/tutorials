@@ -753,7 +753,16 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
     return;
   }
 
-  GlobalVertex *vtx = vertexmap->begin()->second;
+  /// just take a bbc vertex
+  GlobalVertex *vtx = nullptr;
+  for(auto iter = vertexmap->begin(); iter!= vertexmap->end(); ++iter)
+    {
+      GlobalVertex* vertex = iter->second;
+      if(vertex->find_vtxids(GlobalVertex::BBC) != vertex->end_vtxids())
+	{
+	  vtx = vertex;
+	}
+    }
   if (vtx == nullptr)
   {
     return;

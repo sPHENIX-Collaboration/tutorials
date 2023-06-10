@@ -11,8 +11,8 @@
 #include <calotrigger/CaloTriggerInfo.h>
 
 /// Jet includes
-#include <g4jets/Jet.h>
-#include <g4jets/JetMap.h>
+#include <jetbase/Jet.h>
+#include <jetbase/JetMap.h>
 
 /// Tracking includes
 #include <globalvertex/GlobalVertex.h>

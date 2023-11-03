@@ -19,8 +19,8 @@
 #include <globalvertex/GlobalVertexMap.h>
 #include <trackbase_historic/SvtxTrack.h>
 #include <trackbase_historic/SvtxTrackMap.h>
-#include <trackbase_historic/SvtxVertex.h>
-#include <trackbase_historic/SvtxVertexMap.h>
+#include <globalvertex/SvtxVertex.h>
+#include <globalvertex/SvtxVertexMap.h>
 
 /// Truth evaluation includes
 #include <g4eval/JetEvalStack.h>
@@ -758,7 +758,7 @@ void AnaTutorial::getEMCalClusters(PHCompositeNode *topNode)
   for(auto iter = vertexmap->begin(); iter!= vertexmap->end(); ++iter)
     {
       GlobalVertex* vertex = iter->second;
-      if(vertex->find_vtxids(GlobalVertex::BBC) != vertex->end_vtxids())
+      if(vertex->find_vtxids(GlobalVertex::MBD) != vertex->end_vtxids())
 	{
 	  vtx = vertex;
 	}

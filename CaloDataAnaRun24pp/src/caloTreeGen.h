@@ -142,12 +142,12 @@ class caloTreeGen : public SubsysReco
   float totalCaloEZDC;
   float totalChargeMBD;
 
-  int storeClusters;
-  int storeClusterDetails;
-  int storeEMCal;
-  int storeHCals;
-  int storeZDC;
-  int storeTrig;
+  int storeClusters = 1;
+  int storeClusterDetails = 1;
+  int storeEMCal = 1;
+  int storeHCals = 1;
+  int storeZDC = 1;
+  int storeTrig = 1;
   
   std::string m_trigNode;
   std::string m_emcTowerNode;

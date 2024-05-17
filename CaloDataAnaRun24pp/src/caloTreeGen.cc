@@ -65,64 +65,76 @@ int caloTreeGen::Init(PHCompositeNode *topNode)
 
   
   T = new TTree("T","T");
-
+  
   //Electromagnetic Calorimeter
-  T -> Branch("emcTowE",&m_emcTowE);
-  T -> Branch("emcTowiEta",&m_emciEta);
-  T -> Branch("emcTowiPhi",&m_emciPhi);
-  T -> Branch("emcTime",&m_emcTime);
-  T -> Branch("emcChi2",&m_emcChi2);
-  T -> Branch("emcPed",&m_emcPed);
+  if(storeEMCal)
+    {
+      T -> Branch("emcTowE",&m_emcTowE);
+      T -> Branch("emcTowiEta",&m_emciEta);
+      T -> Branch("emcTowiPhi",&m_emciPhi);
+      T -> Branch("emcTime",&m_emcTime);
+      T -> Branch("emcChi2",&m_emcChi2);
+      T -> Branch("emcPed",&m_emcPed);
   
+      //EMCal Cluster information
+      if(storeEMCal && storeClusters)
+	{
+	  T -> Branch("clusterE",&m_clusterE);
+	  T -> Branch("clusterPhi",&m_clusterPhi);
+	  T -> Branch("clusterEta", &m_clusterEta);
+	  T -> Branch("clusterPt", &m_clusterPt);
+	  T -> Branch("clusterChi2", &m_clusterChi);
+	  T -> Branch("clusterNtow",&m_clusterNtow);
+	  T -> Branch("clusterTowMaxE",&m_clusterTowMaxE);
+	  T -> Branch("clusterECore",&m_clusterECore);
+
+	  //Information for towers within clusters
+	  //Enabled by setting "DoFineClusters" in the macro
+	  if(storeEMCal && storeClusters && storeClusterDetails)
+	    {
+	      T -> Branch("clusTowPhi","vector<vector<int> >",&m_clusTowPhi);
+	      T -> Branch("clusTowEta","vector<vector<int> >",&m_clusTowEta);
+	      T -> Branch("clusTowE","vector<vector<float> >",&m_clusTowE);
+	    }
+	}
+    }
   //Outer Hadronic Calorimeter
-  T -> Branch("ohcTowE",&m_ohcTowE);
-  T -> Branch("ohcTowiEta",&m_ohciTowEta);
-  T -> Branch("ohcTowiPhi",&m_ohciTowPhi);
-  T -> Branch("ohcTime",&m_ohcTime);
-  T -> Branch("ohcChi2",&m_ohcChi2);
-  T -> Branch("ohcPed",&m_ohcPed);
+  if(storeHCals)
+    {
+      T -> Branch("ohcTowE",&m_ohcTowE);
+      T -> Branch("ohcTowiEta",&m_ohciTowEta);
+      T -> Branch("ohcTowiPhi",&m_ohciTowPhi);
+      T -> Branch("ohcTime",&m_ohcTime);
+      T -> Branch("ohcChi2",&m_ohcChi2);
+      T -> Branch("ohcPed",&m_ohcPed);
   
-  //Inner Hadronic Calorimeter
-  T -> Branch("ihcTowE",&m_ihcTowE);
-  T -> Branch("ihcTowiEta",&m_ihciTowEta);
-  T -> Branch("ihcTowiPhi",&m_ihciTowPhi);
-  T -> Branch("ihcTime",&m_ihcTime);
-  T -> Branch("ihcChi2",&m_ihcChi2);
-  T -> Branch("ihcPed",&m_ihcPed);
-
-  //EMCal Cluster information
-  T -> Branch("clusterE",&m_clusterE);
-  T -> Branch("clusterPhi",&m_clusterPhi);
-  T -> Branch("clusterEta", &m_clusterEta);
-  T -> Branch("clusterPt", &m_clusterPt);
-  T -> Branch("clusterChi2", &m_clusterChi);
-  T -> Branch("clusterNtow",&m_clusterNtow);
-  T -> Branch("clusterTowMaxE",&m_clusterTowMaxE);
-  T -> Branch("clusterECore",&m_clusterECore);
-  
+      //Inner Hadronic Calorimeter
+      T -> Branch("ihcTowE",&m_ihcTowE);
+      T -> Branch("ihcTowiEta",&m_ihciTowEta);
+      T -> Branch("ihcTowiPhi",&m_ihciTowPhi);
+      T -> Branch("ihcTime",&m_ihcTime);
+      T -> Branch("ihcChi2",&m_ihcChi2);
+      T -> Branch("ihcPed",&m_ihcPed);
+    }
   //ZDC information
-  T -> Branch("zdcTowE",&m_zdcTowE);
-  T -> Branch("zdcTowside",&m_zdcSide);
+  if(storeZDC)
+    {
+      T -> Branch("zdcTowE",&m_zdcTowE);
+      T -> Branch("zdcTowside",&m_zdcSide);
   
-  //SMD information
-  T -> Branch("smdE",&m_smdE);
-  T -> Branch("smdSide",&m_smdSide);
-
+      //SMD information
+      T -> Branch("smdE",&m_smdE);
+      T -> Branch("smdSide",&m_smdSide);
+    }
   //Total 
   T -> Branch("totalCaloEEMCal",&totalCaloEEMCal);
   T -> Branch("totalCaloEOHCal",&totalCaloEOHCal);
   T -> Branch("totalCaloEIHCal",&totalCaloEIHCal);
   T -> Branch("totalCaloEZDC",&totalCaloEZDC);
   T -> Branch("zvertex",&m_vertex);
-
-  //Information for towers within clusters
-  //Enabled by setting "DoFineClusters" in the macro
-  T -> Branch("clusTowPhi","vector<vector<int> >",&m_clusTowPhi);
-  T -> Branch("clusTowEta","vector<vector<int> >",&m_clusTowEta);
-  T -> Branch("clusTowE","vector<vector<float> >",&m_clusTowE);
   
   //GL1 Information
-  T -> Branch("triggerVector",&m_triggerVector);
+  if(storeTrig)T -> Branch("triggerVector",&m_triggerVector);
   
   
   zVertex = new TH1F("zVertex","zVertex",200,-100,100);

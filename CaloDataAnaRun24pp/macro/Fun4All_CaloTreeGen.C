@@ -33,7 +33,7 @@ void Fun4All_CaloTreeGen(const int nEvents = 0, const char *listFile = "fileList
   calo -> doZDC(1,"TOWERINFO_CALIB_ZDC");
 
   //Save GL1 Information
-  calo -> doTrig(0,"Gl1Packet");
+  calo -> doTrig(1,"Gl1Packet");
   
   //Store EMCal clusters?
   calo -> doClusters(1,"CLUSTERINFO_CEMC");

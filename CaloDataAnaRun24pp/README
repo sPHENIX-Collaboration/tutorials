@@ -1,0 +1,55 @@
+First commit: Anthony Hodges, ahodges4@illinois.edu, May 17th, 2024
+
+In spite of the title, this is a general-purpose calorimeter analysis module
+designed to grab data from a DST and store into nTuples, it should work in any collision system:)
+In its inception it works on the EMCal, EMCal clusters, HCal, ZDC, SMD, and GL1. The only caveat
+is that as of May 15th, 2024, the ZDC is undergoing a slight change to its channel mapping, 
+so an update will undoubtedly be necessary. Here are the necessary steps to get everything running
+Note, all cd's assume you're in the top directory (where you can see 'src' 'macros' and 'scripts')
+
+#Building:
+cd src
+mkdir build
+$PWD/../autogen.sh --prefix=$MYINSTALL #this should be your unique installation directory
+make install -j8 
+
+#Generating file lists:
+#This is your long term solution, take a peak inside the script for more information
+cd macros 
+bash ../scripts/make2024DstLists.sh $PWD/runList.list
+
+#In the short term, you might consider taking a look at these:
+runListFirstCalib.list
+#which you can load right into the macro
+
+
+#Running the code (with just an example run, there's nothing special about it)!
+#Also note this will spit out a "commissioning.root" file, which is the default argument for the filename
+#This is a good test to make sure everything's running, but try running over a few thousand events
+#or more for better statistics
+cd macros
+root -l -b -q Fun4All_CaloTreeGen.C'(100,"runListFirstCalib.list")'
+
+#Note in the macro you can tell it to not read out information for subsytems you don't need
+#For instance
+calo -> doHCals(1,"TOWERINFO_CALIB_HCALOUT","TOWERINFO_CALIB_HCALIN");
+#Change this to
+calo -> doHCals(0,"TOWERINFO_CALIB_HCALOUT","TOWERINFO_CALIB_HCALIN");
+#Means you won't get hcal information anymore
+
+#Make a quick plot! Let's check out tower energies!
+root -l commissioning.root
+T -> Draw("emcTowE"); //emcal
+T -> Draw("ohcTowE"); //ohcal
+T -> Draw("ihcTowE"); //ihcal
+
+#Cluster information
+T -> Draw("clusterE");
+T -> Draw("clusterChi2");
+#Show me the energy spectrum for clusters whose shower profile is very Electromagnetic
+T -> Draw("clusterE","clusterChi2 < 2");
+#Show me the energy spectrum for clusters whose maximum tower contains >90% of the cluster energy
+T -> Draw("clusterECore","clusterTowMaxE/ClusterECore > 0.9")
+
+Now you can try reconstruction some neutral pions (and maybe some etas, depending on how many events you processed) with
+root -l makePhotonPairs.C

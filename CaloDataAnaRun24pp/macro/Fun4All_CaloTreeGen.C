@@ -29,18 +29,22 @@ void Fun4All_CaloTreeGen(const int nEvents = 0, const char *listFile = "fileList
   caloTreeGen *calo = new caloTreeGen(inName);
   //What subsystems do you want?
   calo -> doEMCal(1,"TOWERINFO_CALIB_CEMC");
-  calo -> doHCals(1,"TOWERINFO_CALIB_HCALOUT","TOWERINFO_CALIB_HCALIN");
-  calo -> doZDC(1,"TOWERINFO_CALIB_ZDC");
-
-  //Save GL1 Information
-  calo -> doTrig(1,"Gl1Packet");
-  
   //Store EMCal clusters?
   calo -> doClusters(1,"CLUSTERINFO_CEMC");
 
   //Store tower information for each EMCal cluster?
   calo -> doClusterDetails(1);
- 
+  
+  //Store HCal information?
+  calo -> doHCals(1,"TOWERINFO_CALIB_HCALOUT","TOWERINFO_CALIB_HCALIN");
+
+  //Store ZDC information?
+  calo -> doZDC(1,"TOWERINFO_CALIB_ZDC");
+
+  //Store GL1 Information?
+  calo -> doTrig(1,"GL1Packet");
+  
+  
   se->registerSubsystem(calo);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTcalo");

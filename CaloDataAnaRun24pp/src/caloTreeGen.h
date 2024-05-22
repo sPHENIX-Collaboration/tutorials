@@ -5,16 +5,14 @@
 
 #include <fun4all/SubsysReco.h>
 
-#include <TTree.h>
+#include <limits>
 #include <string>
 #include <vector>
 
-class TTree;
 class PHCompositeNode;
-class Fun4AllHistoManager;
-class TFile;
 class RawCluster;
-class TowerInfoContainer;
+class TTree;
+class TFile;
 class TH1;
 
 class caloTreeGen : public SubsysReco

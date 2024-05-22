@@ -1,12 +1,11 @@
 #include "caloTreeGen.h"
 
-#include <fun4all/Fun4AllReturnCodes.h>
 
 // For clusters and geometry
 #include <calobase/RawCluster.h>
 #include <calobase/RawClusterContainer.h>
 #include <calobase/RawClusterUtility.h>
-#include <calobase/RawTowerGeomContainer.h>
+#include <calobase/RawTowerDefs.h>
 
 // Tower stuff
 #include <calobase/TowerInfo.h>
@@ -20,10 +19,6 @@
 // GL1 Information
 #include <ffarawobjects/Gl1Packet.h>
 
-// Fun4All
-#include <ffaobjects/EventHeader.h>
-
-#include <fun4all/Fun4AllHistoManager.h>
 #include <fun4all/Fun4AllReturnCodes.h>
 #include <fun4all/Fun4AllServer.h>
 
@@ -34,13 +29,15 @@
 // ROOT stuff
 #include <TFile.h>
 #include <TH1.h>
-#include <TH2.h>
-#include <TH3.h>
-#include <TLorentzVector.h>
 #include <TTree.h>
 
 // for cluster vertex correction
-#include <CLHEP/Geometry/Point3D.h>
+#include <CLHEP/Vector/ThreeVector.h>
+
+#include <cstdint>
+#include <iostream>
+#include <map>
+#include <utility>
 
 //____________________________________________________________________________..
 caloTreeGen::caloTreeGen(const std::string &name)

@@ -5,9 +5,9 @@
 
 #include <fun4all/SubsysReco.h>
 
+#include <TTree.h>
 #include <string>
 #include <vector>
-#include <TTree.h>
 
 class TTree;
 class PHCompositeNode;
@@ -15,15 +15,14 @@ class Fun4AllHistoManager;
 class TFile;
 class RawCluster;
 class TowerInfoContainer;
-class TH1F;
+class TH1;
 
 class caloTreeGen : public SubsysReco
 {
  public:
-
   caloTreeGen(const std::string &name = "caloTreeGen");
 
-  ~caloTreeGen() override;
+  ~caloTreeGen() override = default;
 
   /** Called during initialization.
       Typically this is where you can book histograms, and e.g.
@@ -31,13 +30,6 @@ class caloTreeGen : public SubsysReco
       using Fun4AllServer::dumpHistos() method).
   */
   int Init(PHCompositeNode *topNode) override;
-
-  /** Called for first event when run number is known.
-      Typically this is where you may want to fetch data from
-      database, because you know the run number. A place
-      to book histograms which have to know the run number.
-  */
-  int InitRun(PHCompositeNode *topNode) override;
 
   /** Called for each event.
       This is where you do the real work.
@@ -47,49 +39,96 @@ class caloTreeGen : public SubsysReco
   /// Clean up internals after each event.
   int ResetEvent(PHCompositeNode *topNode) override;
 
-  /// Called at the end of each run.
-  int EndRun(const int runnumber) override;
-
   /// Called at the end of all processing.
   int End(PHCompositeNode *topNode) override;
 
-  /// Reset
-  int Reset(PHCompositeNode * /*topNode*/) override;
+  void doClusters(int clusters, const std::string &clusterNode)
+  {
+    storeClusters = clusters;
+    m_clusterNode = clusterNode;
+  }
 
-  void Print(const std::string &what = "ALL") const override;
+  void doClusterDetails(int fineCluster) { storeClusterDetails = fineCluster; }
 
-  void doClusters(int clusters, std::string clusterNode)  {storeClusters = clusters; m_clusterNode = clusterNode;}
+  void doEMCal(int emcalOn, const std::string &emcNode)
+  {
+    storeEMCal = emcalOn;
+    m_emcTowerNode = emcNode;
+  }
 
-  void doClusterDetails(int fineCluster) {storeClusterDetails = fineCluster;}
-  
-  void doEMCal(int emcalOn, std::string emcNode) {storeEMCal = emcalOn; m_emcTowerNode = emcNode;}
+  void doHCals(int hcalsOn, const std::string &ohcNode, const std::string &ihcNode)
+  {
+    storeHCals = hcalsOn;
+    m_ohcTowerNode = ohcNode;
+    m_ihcTowerNode = ihcNode;
+  }
 
-  void doHCals(int hcalsOn, std::string ohcNode, std::string ihcNode) {storeHCals = hcalsOn; m_ohcTowerNode = ohcNode; m_ihcTowerNode = ihcNode;}
+  void doZDC(int zdcOn, const std::string &zdcNode)
+  {
+    storeZDC = zdcOn;
+    m_zdcTowerNode = zdcNode;
+  }
 
-  void doZDC(int zdcOn, std::string zdcNode) {storeZDC = zdcOn; m_zdcTowerNode = zdcNode;}
-  
-  void doTrig(int trigOn, std::string trigNode) {storeTrig = trigOn; m_trigNode = trigNode;}
+  void doTrig(int trigOn, const std::string &trigNode)
+  {
+    storeTrig = trigOn;
+    m_trigNode = trigNode;
+  }
 
  private:
+  // private methods
+  float getMaxTowerE(RawCluster *cluster);
+  std::vector<float> returnClusterTowE(RawCluster *cluster);
+  std::vector<int> returnClusterTowPhi(RawCluster *cluster);
+  std::vector<int> returnClusterTowEta(RawCluster *cluster);
 
-  TTree *T;
-  //EMCal
+  // pointers
+  TTree *T{nullptr};
+
+  TFile *out{nullptr};
+
+  TH1 *zVertex{nullptr};
+
+  // simple variables
+  float m_vertex{std::numeric_limits<float>::quiet_NaN()};
+  float totalCaloEEMCal{std::numeric_limits<float>::quiet_NaN()};
+  float totalCaloEOHCal{std::numeric_limits<float>::quiet_NaN()};
+  float totalCaloEIHCal{std::numeric_limits<float>::quiet_NaN()};
+  float totalCaloEZDC{std::numeric_limits<float>::quiet_NaN()};
+
+  int storeClusters{1};
+  int storeClusterDetails{1};
+  int storeEMCal{1};
+  int storeHCals{1};
+  int storeZDC{1};
+  int storeTrig{1};
+
+  std::string m_clusterNode;
+  std::string m_emcTowerNode;
+  std::string m_ihcTowerNode;
+  std::string m_ohcTowerNode;
+  std::string m_trigNode;
+  std::string m_zdcTowerNode;
+
+  std::string Outfile{"commissioning.root"};
+
+  // EMCal
   std::vector<float> m_emcTowE;
   std::vector<float> m_emciEta;
   std::vector<float> m_emciPhi;
   std::vector<int> m_emcTime;
   std::vector<float> m_emcChi2;
   std::vector<float> m_emcPed;
-  
-  //OHCal
+
+  // OHCal
   std::vector<float> m_ohciTowPhi;
   std::vector<float> m_ohciTowEta;
   std::vector<float> m_ohcTowE;
   std::vector<int> m_ohcTime;
   std::vector<float> m_ohcChi2;
   std::vector<float> m_ohcPed;
-    
-  //IHCal
+
+  // IHCal
   std::vector<float> m_ihciTowPhi;
   std::vector<float> m_ihciTowEta;
   std::vector<float> m_ihcTowE;
@@ -97,15 +136,15 @@ class caloTreeGen : public SubsysReco
   std::vector<float> m_ihcChi2;
   std::vector<float> m_ihcPed;
 
-  //ZDC
+  // ZDC
   std::vector<float> m_zdcTowE;
   std::vector<int> m_zdcSide;
-  
-  //SMD
+
+  // SMD
   std::vector<float> m_smdE;
   std::vector<int> m_smdSide;
-  
-  //Clusters
+
+  // Clusters
   std::vector<float> m_clusterE;
   std::vector<float> m_clusterPhi;
   std::vector<float> m_clusterEta;
@@ -114,48 +153,13 @@ class caloTreeGen : public SubsysReco
   std::vector<float> m_clusterNtow;
   std::vector<float> m_clusterTowMaxE;
   std::vector<float> m_clusterECore;
-  
+
   std::vector<std::vector<int> > m_clusTowEta;
   std::vector<std::vector<int> > m_clusTowPhi;
   std::vector<std::vector<float> > m_clusTowE;
 
-  //GL1 information
+  // GL1 information
   std::vector<bool> m_triggerVector;
-  
-  float m_vertex;
-
-  TFile *out;
-  //Fun4AllHistoManager *hm = nullptr;
-  std::string Outfile = "commissioning.root";
-
-  TH1F *zVertex;
-  
-  float getMaxTowerE(RawCluster *cluster, TowerInfoContainer *towerContainer);
-  std::vector<float> returnClusterTowE(RawCluster *cluster, TowerInfoContainer *towerContainer);
-  std::vector<int> returnClusterTowPhi(RawCluster *cluster, TowerInfoContainer *towerContainer);
-  std::vector<int> returnClusterTowEta(RawCluster *cluster, TowerInfoContainer *towerContainer);
-
-  
-  float totalCaloEEMCal;
-  float totalCaloEOHCal;
-  float totalCaloEIHCal;
-  float totalCaloEZDC;
-  float totalChargeMBD;
-
-  int storeClusters = 1;
-  int storeClusterDetails = 1;
-  int storeEMCal = 1;
-  int storeHCals = 1;
-  int storeZDC = 1;
-  int storeTrig = 1;
-  
-  std::string m_trigNode;
-  std::string m_emcTowerNode;
-  std::string m_ohcTowerNode;
-  std::string m_ihcTowerNode;
-  std::string m_zdcTowerNode;
-  std::string m_clusterNode;
-  
 };
 
-#endif 
+#endif

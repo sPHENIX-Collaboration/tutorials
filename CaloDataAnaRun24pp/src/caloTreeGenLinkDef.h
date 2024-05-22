@@ -3,6 +3,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class vector<vector<int> > +;
-#pragma link C++ class vector<vector<float> > +;
+#pragma link C++ class vector < vector < int>> + ;
+#pragma link C++ class vector < vector < float>> + ;
 #endif

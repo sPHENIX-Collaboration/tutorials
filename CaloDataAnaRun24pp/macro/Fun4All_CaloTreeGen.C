@@ -1,10 +1,10 @@
 #ifndef MACRO_FUN4ALL_CALOTREEGEN_C
 #define MACRO_FUN4ALL_CALOTREEGEN_C
 
-#include <fun4all/SubsysReco.h>
-#include <fun4all/Fun4AllServer.h>
-#include <fun4all/Fun4AllInputManager.h>
 #include <fun4all/Fun4AllDstInputManager.h>
+#include <fun4all/Fun4AllInputManager.h>
+#include <fun4all/Fun4AllServer.h>
+#include <fun4all/SubsysReco.h>
 
 #include <fun4all/Fun4AllDstOutputManager.h>
 #include <fun4all/Fun4AllOutputManager.h>
@@ -19,7 +19,7 @@ R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloTreeGen.so)
 
-  void Fun4All_CaloTreeGen(const int nEvents = 0, const std::string &listFile = "run43273.list", const std::string &inName = "commissioning.root")
+void Fun4All_CaloTreeGen(const int nEvents = 0, const std::string &listFile = "run43273.list", const std::string &inName = "commissioning.root")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
   recoConsts *rc = recoConsts::instance();
@@ -27,24 +27,23 @@ R__LOAD_LIBRARY(libcaloTreeGen.so)
   gSystem->Load("libg4dst");
 
   caloTreeGen *calo = new caloTreeGen(inName);
-  //What subsystems do you want?
-  calo->doEMCal(1,"TOWERINFO_CALIB_CEMC");
-  //Store EMCal clusters?
-  calo->doClusters(1,"CLUSTERINFO_CEMC");
+  // What subsystems do you want?
+  calo->doEMCal(1, "TOWERINFO_CALIB_CEMC");
+  // Store EMCal clusters?
+  calo->doClusters(1, "CLUSTERINFO_CEMC");
 
-  //Store tower information for each EMCal cluster?
+  // Store tower information for each EMCal cluster?
   calo->doClusterDetails(1);
-  
-  //Store HCal information?
-  calo->doHCals(1,"TOWERINFO_CALIB_HCALOUT","TOWERINFO_CALIB_HCALIN");
 
-  //Store ZDC information?
-  calo->doZDC(1,"TOWERINFO_CALIB_ZDC");
+  // Store HCal information?
+  calo->doHCals(1, "TOWERINFO_CALIB_HCALOUT", "TOWERINFO_CALIB_HCALIN");
 
-  //Store GL1 Information?
-  calo->doTrig(1,"GL1Packet");
-  
-  
+  // Store ZDC information?
+  calo->doZDC(1, "TOWERINFO_CALIB_ZDC");
+
+  // Store GL1 Information?
+  calo->doTrig(1, "GL1Packet");
+
   se->registerSubsystem(calo);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTcalo");

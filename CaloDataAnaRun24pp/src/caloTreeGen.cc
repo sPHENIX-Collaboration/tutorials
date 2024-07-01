@@ -338,7 +338,7 @@ int caloTreeGen::process_event(PHCompositeNode *topNode)
 
   if (storeTrig && gl1PacketInfo)
   {
-    uint64_t triggervec = gl1PacketInfo->getTriggerVector();
+    uint64_t triggervec = gl1PacketInfo->getScaledVector();
     for (int i = 0; i < 64; i++)
     {
       bool trig_decision = ((triggervec & 0x1U) == 0x1U);

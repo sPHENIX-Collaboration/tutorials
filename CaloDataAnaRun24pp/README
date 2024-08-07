@@ -1,5 +1,16 @@
 First commit: Anthony Hodges, ahodges4@illinois.edu, May 17th, 2024
 
+Update July 1st, 2024: Updated trigger vector to scaled trigger vector
+Update August 6th, 2024: Added Process_calo_calib() to fun4all macro and added python script for generating run list. 
+
+TO GENERATE GOOD RUN LIST (Do this in a "runList" directory, there will be a lot of file lists!):
+$ cd macro
+$ python getGoodRunlist.py
+$ reateDstList.pl --cdb 2024p004 --build new --list runList.txt DST_CALO_run2pp
+
+Note that this is implemented using p004 above, but you'll need to follow the production developments and possibly change this tag to get more recent runs. 
+---------------------------------------------------------------------------------------------------------------------------
+
 In spite of the title, this is a general-purpose calorimeter analysis module
 designed to grab data from a DST and store into nTuples, it should work in any collision system:)
 In its inception it works on the EMCal, EMCal clusters, HCal, ZDC, SMD, and GL1. The only caveat

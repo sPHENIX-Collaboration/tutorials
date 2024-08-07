@@ -15,6 +15,8 @@
 
 #include <calotreegen/caloTreeGen.h>
 
+#include <Calo_Calib.C>
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloTreeGen.so)
@@ -25,6 +27,8 @@ void Fun4All_CaloTreeGen(const int nEvents = 0, const std::string &listFile = "r
   recoConsts *rc = recoConsts::instance();
 
   gSystem->Load("libg4dst");
+
+  Process_Calo_Calib();
 
   caloTreeGen *calo = new caloTreeGen(inName);
   // What subsystems do you want?

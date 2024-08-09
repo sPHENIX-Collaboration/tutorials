@@ -6,7 +6,7 @@ Update August 6th, 2024: Added Process_calo_calib() to fun4all macro and added p
 TO GENERATE GOOD RUN LIST (Do this in a "runList" directory, there will be a lot of file lists!):
 $ cd macro
 $ python getGoodRunlist.py
-$ reateDstList.pl --cdb 2024p004 --build new --list runList.txt DST_CALO_run2pp
+$ CreateDstList.pl --cdb 2024p004 --build new --list runList.txt DST_CALO_run2pp
 
 Note that this is implemented using p004 above, but you'll need to follow the production developments and possibly change this tag to get more recent runs. 
 ---------------------------------------------------------------------------------------------------------------------------

@@ -27,11 +27,13 @@ make install -j8
 #Generating file lists:
 #This is your long term solution, take a peak inside the script for more information
 cd macros 
-bash ../scripts/make2024DstLists.sh $PWD/runList.list
+mkdir fileLists
+cd fileLists
+../getGoodRunlist.py
 
-#In the short term, you might consider taking a look at these:
-runListFirstCalib.list
-#which you can load right into the macro
+This will create a file list of all runs marked GOLDEN in the run database with over a million events. 
+Then, you can feed this to CreateDstList.pl (which is a console command, nothing to load) via:
+$ CreateDstList.pl --cdb 2024p004 --build new --list runList.txt DST_CALO_run2pp
 
 
 #Running the code (with just an example run, there's nothing special about it)!
@@ -39,7 +41,9 @@ runListFirstCalib.list
 #This is a good test to make sure everything's running, but try running over a few thousand events
 #or more for better statistics
 cd macros
-root -l -b -q Fun4All_CaloTreeGen.C'(100,"runListFirstCalib.list")'
+root -l -b -q Fun4All_CaloTreeGen.C'(0,"DST_CALO_run2pp_new_2024p004-00048089-00018.root","commissioning.root","ProdA_2024")'
+
+And this will actually run out of the box upon successful install. 
 
 #Note in the macro you can tell it to not read out information for subsytems you don't need
 #For instance

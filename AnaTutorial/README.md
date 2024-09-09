@@ -37,7 +37,7 @@ source $OPT_SPHENIX/bin/setup_local.csh $MYINSTALL
 
 ## Running the example macro
 
-The example macro, found in `macro/Fun4All_AnaTutorial.C`, is just the default `Fun4All_G4_sPHENIX.C` macro with the AnaTutorial package added to it. If you would like to see how the default macro and this macro are different, you can just open `Fun4All_AnaTutorial.C` in your favorite text editor and search for `anatutorial`, or run a `diff` command on the two files. 
+The example macro, found in `macro/Fun4All_AnaTutorial_sPHENIX.C`, is just the default `Fun4All_G4_sPHENIX.C` macro with the AnaTutorial package added to it. If you would like to see how the default macro and this macro are different, you can just open `Fun4All_AnaTutorial.C` in your favorite text editor and search for `anatutorial`, or run a `diff` command on the two files. 
 
 
 The macro can be run out of the box with `root Fun4All_AnaTutorial.C`, and the type of event can be changed within the macro itself (e.g. between running single particle and pythia simulations).

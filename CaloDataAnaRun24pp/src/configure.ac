@@ -1,4 +1,4 @@
-AC_INIT(calotreegen,[1.00])
+AC_INIT(caloHistGen,[1.00])
 AC_CONFIG_SRCDIR([configure.ac])
 
 AM_INIT_AUTOMAKE

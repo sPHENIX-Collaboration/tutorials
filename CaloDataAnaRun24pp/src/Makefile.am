@@ -11,16 +11,16 @@ AM_LDFLAGS = \
   -L$(OFFLINE_MAIN)/lib64
 
 pkginclude_HEADERS = \
-  caloTreeGen.h
+  caloHistGen.h
 
 lib_LTLIBRARIES = \
-  libcaloTreeGen.la
+  libcaloHistGen.la
 
-libcaloTreeGen_la_SOURCES = \
-  caloTreeGen.cc
+libcaloHistGen_la_SOURCES = \
+  caloHistGen.cc
 
 
-libcaloTreeGen_la_LIBADD = \
+libcaloHistGen_la_LIBADD = \
   -lcalo_io \
   -lCLHEP \
   -lffarawmodules \
@@ -35,7 +35,7 @@ noinst_PROGRAMS = \
   testexternals
 
 testexternals_SOURCES = testexternals.cc
-testexternals_LDADD   = libcaloTreeGen.la
+testexternals_LDADD   = libcaloHistGen.la
 
 testexternals.cc:
 	echo "//*** this is a generated file. Do not commit, do not edit" > $@

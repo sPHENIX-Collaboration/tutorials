@@ -16,15 +16,15 @@
 #include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
 
-#include <calotreegen/caloTreeGen.h>
+#include <calohistgen/caloHistGen.h>
 
 #include <Calo_Calib.C>
 
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
-R__LOAD_LIBRARY(libcaloTreeGen.so)
+R__LOAD_LIBRARY(libcaloHistGen.so)
 
-  void Fun4All_CaloTreeGen(const int nEvents = 0, const std::string &fname = "DST_CALO_run2pp_new_2024p004-00048089-00018.root", const std::string &inName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
+void Fun4All_CaloHistGen(const int nEvents = 0, const std::string &fname = "DST_CALO_run2pp_new_2024p004-00048089-00018.root", const std::string &inName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
   recoConsts *rc = recoConsts::instance();
@@ -39,15 +39,12 @@ R__LOAD_LIBRARY(libcaloTreeGen.so)
   gSystem->Load("libg4dst");
   
   Process_Calo_Calib();
-
-  caloTreeGen *calo = new caloTreeGen(inName);
+  
+  caloHistGen *calo = new caloHistGen(inName);
   // What subsystems do you want?
   calo->doEMCal(1, "TOWERINFO_CALIB_CEMC");
   // Store EMCal clusters?
   calo->doClusters(1, "CLUSTERINFO_CEMC");
-
-  // Store tower information for each EMCal cluster?
-  calo->doClusterDetails(1);
 
   // Store HCal information?
   calo->doHCals(1, "TOWERINFO_CALIB_HCALOUT", "TOWERINFO_CALIB_HCALIN");
@@ -58,6 +55,14 @@ R__LOAD_LIBRARY(libcaloTreeGen.so)
   // Store GL1 Information?
   calo->doTrig(1, "GL1Packet");
 
+  //reconstruct diphoton pairs?
+  calo->setPi0Reco(1);
+  calo->setMaxAlpha(0.7);
+  calo->setMinClusterE(0.5);
+
+  calo->setTrig("jet");
+  calo->setTrig("photon");
+  
   se->registerSubsystem(calo);
 
   Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTcalo");

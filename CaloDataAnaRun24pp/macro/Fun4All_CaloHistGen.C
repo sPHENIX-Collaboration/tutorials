@@ -58,7 +58,7 @@ R__LOAD_LIBRARY(libcaloHistGen.so)
   //reconstruct diphoton pairs?
   calo->setPi0Reco(1);
   calo->setMaxAlpha(0.7);
-  calo->setMinClusterE(1.5);
+  calo->setMinClusterE(0.5);
 
   calo->setTrig("jet");
   calo->setTrig("photon");

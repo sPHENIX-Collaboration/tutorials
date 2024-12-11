@@ -24,12 +24,12 @@ R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloHistGen.so)
 
-void Fun4All_CaloHistGen(const int nEvents = 0, const std::string &fname = "DST_CALO_run2pp_new_2024p004-00048089-00018.root", const std::string &inName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
+  void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalib = "DST_CALO_run2pp_ana437_2024p007-00048089-00000.root", const std::string &fnameRaw = "DST_CALOFITTING_run2pp_ana437_2024p007-00048089-00000.root",const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
   recoConsts *rc = recoConsts::instance();
   
-  pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fname);
+  pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalib);
   int runnumber = runseg.first;
 
   rc -> set_StringFlag("CDB_GLOBALTAG",dbtag);
@@ -38,9 +38,17 @@ void Fun4All_CaloHistGen(const int nEvents = 0, const std::string &fname = "DST_
 
   gSystem->Load("libg4dst");
   
+  Fun4AllInputManager *inRaw = new Fun4AllDstInputManager("DSTRaw");
+  inRaw->AddFile(fnameRaw);
+  se->registerInputManager(inRaw);
+
+  Fun4AllInputManager *inCalib = new Fun4AllDstInputManager("DSTCalib");
+  inCalib->AddFile(fnameCalib);
+  se->registerInputManager(inCalib);
+
   Process_Calo_Calib();
   
-  caloHistGen *calo = new caloHistGen(inName);
+  caloHistGen *calo = new caloHistGen(outName);
   // What subsystems do you want?
   calo->doEMCal(1, "TOWERINFO_CALIB_CEMC");
   // Store EMCal clusters?
@@ -64,11 +72,6 @@ void Fun4All_CaloHistGen(const int nEvents = 0, const std::string &fname = "DST_
   calo->setTrig("photon");
   
   se->registerSubsystem(calo);
-
-  Fun4AllInputManager *in = new Fun4AllDstInputManager("DSTcalo");
-  in->AddFile(fname);
-
-  se->registerInputManager(in);
 
   se->run(nEvents);
   se->End();

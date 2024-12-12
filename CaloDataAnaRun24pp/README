@@ -2,11 +2,10 @@ First commit: Anthony Hodges, ahodges4@illinois.edu, May 17th, 2024
 
 Update July 1st, 2024: Updated trigger vector to scaled trigger vector
 Update August 6th, 2024: Added Process_calo_calib() to fun4all macro and added python script for generating run list. 
+Update OCtober 1st, 2024: Switched to histogram implementation
 
-TO GENERATE GOOD RUN LIST (Do this in a "runList" directory, there will be a lot of file lists!):
-$ cd macro
-$ python getGoodRunlist.py
-$ CreateDstList.pl --cdb 2024p004 --build new --list runList.txt DST_CALO_run2pp
+TO GENERATE GOOD RUN LIST PLEASE REFER TO THIS CODE:
+https://github.com/JustinBen0131/DirectPhotonAnalysis/blob/main/runListGeneration/GoldenRunList_ConductorFile.sh
 
 Note that this is implemented using p004 above, but you'll need to follow the production developments and possibly change this tag to get more recent runs. 
 ---------------------------------------------------------------------------------------------------------------------------

@@ -235,7 +235,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         }
         clusterCounter2++;
         RawCluster *recoCluster2 = clusterIter2->second;
-        CLHEP::Hep3Vector E_vec_cluster2 = RawClusterUtility::GetECoreVec(*recoCluster1, hep_vertex);
+        CLHEP::Hep3Vector E_vec_cluster2 = RawClusterUtility::GetECoreVec(*recoCluster2, hep_vertex);
         if (recoCluster2->get_chi2() > 4)
         {
           continue;

@@ -244,7 +244,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         {
           continue;
         }
-        if (abs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
+        if (std::abs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
         {
           continue;
         }

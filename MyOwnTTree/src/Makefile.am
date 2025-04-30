@@ -1,10 +1,15 @@
 AUTOMAKE_OPTIONS = foreign
 
-AM_CPPFLAGS = -I$(includedir) -I$(OFFLINE_MAIN)/include -I$(ROOTSYS)/include 
+AM_CPPFLAGS = \
+  -I$(includedir) \
+  -isystem$(OFFLINE_MAIN)/include \
+  -isystem$(ROOTSYS)/include
 
 lib_LTLIBRARIES = libmytree.la   
 
-AM_LDFLAGS = -L$(libdir) -L$(OFFLINE_MAIN)/lib
+AM_LDFLAGS = \
+  -L$(libdir) \
+  -L$(OFFLINE_MAIN)/lib
 
 libmytree_la_LIBADD = \
   -lfun4all \

@@ -155,7 +155,6 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   unsigned int tower_range = 0;
   if (storeEMCal && emcTowerContainer)
   {
-    std::cout << "Looping over EMCal towers" << std::endl;
     tower_range = emcTowerContainer->size();
     for (unsigned int iter = 0; iter < tower_range; iter++)
     {
@@ -179,7 +178,6 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
 
   if (storeClusters && storeEMCal)
   {
-    std::cout << "Storing clusters" << std::endl;
     RawClusterContainer::ConstRange clusterEnd = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter;
     for (clusterIter = clusterEnd.first; clusterIter != clusterEnd.second; clusterIter++)
@@ -209,7 +207,6 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   // pi0 reconstruction
   if (doPi0Reco && storeEMCal)
   {
-    std::cout << "Reconstructing dicluster pairs" << std::endl;
     RawClusterContainer::ConstRange clusters = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter1, clusterIter2;
     int clusterCounter1 = 0;
@@ -316,7 +313,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   TowerInfoContainer *zdcTowerContainer = findNode::getClass<TowerInfoContainer>(topNode, m_zdcTowerNode.c_str());
   if (!zdcTowerContainer)
   {
-    std::cout << PHWHERE << "caloHistGen::process_event: " << m_emcTowerNode << " node is missing. Output related to this node will be empty" << std::endl;
+    std::cout << PHWHERE << "caloHistGen::process_event: " << m_zdcTowerNode.c_str() << " node is missing. Output related to this node will be empty" << std::endl;
     return Fun4AllReturnCodes::ABORTEVENT;
   }
 

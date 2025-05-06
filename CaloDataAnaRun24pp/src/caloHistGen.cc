@@ -155,6 +155,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   unsigned int tower_range = 0;
   if (storeEMCal && emcTowerContainer)
   {
+    std::cout << "Looping over EMCal towers" << std::endl;
     tower_range = emcTowerContainer->size();
     for (unsigned int iter = 0; iter < tower_range; iter++)
     {
@@ -178,6 +179,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
 
   if (storeClusters && storeEMCal)
   {
+    std::cout << "Storing clusters" << std::endl;
     RawClusterContainer::ConstRange clusterEnd = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter;
     for (clusterIter = clusterEnd.first; clusterIter != clusterEnd.second; clusterIter++)
@@ -207,9 +209,12 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   // pi0 reconstruction
   if (doPi0Reco && storeEMCal)
   {
+    std::cout << "Reconstructing dicluster pairs" << std::endl;
     RawClusterContainer::ConstRange clusters = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter1, clusterIter2;
     int clusterCounter1 = 0;
+    int clusterCounter2 = 0;
+
     for (clusterIter1 = clusters.first; clusterIter1 != clusters.second; clusterIter1++)
     {
       RawCluster *recoCluster1 = clusterIter1->second;
@@ -226,14 +231,13 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
       }
       CLHEP::Hep3Vector E_vec_cluster1 = RawClusterUtility::GetECoreVec(*recoCluster1, hep_vertex);
 
-      int clusterCounter2 = 0;
       for (clusterIter2 = clusters.first; clusterIter2 != clusters.second; clusterIter2++)
       {
+	clusterCounter2++;
         if (clusterCounter2 <= clusterCounter1)
         {
           continue;  // prevents double counting pairs
         }
-        clusterCounter2++;
         RawCluster *recoCluster2 = clusterIter2->second;
         CLHEP::Hep3Vector E_vec_cluster2 = RawClusterUtility::GetECoreVec(*recoCluster2, hep_vertex);
         if (recoCluster2->get_chi2() > 4)
@@ -244,7 +248,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         {
           continue;
         }
-        if (std::abs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
+        if (std::fabs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
         {
           continue;
         }

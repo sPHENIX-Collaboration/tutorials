@@ -210,6 +210,8 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
     RawClusterContainer::ConstRange clusters = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter1, clusterIter2;
     int clusterCounter1 = 0;
+    int clusterCounter2 = 0;
+
     for (clusterIter1 = clusters.first; clusterIter1 != clusters.second; clusterIter1++)
     {
       RawCluster *recoCluster1 = clusterIter1->second;
@@ -226,14 +228,13 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
       }
       CLHEP::Hep3Vector E_vec_cluster1 = RawClusterUtility::GetECoreVec(*recoCluster1, hep_vertex);
 
-      int clusterCounter2 = 0;
       for (clusterIter2 = clusters.first; clusterIter2 != clusters.second; clusterIter2++)
       {
+	clusterCounter2++;
         if (clusterCounter2 <= clusterCounter1)
         {
           continue;  // prevents double counting pairs
         }
-        clusterCounter2++;
         RawCluster *recoCluster2 = clusterIter2->second;
         CLHEP::Hep3Vector E_vec_cluster2 = RawClusterUtility::GetECoreVec(*recoCluster2, hep_vertex);
         if (recoCluster2->get_chi2() > 4)
@@ -244,7 +245,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         {
           continue;
         }
-        if (std::abs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
+        if (std::fabs(E_vec_cluster1.mag() - E_vec_cluster2.mag()) / (E_vec_cluster1.mag() + E_vec_cluster2.mag()) > maxAlpha)
         {
           continue;
         }
@@ -312,7 +313,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   TowerInfoContainer *zdcTowerContainer = findNode::getClass<TowerInfoContainer>(topNode, m_zdcTowerNode.c_str());
   if (!zdcTowerContainer)
   {
-    std::cout << PHWHERE << "caloHistGen::process_event: " << m_emcTowerNode << " node is missing. Output related to this node will be empty" << std::endl;
+    std::cout << PHWHERE << "caloHistGen::process_event: " << m_zdcTowerNode.c_str() << " node is missing. Output related to this node will be empty" << std::endl;
     return Fun4AllReturnCodes::ABORTEVENT;
   }
 

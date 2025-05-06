@@ -24,9 +24,10 @@ R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloHistGen.so)
 
-  void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalib = "DST_CALO_run2pp_ana437_2024p007-00048089-00000.root", const std::string &fnameRaw = "DST_CALOFITTING_run2pp_ana437_2024p007-00048089-00000.root",const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
+  void Fun4All_CaloHistGen(const int nEvents = 20000, const std::string &fnameCalib = "DST_CALO_run2pp_ana462_2024p010_v001-00052032-00004.root", const std::string &fnameRaw = "DST_CALOFITTING_run2pp_ana446_2024p007-00052032-00004.root",const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
 {
   Fun4AllServer *se = Fun4AllServer::instance();
+  se->Verbosity(0);
   recoConsts *rc = recoConsts::instance();
   
   pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalib);
@@ -47,6 +48,7 @@ R__LOAD_LIBRARY(libcaloHistGen.so)
   se->registerInputManager(inCalib);
 
   Process_Calo_Calib();
+
   
   caloHistGen *calo = new caloHistGen(outName);
   // What subsystems do you want?
@@ -58,10 +60,10 @@ R__LOAD_LIBRARY(libcaloHistGen.so)
   calo->doHCals(1, "TOWERINFO_CALIB_HCALOUT", "TOWERINFO_CALIB_HCALIN");
 
   // Store ZDC information?
-  calo->doZDC(1, "TOWERINFO_CALIB_ZDC");
+  calo->doZDC(1, "TOWERS_ZDC");
 
   // Store GL1 Information?
-  calo->doTrig(1, "GL1Packet");
+  calo->doTrig(0, "GL1Packet");
 
   //reconstruct diphoton pairs?
   calo->setPi0Reco(1);

@@ -128,7 +128,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
       bool trig_decision = ((triggervec & 0x1U) == 0x1U);
 
       triggervec = (triggervec >> 1U) & 0xffffffffU;
-      if (!trig_decision && i == trigRequired[i])
+      if (!trig_decision && trigRequired[i])
       {
         return 0;
       }

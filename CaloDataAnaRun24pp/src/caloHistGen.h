@@ -15,6 +15,7 @@ class TFile;
 class TH1F;
 class TH2F;
 class TH3F;
+class TowerInfoContainer;
 
 class caloHistGen : public SubsysReco
 {
@@ -66,6 +67,11 @@ class caloHistGen : public SubsysReco
     m_zdcTowerNode = zdcNode;
   }
 
+  void setCaloFrac(float frac)
+  {
+    caloFrac = frac;
+  }
+
   void doTrig(int trigOn, const std::string &trigNode)
   {
     checkTrig = trigOn;
@@ -82,12 +88,28 @@ class caloHistGen : public SubsysReco
     maxAlpha = alphaMax;
   }
   
-  void setMinClusterE(float minClusE)
+  void setCluster1EMin(float minClusE)
   {
-    clusEMin = minClusE;
+    clus1EMin = minClusE;
   }
+
+  void setCluster2EMin(float minClusE)
+  {
+    clus2EMin = minClusE;
+  }
+
+  void setIsAuAu(bool isHI)
+  {
+    isAuAu = isHI;
+  }
+
+  float getTotalCaloEnergy(TowerInfoContainer *towerContainer);
   
-  
+  void peripheralOnlyPi0(bool doPeriphOnly)
+  {
+    peripheralOnly = doPeriphOnly;
+  }
+
   void setTrig(const char *selection)
   {
     if (!strcmp(selection, "minBias"))
@@ -167,7 +189,7 @@ class caloHistGen : public SubsysReco
   TH1F *h_clusPt{nullptr};
   TH1F *h_clusEcore{nullptr};
   
- TH1F * h_clusChi2{nullptr};
+  TH1F * h_clusChi2{nullptr};
 
   TH1F *h_zVertex{nullptr};
   
@@ -178,6 +200,8 @@ class caloHistGen : public SubsysReco
   
   
   // simple variables
+  bool peripheralOnly{false};
+  bool isAuAu{false};
   int storeClusters{1};
   int storeEMCal{1};
   int storeHCals{1};
@@ -186,8 +210,10 @@ class caloHistGen : public SubsysReco
   int doPi0Reco{0};
   int checkTrig{1};
   float maxAlpha{0.7};
-  float clusEMin{1.5};
-
+  float clus1EMin{0.5};
+  float clus2EMin{0.5};
+  float emcaldownscale{1350000. / 800.};
+  float caloFrac{0.05};
   std::string m_clusterNode;
   std::string m_emcTowerNode;
   std::string m_ihcTowerNode;

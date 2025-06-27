@@ -54,13 +54,13 @@ int caloHistGen::Init(PHCompositeNode * /*topNode*/)
   delete out;  // make cppcheck happy (nullptrs can be deleted)
   out = new TFile(Outfile.c_str(), "RECREATE");
 
-  h_emcTowE = new TH3F("emcTowE", "tower eta, tower phi, tower energy", 96, -0.5, 95.5, 256, -0.5, 256.5, 1000, -10, 25);
-  h_OHCalTowE = new TH3F("OHCalTowE", "outer hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 1000, -10, 25);
-  h_IHCalTowE = new TH3F("IHCalTowE", "inner hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 1000, -10, 25);
+  h_emcTowE = new TH3F("emcTowE", "tower eta, tower phi, tower energy", 96, -0.5, 95.5, 256, -0.5, 256.5, 100, -10, 25);
+  h_OHCalTowE = new TH3F("OHCalTowE", "outer hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, -10, 25);
+  h_IHCalTowE = new TH3F("IHCalTowE", "inner hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, -10, 25);
 
-  h_emcTowChi2 = new TH3F("emcTowChi2", "tower eta, tower phi, tower Chi2", 96, -0.5, 95.5, 256, -0.5, 256.5, 1000, 0.5, 4e8);
-  h_OHCalTowChi2 = new TH3F("OHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 1000, 0.5, 4e8);
-  h_IHCalTowChi2 = new TH3F("IHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 1000, 0.5, 4e8);
+  h_emcTowChi2 = new TH3F("emcTowChi2", "tower eta, tower phi, tower Chi2", 96, -0.5, 95.5, 256, -0.5, 256.5, 100, 0.5, 4e8);
+  h_OHCalTowChi2 = new TH3F("OHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0.5, 4e8);
+  h_IHCalTowChi2 = new TH3F("IHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0.5, 4e8);
 
   h_emcTowTime = new TH3F("emcTowEnergy", "tower eta, tower phi, tower Time", 96, -0.5, 95.5, 256, -0.5, 256.5, 21, -10.5, 10.5);
   h_OHCalTowTime = new TH3F("OHCalTowEnergy", "tower eta, tower phi, tower Time", 24, -0.5, 23.5, 64, -0.5, 63.5, 21, -10.5, 10.5);
@@ -72,8 +72,8 @@ int caloHistGen::Init(PHCompositeNode * /*topNode*/)
 
   h_clusInfo = new TH3F("clusInfo", "cluster eta, phi, energy", 140, -1.2, 1.2, 100, -1. * M_PI, M_PI, 500, -2, 25);
 
-  h_clusPt = new TH1F("clusPt", "cluster pT", 500, -2, 25);
-  h_clusEcore = new TH1F("clusEcore", "cluster Ecore", 500, -2, 25);
+  h_clusPt = new TH1F("clusPt", "cluster pT", 100, -2, 25);
+  h_clusEcore = new TH1F("clusEcore", "cluster Ecore", 100, -2, 25);
 
   h_clusChi2 = new TH1F("clusChi2_E", "cluster chi2", 100, 0, 100);
 
@@ -83,9 +83,9 @@ int caloHistGen::Init(PHCompositeNode * /*topNode*/)
 
   h_zdcChanTime = new TH2F("zdcChanTime", "zdc timing per channel", 7, -0.5, 6.5, 21, -10.5, 10.5);
 
-  h_diPhotonEtaPhiE = new TH3F("h_diPhontonEtaPhiE", "diphoton spatial kinematics", 100, -1.1, 1.1, 100, -1 * M_PI, M_PI, 40, 0, 20);
+  h_diPhotonEtaPhiE = new TH3F("h_diPhontonEtaPhiE", "diphoton spatial kinematics", 50, -1.1, 1.1, 100, -1 * M_PI, M_PI, 40, 0, 20);
 
-  h_diPhotonMassE = new TH2F("h_diPhontonMassE", "diphoton mass and energy", 200, 0, 1, 40, 0, 20);
+  h_diPhotonMassE = new TH2F("h_diPhontonMassE", "diphoton mass and energy", 50, 0.02, 1, 40, 0, 20);
 
   // so that the histos actually get written out
   Fun4AllServer *se = Fun4AllServer::instance();
@@ -115,7 +115,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   }
 
   Gl1Packet *gl1PacketInfo = findNode::getClass<Gl1Packet>(topNode, m_trigNode.c_str());
-  if (!gl1PacketInfo)
+  if (!gl1PacketInfo && checkTrig)
   {
     std::cout << PHWHERE << "caloHistGen::process_event: " << m_trigNode << " node is missing. Output related to this node will be empty" << std::endl;
   }
@@ -128,8 +128,9 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
       bool trig_decision = ((triggervec & 0x1U) == 0x1U);
 
       triggervec = (triggervec >> 1U) & 0xffffffffU;
-      if (!trig_decision && i == trigRequired[i])
+      if (!trig_decision && trigRequired[i])
       {
+        std::cout << "Trigger check failed, skipping event" << std::endl;
         return 0;
       }
     }
@@ -205,7 +206,14 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
   }
 
   // pi0 reconstruction
-  if (doPi0Reco && storeEMCal)
+  float caloEnergy =  getTotalCaloEnergy(emcTowerContainer);
+  bool doHIPi0Reco = true;
+  if(isAuAu)
+  {
+    if(!(peripheralOnly &&  caloEnergy < caloFrac * emcaldownscale)) doHIPi0Reco = false;
+  }
+  
+  if (doPi0Reco && storeEMCal && doHIPi0Reco)
   {
     RawClusterContainer::ConstRange clusters = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter1, clusterIter2;
@@ -241,7 +249,15 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         {
           continue;
         }
-        if (E_vec_cluster1.mag() < clusEMin || E_vec_cluster2.mag() < clusEMin)
+	float clusterLead = E_vec_cluster1.mag();
+	float clusterSub = E_vec_cluster2.mag();
+	if(E_vec_cluster2.mag() > clusterLead)
+	  {
+	    clusterLead = E_vec_cluster2.mag();
+	    clusterSub = E_vec_cluster1.mag();
+	  }
+	
+        if (clusterLead < clus1EMin || clusterSub < clus2EMin)
         {
           continue;
         }
@@ -257,6 +273,7 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
       }
     }
   }
+  
   // tower information
   TowerInfoContainer *ohcTowerContainer = findNode::getClass<TowerInfoContainer>(topNode, m_ohcTowerNode);
   TowerInfoContainer *ihcTowerContainer = findNode::getClass<TowerInfoContainer>(topNode, m_ihcTowerNode.c_str());
@@ -397,3 +414,23 @@ int caloHistGen::End(PHCompositeNode * /*topNode*/)
   return Fun4AllReturnCodes::EVENT_OK;
 }
 
+float caloHistGen::getTotalCaloEnergy(TowerInfoContainer *towerContainer)
+{
+
+  float totalCaloEnergy = 0;
+  
+  if(!towerContainer) return std::nanf("1");
+
+  
+  int tower_range = towerContainer->size();
+  for(int iter = 0; iter < tower_range; iter++)
+    {
+      if(towerContainer->get_tower_at_channel(iter) -> get_isGood())
+	{
+	  double energy = towerContainer->get_tower_at_channel(iter)->get_energy();
+	  totalCaloEnergy += energy;
+	}
+    }
+
+  return totalCaloEnergy;
+}

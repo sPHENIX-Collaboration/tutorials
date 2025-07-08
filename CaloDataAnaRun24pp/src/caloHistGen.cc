@@ -54,19 +54,19 @@ int caloHistGen::Init(PHCompositeNode * /*topNode*/)
   delete out;  // make cppcheck happy (nullptrs can be deleted)
   out = new TFile(Outfile.c_str(), "RECREATE");
 
-  h_emcTowE = new TH3F("emcTowE", "tower eta, tower phi, tower energy", 96, -0.5, 95.5, 256, -0.5, 256.5, 100, -10, 25);
+  h_emcTowE = new TH3F("emcTowE", "tower eta, tower phi, tower energy", 96, -0.5, 95.5, 256, -0.5, 255.5, 100, -10, 25);
   h_OHCalTowE = new TH3F("OHCalTowE", "outer hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, -10, 25);
   h_IHCalTowE = new TH3F("IHCalTowE", "inner hcal tower eta, tower phi, tower energy", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, -10, 25);
 
-  h_emcTowChi2 = new TH3F("emcTowChi2", "tower eta, tower phi, tower Chi2", 96, -0.5, 95.5, 256, -0.5, 256.5, 100, 0.5, 4e8);
+  h_emcTowChi2 = new TH3F("emcTowChi2", "tower eta, tower phi, tower Chi2", 96, -0.5, 95.5, 256, -0.5, 255.5, 100, 0.5, 4e8);
   h_OHCalTowChi2 = new TH3F("OHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0.5, 4e8);
   h_IHCalTowChi2 = new TH3F("IHCalTowChi2", "tower eta, tower phi, tower Chi2", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0.5, 4e8);
 
-  h_emcTowTime = new TH3F("emcTowEnergy", "tower eta, tower phi, tower Time", 96, -0.5, 95.5, 256, -0.5, 256.5, 21, -10.5, 10.5);
+  h_emcTowTime = new TH3F("emcTowEnergy", "tower eta, tower phi, tower Time", 96, -0.5, 95.5, 256, -0.5, 255.5, 21, -10.5, 10.5);
   h_OHCalTowTime = new TH3F("OHCalTowEnergy", "tower eta, tower phi, tower Time", 24, -0.5, 23.5, 64, -0.5, 63.5, 21, -10.5, 10.5);
   h_IHCalTowTime = new TH3F("IHCalTowTime", "tower eta, tower phi, tower Time", 24, -0.5, 23.5, 64, -0.5, 63.5, 21, -10.5, 10.5);
 
-  h_emcTowPed = new TH3F("emcTowPed", "tower eta, tower phi, tower Ped", 96, -0.5, 95.5, 256, -0.5, 256.5, 100, 0, 5000);
+  h_emcTowPed = new TH3F("emcTowPed", "tower eta, tower phi, tower Ped", 96, -0.5, 95.5, 256, -0.5, 255.5, 100, 0, 5000);
   h_OHCalTowPed = new TH3F("OHCalTowPed", "tower eta, tower phi, tower Ped", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0, 5000);
   h_IHCalTowPed = new TH3F("IHCalTowPed", "tower eta, tower phi, tower Ped", 24, -0.5, 23.5, 64, -0.5, 63.5, 100, 0, 5000);
 

@@ -218,7 +218,6 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
     RawClusterContainer::ConstRange clusters = clusterContainer->getClusters();
     RawClusterContainer::ConstIterator clusterIter1, clusterIter2;
     int clusterCounter1 = 0;
-    int clusterCounter2 = 0;
 
     for (clusterIter1 = clusters.first; clusterIter1 != clusters.second; clusterIter1++)
     {
@@ -235,10 +234,11 @@ int caloHistGen::process_event(PHCompositeNode *topNode)
         hep_vertex.setZ(vertex);
       }
       CLHEP::Hep3Vector E_vec_cluster1 = RawClusterUtility::GetECoreVec(*recoCluster1, hep_vertex);
+	  int clusterCounter2 = 0;
 
       for (clusterIter2 = clusters.first; clusterIter2 != clusters.second; clusterIter2++)
       {
-	clusterCounter2++;
+	    clusterCounter2++;
         if (clusterCounter2 <= clusterCounter1)
         {
           continue;  // prevents double counting pairs

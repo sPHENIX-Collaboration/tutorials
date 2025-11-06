@@ -13,8 +13,11 @@
 #include <fun4all/Fun4AllOutputManager.h>
 #include <fun4all/Fun4AllServer.h>
 
+#include <mbd/MbdReco.h>
+
 #include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
+#include <globalvertex/GlobalVertexReco.h>
 
 #include <calohistgen/caloHistGen.h>
 
@@ -25,18 +28,18 @@ R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloHistGen.so)
 
 
-void Fun4All_CaloHistGen(const int nEvents = 10000, const std::string &fnameCalib = "/direct/sphenix+lustre01/sphnxpro/production/run3auau/physics/caloy2calib/new_newcdbtag_v006/run_00068100_00068200/DST_CALO_run3auau_new_newcdbtag_v006-00068152-00000.root", const std::string &fnameRaw = "/direct/sphenix+lustre01/sphnxpro/production/run3auau/physics/caloy2fitting/new_newcdbtag_v006/run_00068100_00068200/DST_CALOFITTING_run3auau_new_newcdbtag_v006-00068152-00000.root",const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 25 Au+Au
-//void Fun4All_CaloHistGen(const int nEvents = 0, const std::string &fnameCalib = "/direct/sphenix+lustre01/sphnxpro/production/run2pp/physics/ana468_2024p012_v001/DST_CALO/run_00052000_00052100/dst/DST_CALO_run2pp_ana468_2024p012_v001-00052032-00000.root", const std::string &fnameRaw = "/direct/sphenix+lustre01/sphnxpro/production/run2pp/physics/ana468_2024p012_v001/DST_CALOFITTING/run_00052000_00052100/dst/DST_CALOFITTING_run2pp_ana468_2024p012_v001-00052032-00000.root",const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 24 p+p
+void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run3auau_new_newcdbtag_v008-00066484-00000.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 25 Au+Au
+//void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run2pp_ana509_2024p022_v001-00047334-00022.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 24 p+p
 {
   Fun4AllServer *se = Fun4AllServer::instance();
   se->Verbosity(0);
   recoConsts *rc = recoConsts::instance();
   
-  pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalib);
+  pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalo);
   int runnumber = runseg.first;
 
   bool isAuAu = false;
-  if(fnameCalib.find("auau") != std::string::npos)
+  if(fnameCalo.find("auau") != std::string::npos)
     {
       std::cout << "This is Au+Au, setting flags and cuts" << std::endl;
       isAuAu = true;
@@ -53,18 +56,21 @@ void Fun4All_CaloHistGen(const int nEvents = 10000, const std::string &fnameCali
 
   gSystem->Load("libg4dst");
   
-  Fun4AllInputManager *inRaw = new Fun4AllDstInputManager("DSTRaw");
-  inRaw->AddFile(fnameRaw);
-  se->registerInputManager(inRaw);
-
-  Fun4AllInputManager *inCalib = new Fun4AllDstInputManager("DSTCalib");
-  inCalib->AddFile(fnameCalib);
-  se->registerInputManager(inCalib);
+  Fun4AllInputManager *inputManager = new Fun4AllDstInputManager("DSTRaw");
+  inputManager->AddFile(fnameCalo);
+  se->registerInputManager(inputManager);
 
   //you need this call to calibrate the data!
   Process_Calo_Calib();
 
-  
+  //MBD Reconstruction
+  MbdReco *mbdreco = new MbdReco();
+  se->registerSubsystem(mbdreco);
+
+  GlobalVertexReco *gvertex = new GlobalVertexReco();
+  gvertex->Verbosity(Fun4AllBase::VERBOSITY_QUIET);
+  se->registerSubsystem(gvertex);
+
   caloHistGen *calo = new caloHistGen(outName);
 
   // Let the subsys reco know what we're looking at

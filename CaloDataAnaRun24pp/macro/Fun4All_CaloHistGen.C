@@ -32,7 +32,7 @@ void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo 
 //void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run2pp_ana509_2024p022_v001-00047334-00022.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 24 p+p
 {
   Fun4AllServer *se = Fun4AllServer::instance();
-  se->Verbosity(1\0);
+  se->Verbosity(0);
   recoConsts *rc = recoConsts::instance();
   
   std::pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalo);

@@ -22,17 +22,17 @@
 #include <phool/PHRandomSeed.h>
 #include <phool/recoConsts.h>
 
+
 R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(libffarawobjects.so)
 R__LOAD_LIBRARY(libcaloHistGen.so)
 
-// For Run 2 pp use fnameCalo = DST_CALOFITTING_run2pp_pro001_pcdb001_v001-00047334-00000.root
-// For Run 3 auau use fnameCalo = DST_CALOFITTING_run3auau_pro001_pcdb001_v001-00068042-00000.root
-
-void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run3auau_pro001_pcdb001_v001-00068042-00000.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "newcdbtag")
+void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run3pp_pro001_pcdb001_v001-00079871-00000.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")
+//void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run3auau_new_newcdbtag_v008-00066484-00000.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 25 Au+Au
+//void Fun4All_CaloHistGen(const int nEvents = 1000, const std::string &fnameCalo = "DST_CALOFITTING_run2pp_ana509_2024p022_v001-00047334-00022.root", const std::string &outName = "commissioning.root", const std::string &dbtag = "ProdA_2024")//Constructor for Run 24 p+p
 {
   Fun4AllServer *se = Fun4AllServer::instance();
-  se->Verbosity(0);
+  se->Verbosity(1\0);
   recoConsts *rc = recoConsts::instance();
   
   std::pair<int, int> runseg = Fun4AllUtils::GetRunSegment(fnameCalo);
